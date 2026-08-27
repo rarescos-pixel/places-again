@@ -1,5 +1,11 @@
 # Places, Again
 
+[![Run on Google Cloud](https://deploy.cloud.run/button.svg)](https://deploy.cloud.run?git_repo=https://github.com/rarescos-pixel/places-again&revision=main)
+
+The button above opens Google's guided Cloud Run deployment. The repository's
+`app.json` prepares the required APIs, Firestore database, bounded public-demo
+settings, and dedicated runtime identity, then runs an end-to-end smoke test.
+
 **Places, Again** is a same-day recovery agent for live productions. A performer
 or specialist disappears from the plan; the agent identifies every
 affected call, finds a qualified cover, changes only what it must, verifies the
