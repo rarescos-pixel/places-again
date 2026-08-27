@@ -1,0 +1,95 @@
+{
+  "production": "La Traviata — recovery rehearsal",
+  "date": "2026-08-27",
+  "timezone": "Europe/Bucharest",
+  "version": 1,
+  "people": {
+    "soprano_principal": {
+      "name": "Maria Ionescu",
+      "role": "Violetta principal",
+      "skills": ["role:violetta", "language:italian"],
+      "availability": [{"start": "08:00", "end": "18:00"}]
+    },
+    "soprano_cover": {
+      "name": "Ana Pop",
+      "role": "Violetta cover",
+      "skills": ["role:violetta", "language:italian"],
+      "availability": [{"start": "10:00", "end": "18:00"}]
+    },
+    "pianist": {
+      "name": "Radu Pavel",
+      "role": "Répétiteur",
+      "skills": ["piano:traviata", "language:italian"],
+      "availability": [{"start": "08:00", "end": "17:00"}]
+    },
+    "conductor": {
+      "name": "Elena Marin",
+      "role": "Conductor",
+      "skills": ["conducting:traviata"],
+      "availability": [{"start": "09:30", "end": "15:00"}]
+    },
+    "tenor": {
+      "name": "Victor Dima",
+      "role": "Alfredo",
+      "skills": ["role:alfredo"],
+      "availability": [{"start": "10:00", "end": "16:00"}]
+    },
+    "director": {
+      "name": "Sofia Matei",
+      "role": "Stage director",
+      "skills": ["direction:traviata"],
+      "availability": [{"start": "09:00", "end": "16:00"}]
+    },
+    "stage_manager": {
+      "name": "Dan Luca",
+      "role": "Stage manager",
+      "skills": ["stage_management"],
+      "availability": [{"start": "08:00", "end": "18:00"}]
+    }
+  },
+  "sessions": [
+    {
+      "id": "s1",
+      "title": "Violetta piano call",
+      "start": "09:00",
+      "end": "10:00",
+      "room": "Studio A",
+      "priority": 3,
+      "participants": ["soprano_principal", "pianist"]
+    },
+    {
+      "id": "s2",
+      "title": "Act II stage-and-piano",
+      "start": "10:30",
+      "end": "12:00",
+      "room": "Main Stage",
+      "priority": 5,
+      "participants": ["soprano_principal", "tenor", "conductor", "director", "pianist", "stage_manager"]
+    },
+    {
+      "id": "s3",
+      "title": "Alfredo coaching",
+      "start": "12:15",
+      "end": "13:00",
+      "room": "Studio A",
+      "priority": 2,
+      "participants": ["tenor", "pianist"]
+    },
+    {
+      "id": "s4",
+      "title": "Violetta diction notes",
+      "start": "13:00",
+      "end": "13:30",
+      "room": "Studio B",
+      "priority": 2,
+      "participants": ["soprano_principal", "pianist"]
+    }
+  ],
+  "audit": [
+    {
+      "event": "schedule_loaded",
+      "version": 1,
+      "source": "synthetic_demo"
+    }
+  ]
+}
