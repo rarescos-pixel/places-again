@@ -41,13 +41,13 @@ jobs:
         run: pytest -q
 
       - name: Run labeled evaluation
-        run: python scripts/run_evaluation.py --summary
+        run: python scripts/run_evaluation.py --output reports/evaluation-report.json --summary
 
       - name: Verify core invariants
         run: python scripts/verify_core.py
 
       - name: Scan repository and git history for secrets
-        run: python scripts/secret_scan.py --history
+        run: python scripts/secret_scan.py --history --output reports/secret-scan.json
 
       - name: Python syntax sanity
         run: python -m compileall -q places_again scripts tests
@@ -76,6 +76,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: quality-evidence-${{ github.sha }}
-          path: reports/*.json
+          path: |
+            reports/evaluation-report.json
+            reports/secret-scan.json
           if-no-files-found: error
           retention-days: 30
