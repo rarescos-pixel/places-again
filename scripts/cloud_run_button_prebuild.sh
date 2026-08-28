@@ -6,6 +6,8 @@
 set -Eeuo pipefail
 
 PROJECT_ID="${GOOGLE_CLOUD_PROJECT:?Cloud Run Button did not provide GOOGLE_CLOUD_PROJECT}"
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+source "${SCRIPT_DIR}/enable_google_apis.sh"
 
 note() { printf '[Places, Again] %s\n' "$*"; }
 
@@ -17,8 +19,15 @@ BILLING_ENABLED="$(gcloud billing projects describe "${PROJECT_ID}" --format='va
 }
 
 note "Enabling APIs required by the guided build and authoritative deployment."
-gcloud services enable \
-  run.googleapis.com cloudbuild.googleapis.com artifactregistry.googleapis.com \
-  aiplatform.googleapis.com firestore.googleapis.com pubsub.googleapis.com \
-  iam.googleapis.com iamcredentials.googleapis.com logging.googleapis.com \
-  --project="${PROJECT_ID}" --quiet
+REQUIRED_APIS=(
+  run.googleapis.com
+  cloudbuild.googleapis.com
+  artifactregistry.googleapis.com
+  aiplatform.googleapis.com
+  firestore.googleapis.com
+  pubsub.googleapis.com
+  iam.googleapis.com
+  iamcredentials.googleapis.com
+  logging.googleapis.com
+)
+enable_google_apis "${PROJECT_ID}" "${REQUIRED_APIS[@]}"

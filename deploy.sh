@@ -20,6 +20,7 @@ readonly MODEL="gemini-3.5-flash"
 PROJECT_ID="${1:-${GOOGLE_CLOUD_PROJECT:-${DEFAULT_PROJECT_ID}}}"
 PREBUILT_IMAGE="${PLACES_AGAIN_PREBUILT_IMAGE:-}"
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+source "${SCRIPT_DIR}/scripts/enable_google_apis.sh"
 REPORT_DIR="${SCRIPT_DIR}/runtime"
 TIMESTAMP="$(date -u +%Y%m%dT%H%M%SZ)"
 REPORT="${REPORT_DIR}/deployment-report-${TIMESTAMP}.txt"
@@ -86,17 +87,18 @@ case "${BILLING_ENABLED}" in
 esac
 
 section "Google Cloud APIs"
-gcloud services enable \
-  run.googleapis.com \
-  cloudbuild.googleapis.com \
-  artifactregistry.googleapis.com \
-  aiplatform.googleapis.com \
-  firestore.googleapis.com \
-  pubsub.googleapis.com \
-  iam.googleapis.com \
-  iamcredentials.googleapis.com \
-  logging.googleapis.com \
-  --project="${PROJECT_ID}" --quiet
+REQUIRED_APIS=(
+  run.googleapis.com
+  cloudbuild.googleapis.com
+  artifactregistry.googleapis.com
+  aiplatform.googleapis.com
+  firestore.googleapis.com
+  pubsub.googleapis.com
+  iam.googleapis.com
+  iamcredentials.googleapis.com
+  logging.googleapis.com
+)
+enable_google_apis "${PROJECT_ID}" "${REQUIRED_APIS[@]}"
 
 BUILD_ACCOUNT="places-again-builder"
 API_ACCOUNT="places-again-api"
