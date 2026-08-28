@@ -1,0 +1,73 @@
+name: Quality Gate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: quality-gate-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Tests, evaluation, security
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: |
+            requirements.txt
+            requirements-dev.txt
+
+      - name: Install dependencies
+        run: python -m pip install --upgrade pip && pip install -r requirements-dev.txt
+
+      - name: Run automated tests
+        run: pytest -q
+
+      - name: Run labeled evaluation
+        run: python scripts/run_evaluation.py --summary
+
+      - name: Verify core invariants
+        run: python scripts/verify_core.py
+
+      - name: Scan repository and git history for secrets
+        run: python scripts/secret_scan.py --history
+
+      - name: Python syntax sanity
+        run: python -m compileall -q places_again scripts tests
+
+      - name: Shell syntax sanity
+        run: |
+          bash -n deploy.sh
+          find scripts -maxdepth 1 -type f -name '*.sh' -print0 | xargs -0 -r -n1 bash -n
+
+      - name: JSON and SVG/XML parse sanity
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+
+          for path in Path('.').rglob('*.json'):
+              if '.git' not in path.parts:
+                  json.loads(path.read_text(encoding='utf-8'))
+          for path in Path('docs').glob('*.svg'):
+              ET.parse(path)
+          print('JSON and SVG/XML parse checks passed')
+          PY
