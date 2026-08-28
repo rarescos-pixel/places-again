@@ -1,6 +1,6 @@
 {
-  "case_count": 47,
-  "passed": 47,
+  "case_count": 52,
+  "passed": 52,
   "failed": 0,
   "domains": [
     "commercial_shoot",
@@ -11,7 +11,10 @@
     "unresolved_auto_commits": 0,
     "duplicate_side_effects": 0,
     "stale_plan_rejection_rate": 100.0,
-    "accepted_plans_passing_verification_rate": 100.0
+    "accepted_plans_passing_verification_rate": 100.0,
+    "gemini_invented_plan_commits": 0,
+    "hard_constraint_override_commits": 0,
+    "committed_candidates_reverified_rate": 100.0
   },
   "results": [
     {
@@ -41,13 +44,24 @@
         "unaffected_activities_moved": 0,
         "unaffected_sessions_moved": 0,
         "unresolved_activities": 0,
-        "unresolved": 0
+        "unresolved": 0,
+        "priority_weighted_shifted_minutes": 810,
+        "highest_priority_activities_moved": 0,
+        "activities_moved": 1,
+        "people_schedule_changed": 3,
+        "resources_rescheduled": 1,
+        "maximum_cover_minutes": 180,
+        "qualified_covers_used": 1,
+        "collateral_disruption_score": 5
       },
       "invariants": {
         "unsafe_commit": false,
         "unresolved_auto_commit": false,
         "duplicate_side_effect": false,
-        "accepted_plan_failed_verification": false
+        "accepted_plan_failed_verification": false,
+        "invented_candidate_commit": false,
+        "hard_constraint_override_commit": false,
+        "committed_candidate_not_reverified": false
       }
     },
     {
@@ -77,13 +91,24 @@
         "unaffected_activities_moved": 0,
         "unaffected_sessions_moved": 0,
         "unresolved_activities": 0,
-        "unresolved": 0
+        "unresolved": 0,
+        "priority_weighted_shifted_minutes": 810,
+        "highest_priority_activities_moved": 1,
+        "activities_moved": 1,
+        "people_schedule_changed": 3,
+        "resources_rescheduled": 1,
+        "maximum_cover_minutes": 60,
+        "qualified_covers_used": 1,
+        "collateral_disruption_score": 9
       },
       "invariants": {
         "unsafe_commit": false,
         "unresolved_auto_commit": false,
         "duplicate_side_effect": false,
-        "accepted_plan_failed_verification": false
+        "accepted_plan_failed_verification": false,
+        "invented_candidate_commit": false,
+        "hard_constraint_override_commit": false,
+        "committed_candidate_not_reverified": false
       }
     },
     {
@@ -113,13 +138,24 @@
         "unaffected_activities_moved": 0,
         "unaffected_sessions_moved": 0,
         "unresolved_activities": 0,
-        "unresolved": 0
+        "unresolved": 0,
+        "priority_weighted_shifted_minutes": 0,
+        "highest_priority_activities_moved": 0,
+        "activities_moved": 0,
+        "people_schedule_changed": 2,
+        "resources_rescheduled": 0,
+        "maximum_cover_minutes": 90,
+        "qualified_covers_used": 1,
+        "collateral_disruption_score": 2
       },
       "invariants": {
         "unsafe_commit": false,
         "unresolved_auto_commit": false,
         "duplicate_side_effect": false,
-        "accepted_plan_failed_verification": false
+        "accepted_plan_failed_verification": false,
+        "invented_candidate_commit": false,
+        "hard_constraint_override_commit": false,
+        "committed_candidate_not_reverified": false
       }
     },
     {
@@ -149,13 +185,24 @@
         "unaffected_activities_moved": 0,
         "unaffected_sessions_moved": 0,
         "unresolved_activities": 0,
-        "unresolved": 0
+        "unresolved": 0,
+        "priority_weighted_shifted_minutes": 0,
+        "highest_priority_activities_moved": 0,
+        "activities_moved": 0,
+        "people_schedule_changed": 2,
+        "resources_rescheduled": 0,
+        "maximum_cover_minutes": 30,
+        "qualified_covers_used": 1,
+        "collateral_disruption_score": 2
       },
       "invariants": {
         "unsafe_commit": false,
         "unresolved_auto_commit": false,
         "duplicate_side_effect": false,
-        "accepted_plan_failed_verification": false
+        "accepted_plan_failed_verification": false,
+        "invented_candidate_commit": false,
+        "hard_constraint_override_commit": false,
+        "committed_candidate_not_reverified": false
       }
     },
     {
@@ -184,13 +231,24 @@
         "unaffected_activities_moved": 0,
         "unaffected_sessions_moved": 0,
         "unresolved_activities": 0,
-        "unresolved": 0
+        "unresolved": 0,
+        "priority_weighted_shifted_minutes": 0,
+        "highest_priority_activities_moved": 0,
+        "activities_moved": 0,
+        "people_schedule_changed": 0,
+        "resources_rescheduled": 0,
+        "maximum_cover_minutes": 0,
+        "qualified_covers_used": 0,
+        "collateral_disruption_score": 0
       },
       "invariants": {
         "unsafe_commit": false,
         "unresolved_auto_commit": false,
         "duplicate_side_effect": false,
-        "accepted_plan_failed_verification": false
+        "accepted_plan_failed_verification": false,
+        "invented_candidate_commit": false,
+        "hard_constraint_override_commit": false,
+        "committed_candidate_not_reverified": false
       }
     },
     {
@@ -220,13 +278,24 @@
         "unaffected_activities_moved": 0,
         "unaffected_sessions_moved": 0,
         "unresolved_activities": 3,
-        "unresolved": 3
+        "unresolved": 3,
+        "priority_weighted_shifted_minutes": 0,
+        "highest_priority_activities_moved": 0,
+        "activities_moved": 0,
+        "people_schedule_changed": 0,
+        "resources_rescheduled": 0,
+        "maximum_cover_minutes": 0,
+        "qualified_covers_used": 0,
+        "collateral_disruption_score": 0
       },
       "invariants": {
         "unsafe_commit": false,
         "unresolved_auto_commit": false,
         "duplicate_side_effect": false,
-        "accepted_plan_failed_verification": false
+        "accepted_plan_failed_verification": false,
+        "invented_candidate_commit": false,
+        "hard_constraint_override_commit": false,
+        "committed_candidate_not_reverified": false
       }
     },
     {
@@ -244,25 +313,36 @@
       "metrics": {
         "affected_activities": 3,
         "affected_sessions": 3,
-        "affected_people": 7,
+        "affected_people": 6,
         "affected_resources": 3,
         "person_minutes_at_risk": 720,
         "person_hours_at_risk": 12.0,
-        "activities_recovered": 2,
-        "changed_sessions": 2,
-        "person_minutes_restored": 180,
-        "person_hours_restored": 3.0,
-        "shifted_minutes": 270,
+        "activities_recovered": 0,
+        "changed_sessions": 0,
+        "person_minutes_restored": 0,
+        "person_hours_restored": 0.0,
+        "shifted_minutes": 0,
         "unaffected_activities_moved": 0,
         "unaffected_sessions_moved": 0,
-        "unresolved_activities": 1,
-        "unresolved": 1
+        "unresolved_activities": 3,
+        "unresolved": 3,
+        "priority_weighted_shifted_minutes": 0,
+        "highest_priority_activities_moved": 0,
+        "activities_moved": 0,
+        "people_schedule_changed": 0,
+        "resources_rescheduled": 0,
+        "maximum_cover_minutes": 0,
+        "qualified_covers_used": 0,
+        "collateral_disruption_score": 0
       },
       "invariants": {
         "unsafe_commit": false,
         "unresolved_auto_commit": false,
         "duplicate_side_effect": false,
-        "accepted_plan_failed_verification": false
+        "accepted_plan_failed_verification": false,
+        "invented_candidate_commit": false,
+        "hard_constraint_override_commit": false,
+        "committed_candidate_not_reverified": false
       }
     },
     {
@@ -292,13 +372,24 @@
         "unaffected_activities_moved": 0,
         "unaffected_sessions_moved": 0,
         "unresolved_activities": 3,
-        "unresolved": 3
+        "unresolved": 3,
+        "priority_weighted_shifted_minutes": 0,
+        "highest_priority_activities_moved": 0,
+        "activities_moved": 0,
+        "people_schedule_changed": 0,
+        "resources_rescheduled": 0,
+        "maximum_cover_minutes": 0,
+        "qualified_covers_used": 0,
+        "collateral_disruption_score": 0
       },
       "invariants": {
         "unsafe_commit": false,
         "unresolved_auto_commit": false,
         "duplicate_side_effect": false,
-        "accepted_plan_failed_verification": false
+        "accepted_plan_failed_verification": false,
+        "invented_candidate_commit": false,
+        "hard_constraint_override_commit": false,
+        "committed_candidate_not_reverified": false
       }
     },
     {
@@ -316,25 +407,36 @@
       "metrics": {
         "affected_activities": 3,
         "affected_sessions": 3,
-        "affected_people": 7,
+        "affected_people": 6,
         "affected_resources": 3,
         "person_minutes_at_risk": 720,
         "person_hours_at_risk": 12.0,
-        "activities_recovered": 2,
-        "changed_sessions": 2,
-        "person_minutes_restored": 180,
-        "person_hours_restored": 3.0,
-        "shifted_minutes": 270,
+        "activities_recovered": 0,
+        "changed_sessions": 0,
+        "person_minutes_restored": 0,
+        "person_hours_restored": 0.0,
+        "shifted_minutes": 0,
         "unaffected_activities_moved": 0,
         "unaffected_sessions_moved": 0,
-        "unresolved_activities": 1,
-        "unresolved": 1
+        "unresolved_activities": 3,
+        "unresolved": 3,
+        "priority_weighted_shifted_minutes": 0,
+        "highest_priority_activities_moved": 0,
+        "activities_moved": 0,
+        "people_schedule_changed": 0,
+        "resources_rescheduled": 0,
+        "maximum_cover_minutes": 0,
+        "qualified_covers_used": 0,
+        "collateral_disruption_score": 0
       },
       "invariants": {
         "unsafe_commit": false,
         "unresolved_auto_commit": false,
         "duplicate_side_effect": false,
-        "accepted_plan_failed_verification": false
+        "accepted_plan_failed_verification": false,
+        "invented_candidate_commit": false,
+        "hard_constraint_override_commit": false,
+        "committed_candidate_not_reverified": false
       }
     },
     {
@@ -354,7 +456,10 @@
         "unsafe_commit": false,
         "unresolved_auto_commit": false,
         "duplicate_side_effect": false,
-        "accepted_plan_failed_verification": false
+        "accepted_plan_failed_verification": false,
+        "invented_candidate_commit": false,
+        "hard_constraint_override_commit": false,
+        "committed_candidate_not_reverified": false
       }
     },
     {
@@ -384,13 +489,24 @@
         "unaffected_activities_moved": 0,
         "unaffected_sessions_moved": 0,
         "unresolved_activities": 0,
-        "unresolved": 0
+        "unresolved": 0,
+        "priority_weighted_shifted_minutes": 810,
+        "highest_priority_activities_moved": 0,
+        "activities_moved": 1,
+        "people_schedule_changed": 3,
+        "resources_rescheduled": 1,
+        "maximum_cover_minutes": 180,
+        "qualified_covers_used": 1,
+        "collateral_disruption_score": 5
       },
       "invariants": {
         "unsafe_commit": false,
         "unresolved_auto_commit": false,
         "duplicate_side_effect": false,
-        "accepted_plan_failed_verification": false
+        "accepted_plan_failed_verification": false,
+        "invented_candidate_commit": false,
+        "hard_constraint_override_commit": false,
+        "committed_candidate_not_reverified": false
       }
     },
     {
@@ -420,13 +536,24 @@
         "unaffected_activities_moved": 0,
         "unaffected_sessions_moved": 0,
         "unresolved_activities": 0,
-        "unresolved": 0
+        "unresolved": 0,
+        "priority_weighted_shifted_minutes": 810,
+        "highest_priority_activities_moved": 0,
+        "activities_moved": 1,
+        "people_schedule_changed": 3,
+        "resources_rescheduled": 1,
+        "maximum_cover_minutes": 180,
+        "qualified_covers_used": 1,
+        "collateral_disruption_score": 5
       },
       "invariants": {
         "unsafe_commit": false,
         "unresolved_auto_commit": false,
         "duplicate_side_effect": false,
-        "accepted_plan_failed_verification": false
+        "accepted_plan_failed_verification": false,
+        "invented_candidate_commit": false,
+        "hard_constraint_override_commit": false,
+        "committed_candidate_not_reverified": false
       }
     },
     {
@@ -456,13 +583,24 @@
         "unaffected_activities_moved": 0,
         "unaffected_sessions_moved": 0,
         "unresolved_activities": 0,
-        "unresolved": 0
+        "unresolved": 0,
+        "priority_weighted_shifted_minutes": 810,
+        "highest_priority_activities_moved": 0,
+        "activities_moved": 1,
+        "people_schedule_changed": 3,
+        "resources_rescheduled": 1,
+        "maximum_cover_minutes": 180,
+        "qualified_covers_used": 1,
+        "collateral_disruption_score": 5
       },
       "invariants": {
         "unsafe_commit": false,
         "unresolved_auto_commit": false,
         "duplicate_side_effect": false,
-        "accepted_plan_failed_verification": false
+        "accepted_plan_failed_verification": false,
+        "invented_candidate_commit": false,
+        "hard_constraint_override_commit": false,
+        "committed_candidate_not_reverified": false
       }
     },
     {
@@ -492,13 +630,24 @@
         "unaffected_activities_moved": 0,
         "unaffected_sessions_moved": 0,
         "unresolved_activities": 0,
-        "unresolved": 0
+        "unresolved": 0,
+        "priority_weighted_shifted_minutes": 810,
+        "highest_priority_activities_moved": 0,
+        "activities_moved": 1,
+        "people_schedule_changed": 3,
+        "resources_rescheduled": 1,
+        "maximum_cover_minutes": 180,
+        "qualified_covers_used": 1,
+        "collateral_disruption_score": 5
       },
       "invariants": {
         "unsafe_commit": false,
         "unresolved_auto_commit": false,
         "duplicate_side_effect": false,
-        "accepted_plan_failed_verification": false
+        "accepted_plan_failed_verification": false,
+        "invented_candidate_commit": false,
+        "hard_constraint_override_commit": false,
+        "committed_candidate_not_reverified": false
       }
     },
     {
@@ -529,13 +678,24 @@
         "unaffected_activities_moved": 0,
         "unaffected_sessions_moved": 0,
         "unresolved_activities": 0,
-        "unresolved": 0
+        "unresolved": 0,
+        "priority_weighted_shifted_minutes": 810,
+        "highest_priority_activities_moved": 0,
+        "activities_moved": 1,
+        "people_schedule_changed": 3,
+        "resources_rescheduled": 1,
+        "maximum_cover_minutes": 180,
+        "qualified_covers_used": 1,
+        "collateral_disruption_score": 5
       },
       "invariants": {
         "unsafe_commit": false,
         "unresolved_auto_commit": false,
         "duplicate_side_effect": false,
-        "accepted_plan_failed_verification": false
+        "accepted_plan_failed_verification": false,
+        "invented_candidate_commit": false,
+        "hard_constraint_override_commit": false,
+        "committed_candidate_not_reverified": false
       }
     },
     {
@@ -565,13 +725,24 @@
         "unaffected_activities_moved": 0,
         "unaffected_sessions_moved": 0,
         "unresolved_activities": 0,
-        "unresolved": 0
+        "unresolved": 0,
+        "priority_weighted_shifted_minutes": 810,
+        "highest_priority_activities_moved": 0,
+        "activities_moved": 1,
+        "people_schedule_changed": 3,
+        "resources_rescheduled": 1,
+        "maximum_cover_minutes": 180,
+        "qualified_covers_used": 1,
+        "collateral_disruption_score": 5
       },
       "invariants": {
         "unsafe_commit": false,
         "unresolved_auto_commit": false,
         "duplicate_side_effect": false,
-        "accepted_plan_failed_verification": false
+        "accepted_plan_failed_verification": false,
+        "invented_candidate_commit": false,
+        "hard_constraint_override_commit": false,
+        "committed_candidate_not_reverified": false
       }
     },
     {
@@ -601,13 +772,24 @@
         "unaffected_activities_moved": 0,
         "unaffected_sessions_moved": 0,
         "unresolved_activities": 0,
-        "unresolved": 0
+        "unresolved": 0,
+        "priority_weighted_shifted_minutes": 0,
+        "highest_priority_activities_moved": 0,
+        "activities_moved": 0,
+        "people_schedule_changed": 2,
+        "resources_rescheduled": 0,
+        "maximum_cover_minutes": 180,
+        "qualified_covers_used": 1,
+        "collateral_disruption_score": 2
       },
       "invariants": {
         "unsafe_commit": false,
         "unresolved_auto_commit": false,
         "duplicate_side_effect": false,
-        "accepted_plan_failed_verification": false
+        "accepted_plan_failed_verification": false,
+        "invented_candidate_commit": false,
+        "hard_constraint_override_commit": false,
+        "committed_candidate_not_reverified": false
       }
     },
     {
@@ -637,49 +819,71 @@
         "unaffected_activities_moved": 0,
         "unaffected_sessions_moved": 0,
         "unresolved_activities": 3,
-        "unresolved": 3
+        "unresolved": 3,
+        "priority_weighted_shifted_minutes": 0,
+        "highest_priority_activities_moved": 0,
+        "activities_moved": 0,
+        "people_schedule_changed": 0,
+        "resources_rescheduled": 0,
+        "maximum_cover_minutes": 0,
+        "qualified_covers_used": 0,
+        "collateral_disruption_score": 0
       },
       "invariants": {
         "unsafe_commit": false,
         "unresolved_auto_commit": false,
         "duplicate_side_effect": false,
-        "accepted_plan_failed_verification": false
+        "accepted_plan_failed_verification": false,
+        "invented_candidate_commit": false,
+        "hard_constraint_override_commit": false,
+        "committed_candidate_not_reverified": false
       }
     },
     {
       "id": "op_preexisting_resource_conflict",
       "labels": [
         "resource_conflict",
-        "safety_gate"
+        "alternative_safe_candidate"
       ],
-      "expected": "human_escalation",
-      "actual": "human_escalation",
+      "expected": "autonomous_safe_commit",
+      "actual": "autonomous_safe_commit",
       "passed": true,
-      "status": "human_required",
-      "version_delta": 0,
-      "outbox_count": 0,
+      "status": "completed",
+      "version_delta": 1,
+      "outbox_count": 12,
       "metrics": {
         "affected_activities": 3,
         "affected_sessions": 3,
-        "affected_people": 7,
+        "affected_people": 6,
         "affected_resources": 3,
         "person_minutes_at_risk": 720,
         "person_hours_at_risk": 12.0,
-        "activities_recovered": 2,
-        "changed_sessions": 2,
-        "person_minutes_restored": 180,
-        "person_hours_restored": 3.0,
-        "shifted_minutes": 270,
+        "activities_recovered": 3,
+        "changed_sessions": 3,
+        "person_minutes_restored": 720,
+        "person_hours_restored": 12.0,
+        "shifted_minutes": 240,
         "unaffected_activities_moved": 0,
         "unaffected_sessions_moved": 0,
-        "unresolved_activities": 1,
-        "unresolved": 1
+        "unresolved_activities": 0,
+        "unresolved": 0,
+        "priority_weighted_shifted_minutes": 1080,
+        "highest_priority_activities_moved": 1,
+        "activities_moved": 2,
+        "people_schedule_changed": 7,
+        "resources_rescheduled": 2,
+        "maximum_cover_minutes": 180,
+        "qualified_covers_used": 1,
+        "collateral_disruption_score": 15
       },
       "invariants": {
         "unsafe_commit": false,
         "unresolved_auto_commit": false,
         "duplicate_side_effect": false,
-        "accepted_plan_failed_verification": false
+        "accepted_plan_failed_verification": false,
+        "invented_candidate_commit": false,
+        "hard_constraint_override_commit": false,
+        "committed_candidate_not_reverified": false
       }
     },
     {
@@ -695,7 +899,10 @@
         "unsafe_commit": false,
         "unresolved_auto_commit": false,
         "duplicate_side_effect": false,
-        "accepted_plan_failed_verification": false
+        "accepted_plan_failed_verification": false,
+        "invented_candidate_commit": false,
+        "hard_constraint_override_commit": false,
+        "committed_candidate_not_reverified": false
       }
     },
     {
@@ -712,7 +919,10 @@
         "unsafe_commit": false,
         "unresolved_auto_commit": false,
         "duplicate_side_effect": false,
-        "accepted_plan_failed_verification": false
+        "accepted_plan_failed_verification": false,
+        "invented_candidate_commit": false,
+        "hard_constraint_override_commit": false,
+        "committed_candidate_not_reverified": false
       }
     },
     {
@@ -729,7 +939,10 @@
         "unsafe_commit": false,
         "unresolved_auto_commit": false,
         "duplicate_side_effect": false,
-        "accepted_plan_failed_verification": false
+        "accepted_plan_failed_verification": false,
+        "invented_candidate_commit": false,
+        "hard_constraint_override_commit": false,
+        "committed_candidate_not_reverified": false
       }
     },
     {
@@ -746,7 +959,10 @@
         "unsafe_commit": false,
         "unresolved_auto_commit": false,
         "duplicate_side_effect": false,
-        "accepted_plan_failed_verification": false
+        "accepted_plan_failed_verification": false,
+        "invented_candidate_commit": false,
+        "hard_constraint_override_commit": false,
+        "committed_candidate_not_reverified": false
       }
     },
     {
@@ -776,13 +992,24 @@
         "unaffected_activities_moved": 0,
         "unaffected_sessions_moved": 0,
         "unresolved_activities": 0,
-        "unresolved": 0
+        "unresolved": 0,
+        "priority_weighted_shifted_minutes": 1080,
+        "highest_priority_activities_moved": 0,
+        "activities_moved": 1,
+        "people_schedule_changed": 3,
+        "resources_rescheduled": 2,
+        "maximum_cover_minutes": 330,
+        "qualified_covers_used": 1,
+        "collateral_disruption_score": 6
       },
       "invariants": {
         "unsafe_commit": false,
         "unresolved_auto_commit": false,
         "duplicate_side_effect": false,
-        "accepted_plan_failed_verification": false
+        "accepted_plan_failed_verification": false,
+        "invented_candidate_commit": false,
+        "hard_constraint_override_commit": false,
+        "committed_candidate_not_reverified": false
       }
     },
     {
@@ -812,13 +1039,24 @@
         "unaffected_activities_moved": 0,
         "unaffected_sessions_moved": 0,
         "unresolved_activities": 0,
-        "unresolved": 0
+        "unresolved": 0,
+        "priority_weighted_shifted_minutes": 1080,
+        "highest_priority_activities_moved": 1,
+        "activities_moved": 1,
+        "people_schedule_changed": 3,
+        "resources_rescheduled": 2,
+        "maximum_cover_minutes": 60,
+        "qualified_covers_used": 1,
+        "collateral_disruption_score": 10
       },
       "invariants": {
         "unsafe_commit": false,
         "unresolved_auto_commit": false,
         "duplicate_side_effect": false,
-        "accepted_plan_failed_verification": false
+        "accepted_plan_failed_verification": false,
+        "invented_candidate_commit": false,
+        "hard_constraint_override_commit": false,
+        "committed_candidate_not_reverified": false
       }
     },
     {
@@ -848,13 +1086,24 @@
         "unaffected_activities_moved": 0,
         "unaffected_sessions_moved": 0,
         "unresolved_activities": 0,
-        "unresolved": 0
+        "unresolved": 0,
+        "priority_weighted_shifted_minutes": 0,
+        "highest_priority_activities_moved": 0,
+        "activities_moved": 0,
+        "people_schedule_changed": 2,
+        "resources_rescheduled": 0,
+        "maximum_cover_minutes": 90,
+        "qualified_covers_used": 1,
+        "collateral_disruption_score": 2
       },
       "invariants": {
         "unsafe_commit": false,
         "unresolved_auto_commit": false,
         "duplicate_side_effect": false,
-        "accepted_plan_failed_verification": false
+        "accepted_plan_failed_verification": false,
+        "invented_candidate_commit": false,
+        "hard_constraint_override_commit": false,
+        "committed_candidate_not_reverified": false
       }
     },
     {
@@ -884,13 +1133,24 @@
         "unaffected_activities_moved": 0,
         "unaffected_sessions_moved": 0,
         "unresolved_activities": 0,
-        "unresolved": 0
+        "unresolved": 0,
+        "priority_weighted_shifted_minutes": 0,
+        "highest_priority_activities_moved": 0,
+        "activities_moved": 0,
+        "people_schedule_changed": 2,
+        "resources_rescheduled": 0,
+        "maximum_cover_minutes": 90,
+        "qualified_covers_used": 1,
+        "collateral_disruption_score": 2
       },
       "invariants": {
         "unsafe_commit": false,
         "unresolved_auto_commit": false,
         "duplicate_side_effect": false,
-        "accepted_plan_failed_verification": false
+        "accepted_plan_failed_verification": false,
+        "invented_candidate_commit": false,
+        "hard_constraint_override_commit": false,
+        "committed_candidate_not_reverified": false
       }
     },
     {
@@ -920,13 +1180,24 @@
         "unaffected_activities_moved": 0,
         "unaffected_sessions_moved": 0,
         "unresolved_activities": 0,
-        "unresolved": 0
+        "unresolved": 0,
+        "priority_weighted_shifted_minutes": 0,
+        "highest_priority_activities_moved": 0,
+        "activities_moved": 0,
+        "people_schedule_changed": 2,
+        "resources_rescheduled": 0,
+        "maximum_cover_minutes": 90,
+        "qualified_covers_used": 1,
+        "collateral_disruption_score": 2
       },
       "invariants": {
         "unsafe_commit": false,
         "unresolved_auto_commit": false,
         "duplicate_side_effect": false,
-        "accepted_plan_failed_verification": false
+        "accepted_plan_failed_verification": false,
+        "invented_candidate_commit": false,
+        "hard_constraint_override_commit": false,
+        "committed_candidate_not_reverified": false
       }
     },
     {
@@ -955,13 +1226,24 @@
         "unaffected_activities_moved": 0,
         "unaffected_sessions_moved": 0,
         "unresolved_activities": 0,
-        "unresolved": 0
+        "unresolved": 0,
+        "priority_weighted_shifted_minutes": 0,
+        "highest_priority_activities_moved": 0,
+        "activities_moved": 0,
+        "people_schedule_changed": 0,
+        "resources_rescheduled": 0,
+        "maximum_cover_minutes": 0,
+        "qualified_covers_used": 0,
+        "collateral_disruption_score": 0
       },
       "invariants": {
         "unsafe_commit": false,
         "unresolved_auto_commit": false,
         "duplicate_side_effect": false,
-        "accepted_plan_failed_verification": false
+        "accepted_plan_failed_verification": false,
+        "invented_candidate_commit": false,
+        "hard_constraint_override_commit": false,
+        "committed_candidate_not_reverified": false
       }
     },
     {
@@ -991,13 +1273,24 @@
         "unaffected_activities_moved": 0,
         "unaffected_sessions_moved": 0,
         "unresolved_activities": 4,
-        "unresolved": 4
+        "unresolved": 4,
+        "priority_weighted_shifted_minutes": 0,
+        "highest_priority_activities_moved": 0,
+        "activities_moved": 0,
+        "people_schedule_changed": 0,
+        "resources_rescheduled": 0,
+        "maximum_cover_minutes": 0,
+        "qualified_covers_used": 0,
+        "collateral_disruption_score": 0
       },
       "invariants": {
         "unsafe_commit": false,
         "unresolved_auto_commit": false,
         "duplicate_side_effect": false,
-        "accepted_plan_failed_verification": false
+        "accepted_plan_failed_verification": false,
+        "invented_candidate_commit": false,
+        "hard_constraint_override_commit": false,
+        "committed_candidate_not_reverified": false
       }
     },
     {
@@ -1015,25 +1308,36 @@
       "metrics": {
         "affected_activities": 4,
         "affected_sessions": 4,
-        "affected_people": 7,
+        "affected_people": 6,
         "affected_resources": 5,
         "person_minutes_at_risk": 1560,
         "person_hours_at_risk": 26.0,
-        "activities_recovered": 3,
-        "changed_sessions": 3,
-        "person_minutes_restored": 1020,
-        "person_hours_restored": 17.0,
-        "shifted_minutes": 645,
+        "activities_recovered": 0,
+        "changed_sessions": 0,
+        "person_minutes_restored": 0,
+        "person_hours_restored": 0.0,
+        "shifted_minutes": 0,
         "unaffected_activities_moved": 0,
         "unaffected_sessions_moved": 0,
-        "unresolved_activities": 1,
-        "unresolved": 1
+        "unresolved_activities": 4,
+        "unresolved": 4,
+        "priority_weighted_shifted_minutes": 0,
+        "highest_priority_activities_moved": 0,
+        "activities_moved": 0,
+        "people_schedule_changed": 0,
+        "resources_rescheduled": 0,
+        "maximum_cover_minutes": 0,
+        "qualified_covers_used": 0,
+        "collateral_disruption_score": 0
       },
       "invariants": {
         "unsafe_commit": false,
         "unresolved_auto_commit": false,
         "duplicate_side_effect": false,
-        "accepted_plan_failed_verification": false
+        "accepted_plan_failed_verification": false,
+        "invented_candidate_commit": false,
+        "hard_constraint_override_commit": false,
+        "committed_candidate_not_reverified": false
       }
     },
     {
@@ -1063,13 +1367,24 @@
         "unaffected_activities_moved": 0,
         "unaffected_sessions_moved": 0,
         "unresolved_activities": 4,
-        "unresolved": 4
+        "unresolved": 4,
+        "priority_weighted_shifted_minutes": 0,
+        "highest_priority_activities_moved": 0,
+        "activities_moved": 0,
+        "people_schedule_changed": 0,
+        "resources_rescheduled": 0,
+        "maximum_cover_minutes": 0,
+        "qualified_covers_used": 0,
+        "collateral_disruption_score": 0
       },
       "invariants": {
         "unsafe_commit": false,
         "unresolved_auto_commit": false,
         "duplicate_side_effect": false,
-        "accepted_plan_failed_verification": false
+        "accepted_plan_failed_verification": false,
+        "invented_candidate_commit": false,
+        "hard_constraint_override_commit": false,
+        "committed_candidate_not_reverified": false
       }
     },
     {
@@ -1087,25 +1402,36 @@
       "metrics": {
         "affected_activities": 4,
         "affected_sessions": 4,
-        "affected_people": 7,
+        "affected_people": 6,
         "affected_resources": 5,
         "person_minutes_at_risk": 1560,
         "person_hours_at_risk": 26.0,
-        "activities_recovered": 2,
-        "changed_sessions": 2,
-        "person_minutes_restored": 570,
-        "person_hours_restored": 9.5,
-        "shifted_minutes": 270,
+        "activities_recovered": 0,
+        "changed_sessions": 0,
+        "person_minutes_restored": 0,
+        "person_hours_restored": 0.0,
+        "shifted_minutes": 0,
         "unaffected_activities_moved": 0,
         "unaffected_sessions_moved": 0,
-        "unresolved_activities": 2,
-        "unresolved": 2
+        "unresolved_activities": 4,
+        "unresolved": 4,
+        "priority_weighted_shifted_minutes": 0,
+        "highest_priority_activities_moved": 0,
+        "activities_moved": 0,
+        "people_schedule_changed": 0,
+        "resources_rescheduled": 0,
+        "maximum_cover_minutes": 0,
+        "qualified_covers_used": 0,
+        "collateral_disruption_score": 0
       },
       "invariants": {
         "unsafe_commit": false,
         "unresolved_auto_commit": false,
         "duplicate_side_effect": false,
-        "accepted_plan_failed_verification": false
+        "accepted_plan_failed_verification": false,
+        "invented_candidate_commit": false,
+        "hard_constraint_override_commit": false,
+        "committed_candidate_not_reverified": false
       }
     },
     {
@@ -1123,25 +1449,36 @@
       "metrics": {
         "affected_activities": 4,
         "affected_sessions": 4,
-        "affected_people": 7,
+        "affected_people": 6,
         "affected_resources": 5,
         "person_minutes_at_risk": 1560,
         "person_hours_at_risk": 26.0,
-        "activities_recovered": 2,
-        "changed_sessions": 2,
-        "person_minutes_restored": 570,
-        "person_hours_restored": 9.5,
-        "shifted_minutes": 270,
+        "activities_recovered": 0,
+        "changed_sessions": 0,
+        "person_minutes_restored": 0,
+        "person_hours_restored": 0.0,
+        "shifted_minutes": 0,
         "unaffected_activities_moved": 0,
         "unaffected_sessions_moved": 0,
-        "unresolved_activities": 2,
-        "unresolved": 2
+        "unresolved_activities": 4,
+        "unresolved": 4,
+        "priority_weighted_shifted_minutes": 0,
+        "highest_priority_activities_moved": 0,
+        "activities_moved": 0,
+        "people_schedule_changed": 0,
+        "resources_rescheduled": 0,
+        "maximum_cover_minutes": 0,
+        "qualified_covers_used": 0,
+        "collateral_disruption_score": 0
       },
       "invariants": {
         "unsafe_commit": false,
         "unresolved_auto_commit": false,
         "duplicate_side_effect": false,
-        "accepted_plan_failed_verification": false
+        "accepted_plan_failed_verification": false,
+        "invented_candidate_commit": false,
+        "hard_constraint_override_commit": false,
+        "committed_candidate_not_reverified": false
       }
     },
     {
@@ -1171,13 +1508,24 @@
         "unaffected_activities_moved": 0,
         "unaffected_sessions_moved": 0,
         "unresolved_activities": 0,
-        "unresolved": 0
+        "unresolved": 0,
+        "priority_weighted_shifted_minutes": 1080,
+        "highest_priority_activities_moved": 0,
+        "activities_moved": 1,
+        "people_schedule_changed": 3,
+        "resources_rescheduled": 2,
+        "maximum_cover_minutes": 330,
+        "qualified_covers_used": 1,
+        "collateral_disruption_score": 6
       },
       "invariants": {
         "unsafe_commit": false,
         "unresolved_auto_commit": false,
         "duplicate_side_effect": false,
-        "accepted_plan_failed_verification": false
+        "accepted_plan_failed_verification": false,
+        "invented_candidate_commit": false,
+        "hard_constraint_override_commit": false,
+        "committed_candidate_not_reverified": false
       }
     },
     {
@@ -1207,13 +1555,24 @@
         "unaffected_activities_moved": 0,
         "unaffected_sessions_moved": 0,
         "unresolved_activities": 0,
-        "unresolved": 0
+        "unresolved": 0,
+        "priority_weighted_shifted_minutes": 1080,
+        "highest_priority_activities_moved": 0,
+        "activities_moved": 1,
+        "people_schedule_changed": 3,
+        "resources_rescheduled": 2,
+        "maximum_cover_minutes": 330,
+        "qualified_covers_used": 1,
+        "collateral_disruption_score": 6
       },
       "invariants": {
         "unsafe_commit": false,
         "unresolved_auto_commit": false,
         "duplicate_side_effect": false,
-        "accepted_plan_failed_verification": false
+        "accepted_plan_failed_verification": false,
+        "invented_candidate_commit": false,
+        "hard_constraint_override_commit": false,
+        "committed_candidate_not_reverified": false
       }
     },
     {
@@ -1243,13 +1602,24 @@
         "unaffected_activities_moved": 0,
         "unaffected_sessions_moved": 0,
         "unresolved_activities": 0,
-        "unresolved": 0
+        "unresolved": 0,
+        "priority_weighted_shifted_minutes": 1080,
+        "highest_priority_activities_moved": 0,
+        "activities_moved": 1,
+        "people_schedule_changed": 3,
+        "resources_rescheduled": 2,
+        "maximum_cover_minutes": 330,
+        "qualified_covers_used": 1,
+        "collateral_disruption_score": 6
       },
       "invariants": {
         "unsafe_commit": false,
         "unresolved_auto_commit": false,
         "duplicate_side_effect": false,
-        "accepted_plan_failed_verification": false
+        "accepted_plan_failed_verification": false,
+        "invented_candidate_commit": false,
+        "hard_constraint_override_commit": false,
+        "committed_candidate_not_reverified": false
       }
     },
     {
@@ -1279,13 +1649,24 @@
         "unaffected_activities_moved": 0,
         "unaffected_sessions_moved": 0,
         "unresolved_activities": 0,
-        "unresolved": 0
+        "unresolved": 0,
+        "priority_weighted_shifted_minutes": 1080,
+        "highest_priority_activities_moved": 0,
+        "activities_moved": 1,
+        "people_schedule_changed": 3,
+        "resources_rescheduled": 2,
+        "maximum_cover_minutes": 330,
+        "qualified_covers_used": 1,
+        "collateral_disruption_score": 6
       },
       "invariants": {
         "unsafe_commit": false,
         "unresolved_auto_commit": false,
         "duplicate_side_effect": false,
-        "accepted_plan_failed_verification": false
+        "accepted_plan_failed_verification": false,
+        "invented_candidate_commit": false,
+        "hard_constraint_override_commit": false,
+        "committed_candidate_not_reverified": false
       }
     },
     {
@@ -1303,25 +1684,36 @@
       "metrics": {
         "affected_activities": 4,
         "affected_sessions": 4,
-        "affected_people": 7,
+        "affected_people": 6,
         "affected_resources": 6,
         "person_minutes_at_risk": 1560,
         "person_hours_at_risk": 26.0,
-        "activities_recovered": 3,
-        "changed_sessions": 3,
-        "person_minutes_restored": 1110,
-        "person_hours_restored": 18.5,
-        "shifted_minutes": 270,
+        "activities_recovered": 0,
+        "changed_sessions": 0,
+        "person_minutes_restored": 0,
+        "person_hours_restored": 0.0,
+        "shifted_minutes": 0,
         "unaffected_activities_moved": 0,
         "unaffected_sessions_moved": 0,
-        "unresolved_activities": 1,
-        "unresolved": 1
+        "unresolved_activities": 4,
+        "unresolved": 4,
+        "priority_weighted_shifted_minutes": 0,
+        "highest_priority_activities_moved": 0,
+        "activities_moved": 0,
+        "people_schedule_changed": 0,
+        "resources_rescheduled": 0,
+        "maximum_cover_minutes": 0,
+        "qualified_covers_used": 0,
+        "collateral_disruption_score": 0
       },
       "invariants": {
         "unsafe_commit": false,
         "unresolved_auto_commit": false,
         "duplicate_side_effect": false,
-        "accepted_plan_failed_verification": false
+        "accepted_plan_failed_verification": false,
+        "invented_candidate_commit": false,
+        "hard_constraint_override_commit": false,
+        "committed_candidate_not_reverified": false
       }
     },
     {
@@ -1335,11 +1727,11 @@
       "passed": true,
       "status": "completed",
       "version_delta": 1,
-      "outbox_count": 14,
+      "outbox_count": 12,
       "metrics": {
         "affected_activities": 4,
         "affected_sessions": 4,
-        "affected_people": 7,
+        "affected_people": 6,
         "affected_resources": 5,
         "person_minutes_at_risk": 1560,
         "person_hours_at_risk": 26.0,
@@ -1347,17 +1739,28 @@
         "changed_sessions": 4,
         "person_minutes_restored": 1560,
         "person_hours_restored": 26.0,
-        "shifted_minutes": 645,
+        "shifted_minutes": 375,
         "unaffected_activities_moved": 0,
         "unaffected_sessions_moved": 0,
         "unresolved_activities": 0,
-        "unresolved": 0
+        "unresolved": 0,
+        "priority_weighted_shifted_minutes": 1755,
+        "highest_priority_activities_moved": 1,
+        "activities_moved": 3,
+        "people_schedule_changed": 7,
+        "resources_rescheduled": 5,
+        "maximum_cover_minutes": 330,
+        "qualified_covers_used": 1,
+        "collateral_disruption_score": 19
       },
       "invariants": {
         "unsafe_commit": false,
         "unresolved_auto_commit": false,
         "duplicate_side_effect": false,
-        "accepted_plan_failed_verification": false
+        "accepted_plan_failed_verification": false,
+        "invented_candidate_commit": false,
+        "hard_constraint_override_commit": false,
+        "committed_candidate_not_reverified": false
       }
     },
     {
@@ -1387,13 +1790,24 @@
         "unaffected_activities_moved": 0,
         "unaffected_sessions_moved": 0,
         "unresolved_activities": 0,
-        "unresolved": 0
+        "unresolved": 0,
+        "priority_weighted_shifted_minutes": 0,
+        "highest_priority_activities_moved": 0,
+        "activities_moved": 0,
+        "people_schedule_changed": 2,
+        "resources_rescheduled": 0,
+        "maximum_cover_minutes": 180,
+        "qualified_covers_used": 1,
+        "collateral_disruption_score": 2
       },
       "invariants": {
         "unsafe_commit": false,
         "unresolved_auto_commit": false,
         "duplicate_side_effect": false,
-        "accepted_plan_failed_verification": false
+        "accepted_plan_failed_verification": false,
+        "invented_candidate_commit": false,
+        "hard_constraint_override_commit": false,
+        "committed_candidate_not_reverified": false
       }
     },
     {
@@ -1413,7 +1827,10 @@
         "unsafe_commit": false,
         "unresolved_auto_commit": false,
         "duplicate_side_effect": false,
-        "accepted_plan_failed_verification": false
+        "accepted_plan_failed_verification": false,
+        "invented_candidate_commit": false,
+        "hard_constraint_override_commit": false,
+        "committed_candidate_not_reverified": false
       }
     },
     {
@@ -1443,13 +1860,24 @@
         "unaffected_activities_moved": 0,
         "unaffected_sessions_moved": 0,
         "unresolved_activities": 4,
-        "unresolved": 4
+        "unresolved": 4,
+        "priority_weighted_shifted_minutes": 0,
+        "highest_priority_activities_moved": 0,
+        "activities_moved": 0,
+        "people_schedule_changed": 0,
+        "resources_rescheduled": 0,
+        "maximum_cover_minutes": 0,
+        "qualified_covers_used": 0,
+        "collateral_disruption_score": 0
       },
       "invariants": {
         "unsafe_commit": false,
         "unresolved_auto_commit": false,
         "duplicate_side_effect": false,
-        "accepted_plan_failed_verification": false
+        "accepted_plan_failed_verification": false,
+        "invented_candidate_commit": false,
+        "hard_constraint_override_commit": false,
+        "committed_candidate_not_reverified": false
       }
     },
     {
@@ -1466,7 +1894,10 @@
         "unsafe_commit": false,
         "unresolved_auto_commit": false,
         "duplicate_side_effect": false,
-        "accepted_plan_failed_verification": false
+        "accepted_plan_failed_verification": false,
+        "invented_candidate_commit": false,
+        "hard_constraint_override_commit": false,
+        "committed_candidate_not_reverified": false
       }
     },
     {
@@ -1483,7 +1914,10 @@
         "unsafe_commit": false,
         "unresolved_auto_commit": false,
         "duplicate_side_effect": false,
-        "accepted_plan_failed_verification": false
+        "accepted_plan_failed_verification": false,
+        "invented_candidate_commit": false,
+        "hard_constraint_override_commit": false,
+        "committed_candidate_not_reverified": false
       }
     },
     {
@@ -1500,7 +1934,10 @@
         "unsafe_commit": false,
         "unresolved_auto_commit": false,
         "duplicate_side_effect": false,
-        "accepted_plan_failed_verification": false
+        "accepted_plan_failed_verification": false,
+        "invented_candidate_commit": false,
+        "hard_constraint_override_commit": false,
+        "committed_candidate_not_reverified": false
       }
     },
     {
@@ -1516,7 +1953,203 @@
         "unsafe_commit": false,
         "unresolved_auto_commit": false,
         "duplicate_side_effect": false,
-        "accepted_plan_failed_verification": false
+        "accepted_plan_failed_verification": false,
+        "invented_candidate_commit": false,
+        "hard_constraint_override_commit": false,
+        "committed_candidate_not_reverified": false
+      }
+    },
+    {
+      "id": "agentic_bounded_selection",
+      "labels": [
+        "gemini_selection",
+        "multiple_safe_candidates",
+        "reverification"
+      ],
+      "expected": "autonomous_safe_commit",
+      "actual": "autonomous_safe_commit",
+      "passed": true,
+      "status": "completed",
+      "version_delta": 1,
+      "outbox_count": 12,
+      "metrics": {
+        "affected_activities": 3,
+        "affected_sessions": 3,
+        "affected_people": 6,
+        "affected_resources": 3,
+        "person_minutes_at_risk": 720,
+        "person_hours_at_risk": 12.0,
+        "activities_recovered": 3,
+        "changed_sessions": 3,
+        "person_minutes_restored": 720,
+        "person_hours_restored": 12.0,
+        "shifted_minutes": 270,
+        "unaffected_activities_moved": 0,
+        "unaffected_sessions_moved": 0,
+        "unresolved_activities": 0,
+        "unresolved": 0,
+        "priority_weighted_shifted_minutes": 810,
+        "highest_priority_activities_moved": 0,
+        "activities_moved": 1,
+        "people_schedule_changed": 3,
+        "resources_rescheduled": 1,
+        "maximum_cover_minutes": 180,
+        "qualified_covers_used": 1,
+        "collateral_disruption_score": 5
+      },
+      "invariants": {
+        "unsafe_commit": false,
+        "unresolved_auto_commit": false,
+        "duplicate_side_effect": false,
+        "accepted_plan_failed_verification": false,
+        "invented_candidate_commit": false,
+        "hard_constraint_override_commit": false,
+        "committed_candidate_not_reverified": false
+      }
+    },
+    {
+      "id": "agentic_invalid_candidate",
+      "labels": [
+        "gemini_invalid_id",
+        "fail_closed"
+      ],
+      "expected": "candidate_rejected",
+      "actual": "candidate_rejected",
+      "passed": true,
+      "status": "human_required",
+      "version_delta": 0,
+      "outbox_count": 0,
+      "metrics": {},
+      "invariants": {
+        "unsafe_commit": false,
+        "unresolved_auto_commit": false,
+        "duplicate_side_effect": false,
+        "accepted_plan_failed_verification": false,
+        "invented_candidate_commit": false,
+        "hard_constraint_override_commit": false,
+        "committed_candidate_not_reverified": false
+      }
+    },
+    {
+      "id": "agentic_model_timeout",
+      "labels": [
+        "gemini_timeout",
+        "retry_safe",
+        "zero_side_effects"
+      ],
+      "expected": "model_timeout_safe",
+      "actual": "model_timeout_safe",
+      "passed": true,
+      "status": "planned",
+      "version_delta": 0,
+      "outbox_count": 0,
+      "metrics": {},
+      "invariants": {
+        "unsafe_commit": false,
+        "unresolved_auto_commit": false,
+        "duplicate_side_effect": false,
+        "accepted_plan_failed_verification": false,
+        "invented_candidate_commit": false,
+        "hard_constraint_override_commit": false,
+        "committed_candidate_not_reverified": false
+      }
+    },
+    {
+      "id": "agentic_reverification_tamper",
+      "labels": [
+        "hard_constraint_override",
+        "reverification",
+        "fail_closed"
+      ],
+      "expected": "reverification_rejected",
+      "actual": "reverification_rejected",
+      "passed": true,
+      "status": "human_required",
+      "version_delta": 0,
+      "outbox_count": 0,
+      "metrics": {
+        "affected_activities": 3,
+        "affected_sessions": 3,
+        "affected_people": 6,
+        "affected_resources": 3,
+        "person_minutes_at_risk": 720,
+        "person_hours_at_risk": 12.0,
+        "activities_recovered": 3,
+        "changed_sessions": 3,
+        "person_minutes_restored": 720,
+        "person_hours_restored": 12.0,
+        "shifted_minutes": 270,
+        "unaffected_activities_moved": 0,
+        "unaffected_sessions_moved": 0,
+        "unresolved_activities": 0,
+        "unresolved": 0,
+        "priority_weighted_shifted_minutes": 810,
+        "highest_priority_activities_moved": 0,
+        "activities_moved": 1,
+        "people_schedule_changed": 3,
+        "resources_rescheduled": 1,
+        "maximum_cover_minutes": 180,
+        "qualified_covers_used": 1,
+        "collateral_disruption_score": 5
+      },
+      "invariants": {
+        "unsafe_commit": false,
+        "unresolved_auto_commit": false,
+        "duplicate_side_effect": false,
+        "accepted_plan_failed_verification": false,
+        "invented_candidate_commit": false,
+        "hard_constraint_override_commit": false,
+        "committed_candidate_not_reverified": false
+      }
+    },
+    {
+      "id": "agentic_film_soft_priority",
+      "labels": [
+        "second_domain",
+        "soft_priority",
+        "cover_workload",
+        "structured_reason",
+        "audit"
+      ],
+      "expected": "soft_priority_applied",
+      "actual": "soft_priority_applied",
+      "passed": true,
+      "status": "completed",
+      "version_delta": 1,
+      "outbox_count": 14,
+      "metrics": {
+        "affected_activities": 4,
+        "affected_sessions": 4,
+        "affected_people": 6,
+        "affected_resources": 5,
+        "person_minutes_at_risk": 1560,
+        "person_hours_at_risk": 26.0,
+        "activities_recovered": 4,
+        "changed_sessions": 4,
+        "person_minutes_restored": 1560,
+        "person_hours_restored": 26.0,
+        "shifted_minutes": 270,
+        "unaffected_activities_moved": 0,
+        "unaffected_sessions_moved": 0,
+        "unresolved_activities": 0,
+        "unresolved": 0,
+        "priority_weighted_shifted_minutes": 1080,
+        "highest_priority_activities_moved": 0,
+        "activities_moved": 1,
+        "people_schedule_changed": 4,
+        "resources_rescheduled": 2,
+        "maximum_cover_minutes": 180,
+        "qualified_covers_used": 2,
+        "collateral_disruption_score": 7
+      },
+      "invariants": {
+        "unsafe_commit": false,
+        "unresolved_auto_commit": false,
+        "duplicate_side_effect": false,
+        "accepted_plan_failed_verification": false,
+        "invented_candidate_commit": false,
+        "hard_constraint_override_commit": false,
+        "committed_candidate_not_reverified": false
       }
     }
   ]

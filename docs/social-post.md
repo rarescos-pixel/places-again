@@ -1,9 +1,11 @@
-Every organization has software for when the plan works. I built Places, Again for the moment when the plan breaks.
+One person disappears. The schedule is not the problem anymore—the operation is.
 
-It is an autonomous operational disruption recovery agent built with Gemini 3.5, Google ADK, Cloud Run, Pub/Sub, and Firestore. One incident starts a background workflow that measures the blast radius, finds the smallest qualified recovery, proves the new state against deterministic safety gates, commits atomically, and prepares an outbox it cannot send.
+I built Places, Again because I know that failure firsthand from live production. It maps the cascade, generates only hard-safe recovery candidates, then uses Gemini 3.5 + Google ADK to choose the strategy that makes the most operational sense.
 
-I started with opera because I know this failure mode firsthand. Opera is the proving ground, not the market: the same engine also recovers a synthetic commercial film/broadcast shoot.
+Gemini selects. Deterministic code re-verifies. Firestore commits once. If safety cannot be proved, the agent stops for a human. Messages are prepared; it has no ability to send them.
 
-Current reproducible evaluation: 47/47 cases, 0 unsafe commits, 0 unresolved auto-commits, 0 duplicate side effects, 100% stale-plan rejection, and zero messages sent.
+The same engine recovers both an opera production and a synthetic commercial film/broadcast day. Current reproducible evaluation: 52/52 cases, 0 unsafe commits, 0 duplicate business effects, 0 model-invented plan commits, and 100% of committed candidates reverified.
+
+The plan breaks. The operation recovers.
 
 Built for the Google All Things Agentic Hackathon. #AllThingsAgenticHackathon

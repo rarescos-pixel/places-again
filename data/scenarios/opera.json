@@ -4,6 +4,12 @@
   "production": "La Traviata — recovery rehearsal",
   "date": "2026-08-27",
   "timezone": "Europe/Bucharest",
+  "soft_priorities": [
+    {"code": "preserve_highest_priority_activity", "description": "Keep the Act II stage-and-piano call at its original time when a safe alternative exists; it coordinates the largest ensemble and the conductor's limited window.", "rank": 1},
+    {"code": "minimize_people_schedule_changes", "description": "Avoid changing calls for artists and stage staff who are not part of the absence.", "rank": 2},
+    {"code": "minimize_shifted_minutes", "description": "Minimize total movement after the critical ensemble call is protected.", "rank": 3},
+    {"code": "minimize_resource_rescheduling", "description": "Avoid unnecessary changes to the main stage and rehearsal studios.", "rank": 4}
+  ],
   "version": 1,
   "people": {
     "soprano_principal": {"name": "Synthetic Principal Soprano A", "role": "Violetta principal", "skills": ["role:violetta", "language:italian"], "availability": [{"start": "08:00", "end": "18:00"}]},

@@ -12,6 +12,7 @@ ROOT = Path(__file__).resolve().parent.parent
 SCENARIO_DIR = ROOT / "data" / "scenarios"
 LEGACY_SEED_PATH = ROOT / "data" / "demo_state.json"
 DEFAULT_SCENARIO = "opera"
+TERMINAL_EVENT_STATUSES = frozenset({"completed", "human_required"})
 MutationResult = TypeVar("MutationResult")
 
 
@@ -56,6 +57,45 @@ def _normalize_system(payload: dict[str, Any]) -> dict[str, Any]:
     return system
 
 
+def _reset_scenario_in_system(
+    system: dict[str, Any], scenario_id: str
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Reset synthetic schedule data without erasing event evidence.
+
+    Reset is intentionally refused while an event could still be delivered by
+    Pub/Sub. Terminal event records remain as the immutable audit/evidence
+    ledger even when the synthetic schedule is returned to its seed state.
+    """
+    if scenario_id not in system["scenarios"]:
+        raise KeyError(f"Unknown scenario: {scenario_id}")
+    nonterminal = [
+        event_id
+        for event_id, event in system.get("events", {}).items()
+        if event.get("scenario_id") == scenario_id
+        and event.get("status") not in TERMINAL_EVENT_STATUSES
+    ]
+    if nonterminal:
+        raise ValueError(
+            "Cannot reset a scenario while events are still processing: "
+            + ", ".join(sorted(nonterminal))
+        )
+    state = _scenario_seed(scenario_id)
+    system["scenarios"][scenario_id] = state
+    system.setdefault("audit", []).append(
+        {
+            "event": "synthetic_scenario_reset",
+            "scenario_id": scenario_id,
+            "preserved_terminal_events": sum(
+                1
+                for event in system.get("events", {}).values()
+                if event.get("scenario_id") == scenario_id
+                and event.get("status") in TERMINAL_EVENT_STATUSES
+            ),
+        }
+    )
+    return system, deepcopy(state)
+
+
 class JsonRepository:
     def __init__(self, path: Path | None = None):
         configured = os.environ.get("PLACES_AGAIN_STATE_PATH")
@@ -90,13 +130,7 @@ class JsonRepository:
     def reset(self, scenario_id: str = DEFAULT_SCENARIO) -> dict[str, Any]:
         with self._lock:
             system = self._read_system()
-            state = _scenario_seed(scenario_id)
-            system["scenarios"][scenario_id] = state
-            system["events"] = {
-                event_id: event
-                for event_id, event in system.get("events", {}).items()
-                if event.get("scenario_id") != scenario_id
-            }
+            system, state = _reset_scenario_in_system(system, scenario_id)
             self._write_system(system)
             return deepcopy(state)
 
@@ -193,16 +227,12 @@ class FirestoreRepository:
         return deepcopy(system)
 
     def reset(self, scenario_id: str = DEFAULT_SCENARIO) -> dict[str, Any]:
-        system = self.system_snapshot()
-        state = _scenario_seed(scenario_id)
-        system["scenarios"][scenario_id] = state
-        system["events"] = {
-            event_id: event
-            for event_id, event in system.get("events", {}).items()
-            if event.get("scenario_id") != scenario_id
-        }
-        self.document.set(self._encode(system))
-        return deepcopy(state)
+        def reset_in_transaction(
+            system: dict[str, Any],
+        ) -> tuple[dict[str, Any], dict[str, Any]]:
+            return _reset_scenario_in_system(system, scenario_id)
+
+        return self.mutate_system(reset_in_transaction)
 
     def system_snapshot(self) -> dict[str, Any]:
         snapshot = self.document.get()

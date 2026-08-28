@@ -4,7 +4,13 @@ from uuid import uuid4
 import pytest
 
 from places_again.repository import JsonRepository
-from places_again.workflow import get_event, process_event, receive_incident
+from places_again.workflow import (
+    commit_event_candidate,
+    get_event,
+    prepare_event_candidates,
+    process_event,
+    receive_incident,
+)
 
 
 def opera_incident(reason="same-day illness"):
@@ -39,6 +45,27 @@ def test_duplicate_delivery_has_exactly_once_effects(tmp_path):
     assert all(
         message["status"] == "prepared_not_sent"
         for message in repository.snapshot("opera")["outbox"]
+    )
+
+
+def test_synthetic_reset_preserves_terminal_evidence_and_refuses_active_event(tmp_path):
+    repository = JsonRepository(tmp_path / "state.json")
+    active = receive_incident("opera", opera_incident(), repository=repository)
+
+    with pytest.raises(ValueError, match="still processing"):
+        repository.reset("opera")
+
+    completed = process_event(active["event_id"], repository=repository)
+    reset_state = repository.reset("opera")
+    preserved = get_event(active["event_id"], repository=repository)
+
+    assert completed["status"] == "completed"
+    assert reset_state["version"] == 1
+    assert preserved is not None
+    assert preserved["status"] == "completed"
+    assert any(
+        entry["event"] == "synthetic_scenario_reset"
+        for entry in repository.system_snapshot()["audit"]
     )
 
 
@@ -142,3 +169,182 @@ def test_same_event_id_cannot_be_rebound(tmp_path):
         receive_incident(
             "opera", changed, event_id=event_id, repository=repository
         )
+
+
+def test_gemini_bounded_selection_is_persisted_and_reverified(tmp_path):
+    repository = JsonRepository(tmp_path / "state.json")
+    event = receive_incident("opera", opera_incident(), repository=repository)
+    prepared = prepare_event_candidates(event["event_id"], repository=repository)
+    candidate_id = prepared["candidate_summaries"][0]["candidate_id"]
+
+    completed = commit_event_candidate(
+        event["event_id"],
+        candidate_id,
+        ["preserve_highest_priority_activity", "minimize_people_schedule_changes"],
+        repository=repository,
+    )
+
+    assert completed["status"] == "completed"
+    assert completed["selector"] == "gemini_structured_selection"
+    assert completed["selected_candidate_id"] == candidate_id
+    assert completed["deterministic_reverification"]["passed"] is True
+    assert completed["selection_reason_codes"] == [
+        "preserve_highest_priority_activity",
+        "minimize_people_schedule_changes",
+    ]
+    assert repository.snapshot("opera")["version"] == 2
+    assert any(
+        item.get("candidate_id") == candidate_id
+        for item in repository.system_snapshot()["audit"]
+        if item["event"] == "incident_completed"
+    )
+
+
+def test_gemini_cannot_invent_a_candidate_id(tmp_path):
+    repository = JsonRepository(tmp_path / "state.json")
+    event = receive_incident("opera", opera_incident(), repository=repository)
+    prepare_event_candidates(event["event_id"], repository=repository)
+
+    rejected = commit_event_candidate(
+        event["event_id"],
+        "candidate-invented-by-model",
+        ["minimize_shifted_minutes"],
+        repository=repository,
+    )
+
+    assert rejected["status"] == "human_required"
+    assert rejected["failure"]["type"] == "invalid_candidate_selection"
+    assert repository.snapshot("opera")["version"] == 1
+    assert repository.snapshot("opera")["outbox"] == []
+
+
+def test_model_timeout_after_candidate_generation_has_zero_side_effects(tmp_path):
+    repository = JsonRepository(tmp_path / "state.json")
+    event = receive_incident("opera", opera_incident(), repository=repository)
+    prepared = prepare_event_candidates(event["event_id"], repository=repository)
+
+    # This is the durable state a Gemini timeout leaves for Pub/Sub retry.
+    assert prepared["status"] == "planned"
+    assert prepared["safe_candidates_considered"] >= 2
+    assert repository.snapshot("opera")["version"] == 1
+    assert repository.snapshot("opera")["outbox"] == []
+    replayed = prepare_event_candidates(event["event_id"], repository=repository)
+    assert replayed["candidate_preparation_replayed"] is True
+    assert replayed["candidate_set_id"] == prepared["candidate_set_id"]
+
+
+def test_selected_candidate_is_reverified_against_current_state(tmp_path):
+    repository = JsonRepository(tmp_path / "state.json")
+    event = receive_incident("opera", opera_incident(), repository=repository)
+    prepared = prepare_event_candidates(event["event_id"], repository=repository)
+    candidate_id = prepared["candidate_summaries"][0]["candidate_id"]
+
+    def tamper(system):
+        candidate = system["events"][event["event_id"]]["candidate_set"]["candidates"][0]
+        candidate["actions"][0]["new_person_id"] = "pianist"
+        candidate["safe_to_commit"] = True
+        return system, None
+
+    repository.mutate_system(tamper)
+    rejected = commit_event_candidate(
+        event["event_id"],
+        candidate_id,
+        ["preserve_highest_priority_activity"],
+        repository=repository,
+    )
+
+    assert rejected["status"] == "human_required"
+    assert rejected["failure"]["type"] == "deterministic_reverification_failed"
+    assert repository.snapshot("opera")["version"] == 1
+    assert repository.snapshot("opera")["outbox"] == []
+
+
+def test_selected_candidate_rejects_self_replacement_after_tampering(tmp_path):
+    repository = JsonRepository(tmp_path / "state.json")
+    event = receive_incident("opera", opera_incident(), repository=repository)
+    prepared = prepare_event_candidates(event["event_id"], repository=repository)
+    candidate_id = prepared["candidate_summaries"][0]["candidate_id"]
+
+    def tamper(system):
+        candidate = system["events"][event["event_id"]]["candidate_set"]["candidates"][0]
+        candidate["actions"][0]["new_person_id"] = "soprano_principal"
+        candidate["safe_to_commit"] = True
+        return system, None
+
+    repository.mutate_system(tamper)
+    rejected = commit_event_candidate(
+        event["event_id"],
+        candidate_id,
+        ["preserve_highest_priority_activity"],
+        repository=repository,
+    )
+
+    assert rejected["status"] == "human_required"
+    assert rejected["failure"]["type"] == "deterministic_reverification_failed"
+    assert any(
+        item["type"] == "disrupted_person_reassigned"
+        for item in rejected["deterministic_reverification"]["violations"]
+    )
+    assert repository.snapshot("opera")["version"] == 1
+    assert repository.snapshot("opera")["outbox"] == []
+
+
+@pytest.mark.parametrize(
+    "reason_codes",
+    [
+        [],
+        ["preserve_highest_priority_activity", "preserve_highest_priority_activity"],
+        [
+            "preserve_highest_priority_activity",
+            "minimize_people_schedule_changes",
+            "minimize_resource_rescheduling",
+        ],
+    ],
+)
+def test_gemini_reason_codes_must_be_one_or_two_unique_values(tmp_path, reason_codes):
+    repository = JsonRepository(tmp_path / "state.json")
+    event = receive_incident("opera", opera_incident(), repository=repository)
+    prepared = prepare_event_candidates(event["event_id"], repository=repository)
+    candidate_id = prepared["candidate_summaries"][0]["candidate_id"]
+
+    rejected = commit_event_candidate(
+        event["event_id"], candidate_id, reason_codes, repository=repository
+    )
+
+    assert rejected["status"] == "human_required"
+    assert rejected["failure"]["type"] == "invalid_selection_reason_codes"
+    assert repository.snapshot("opera")["version"] == 1
+    assert repository.snapshot("opera")["outbox"] == []
+
+
+def test_gemini_reason_codes_must_be_persisted_event_policy_codes(tmp_path):
+    repository = JsonRepository(tmp_path / "state.json")
+
+    def restrict_policy(state):
+        state["soft_priorities"] = [
+            {
+                "code": "preserve_highest_priority_activity",
+                "description": "Protect the highest-priority call.",
+                "rank": 1,
+            }
+        ]
+        return state, None
+
+    repository.mutate(restrict_policy, "opera")
+    event = receive_incident("opera", opera_incident(), repository=repository)
+    prepared = prepare_event_candidates(event["event_id"], repository=repository)
+    candidate_id = prepared["candidate_summaries"][0]["candidate_id"]
+
+    rejected = commit_event_candidate(
+        event["event_id"],
+        candidate_id,
+        ["minimize_people_schedule_changes"],
+        repository=repository,
+    )
+
+    assert rejected["status"] == "human_required"
+    assert rejected["failure"]["type"] == "invalid_selection_reason_codes"
+    assert "reason_code_not_in_event_policy:minimize_people_schedule_changes" in rejected[
+        "failure"
+    ]["violations"]
+    assert repository.snapshot("opera")["version"] == 1

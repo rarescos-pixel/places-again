@@ -135,6 +135,24 @@ grant_act_as() {
     --member="${ACTIVE_MEMBER}" --role='roles/iam.serviceAccountUser' --quiet >/dev/null
 }
 
+assert_config_equals() {
+  local label="$1" expected="$2" actual="$3"
+  if [[ "${actual}" != "${expected}" ]]; then
+    note "CONFIG_ASSERTION=${label} result=failed expected=${expected} actual=${actual}"
+    die "Deployment configuration assertion failed: ${label}" 9
+  fi
+  note "CONFIG_ASSERTION=${label} result=passed value=${actual}"
+}
+
+assert_config_contains() {
+  local label="$1" expected="$2" actual="$3"
+  if [[ "${actual}" != *"${expected}"* ]]; then
+    note "CONFIG_ASSERTION=${label} result=failed expected_member=${expected}"
+    die "Deployment configuration assertion failed: ${label}" 9
+  fi
+  note "CONFIG_ASSERTION=${label} result=passed expected_member=${expected}"
+}
+
 section "Least-privilege identities"
 ensure_service_account "${BUILD_ACCOUNT}" "${BUILD_SA}" "Places Again builder" "Builds the contest image"
 ensure_service_account "${API_ACCOUNT}" "${API_SA}" "Places Again public API" "Persists incidents and publishes opaque event IDs"
@@ -187,7 +205,7 @@ gcloud run deploy "${API_SERVICE}" \
   --cpu=1 \
   --concurrency=20 \
   --timeout=60 \
-  --set-env-vars="PLACES_AGAIN_SERVICE_ROLE=api,PLACES_AGAIN_REPOSITORY=firestore,PLACES_AGAIN_PUBSUB_TOPIC=${TOPIC},GOOGLE_CLOUD_PROJECT=${PROJECT_ID}" \
+  --set-env-vars="PLACES_AGAIN_SERVICE_ROLE=api,PLACES_AGAIN_REPOSITORY=firestore,PLACES_AGAIN_PUBSUB_TOPIC=${TOPIC},PLACES_AGAIN_SYNTHETIC_DEMO_MODE=true,GOOGLE_CLOUD_PROJECT=${PROJECT_ID}" \
   --quiet
 
 API_URL="$(gcloud run services describe "${API_SERVICE}" --project="${PROJECT_ID}" --region="${REGION}" --format='value(status.url)')"
@@ -241,6 +259,20 @@ else
     --max-retry-delay=60s \
     --quiet
 fi
+
+section "Deployment configuration evidence"
+API_INGRESS="$(gcloud run services describe "${API_SERVICE}" --project="${PROJECT_ID}" --region="${REGION}" --format='value(metadata.annotations."run.googleapis.com/ingress")')"
+WORKER_INGRESS="$(gcloud run services describe "${WORKER_SERVICE}" --project="${PROJECT_ID}" --region="${REGION}" --format='value(metadata.annotations."run.googleapis.com/ingress")')"
+WORKER_POLICY="$(gcloud run services get-iam-policy "${WORKER_SERVICE}" --project="${PROJECT_ID}" --region="${REGION}" --format=json)"
+PUSH_ENDPOINT_ASSERTED="$(gcloud pubsub subscriptions describe "${SUBSCRIPTION}" --project="${PROJECT_ID}" --format='value(pushConfig.pushEndpoint)')"
+PUSH_SA_ASSERTED="$(gcloud pubsub subscriptions describe "${SUBSCRIPTION}" --project="${PROJECT_ID}" --format='value(pushConfig.oidcToken.serviceAccountEmail)')"
+PUSH_AUDIENCE_ASSERTED="$(gcloud pubsub subscriptions describe "${SUBSCRIPTION}" --project="${PROJECT_ID}" --format='value(pushConfig.oidcToken.audience)')"
+assert_config_equals "api_ingress" "all" "${API_INGRESS}"
+assert_config_equals "worker_ingress" "internal" "${WORKER_INGRESS}"
+assert_config_contains "worker_push_invoker" "serviceAccount:${PUSH_SA}" "${WORKER_POLICY}"
+assert_config_equals "subscription_push_endpoint" "${PUSH_ENDPOINT}" "${PUSH_ENDPOINT_ASSERTED}"
+assert_config_equals "subscription_oidc_service_account" "${PUSH_SA}" "${PUSH_SA_ASSERTED}"
+assert_config_equals "subscription_oidc_audience" "${WORKER_URL}" "${PUSH_AUDIENCE_ASSERTED}"
 
 section "Cloud E2E evidence"
 python3 "${SCRIPT_DIR}/scripts/cloud_e2e_test.py" "${API_URL}" --output "${EVIDENCE_REPORT}"

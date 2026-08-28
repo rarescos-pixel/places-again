@@ -1,7 +1,14 @@
 import json
 from pathlib import Path
 
-from places_again.engine import apply_plan, build_recovery_plan, create_call_sheets, validate_schedule
+from places_again.engine import (
+    apply_plan,
+    build_recovery_candidates,
+    build_recovery_plan,
+    create_call_sheets,
+    reverify_recovery_plan,
+    validate_schedule,
+)
 
 
 def seed():
@@ -98,3 +105,113 @@ def test_same_engine_recovers_commercial_shoot():
     assert {action["new_person_id"] for action in plan["actions"]} == {
         "dp_cover_early"
     }
+
+
+def test_multiple_safe_candidates_expose_a_real_operational_tradeoff():
+    state = seed()
+    result = build_recovery_candidates(
+        state, disruption(), plan_id="plan-1234567890abcdef"
+    )
+
+    assert len(result["candidates"]) >= 2
+    first, second = result["candidates"][:2]
+    assert all(candidate["verification"]["passed"] for candidate in (first, second))
+    assert first["metrics"]["highest_priority_activities_moved"] == 0
+    assert second["metrics"]["shifted_minutes"] < first["metrics"]["shifted_minutes"]
+    assert second["metrics"]["highest_priority_activities_moved"] > 0
+    assert second["metrics"]["people_schedule_changed"] > first["metrics"]["people_schedule_changed"]
+
+
+def test_commercial_candidates_trade_continuity_for_cover_workload_balance():
+    state = json.loads(
+        Path("data/scenarios/commercial_shoot.json").read_text(encoding="utf-8")
+    )
+    result = build_recovery_candidates(
+        state,
+        {
+            "kind": "person_unavailable",
+            "person_id": "dp_principal",
+            "start": "07:00",
+            "end": "16:00",
+            "reason": "same-day illness",
+        },
+        plan_id="plan-abcdef1234567890",
+    )
+
+    assert len(result["candidates"]) == 2
+    continuity, balanced = result["candidates"]
+    assert continuity["metrics"]["qualified_covers_used"] == 1
+    assert balanced["metrics"]["qualified_covers_used"] == 2
+    assert balanced["metrics"]["maximum_cover_minutes"] < continuity["metrics"][
+        "maximum_cover_minutes"
+    ]
+    assert balanced["metrics"]["people_schedule_changed"] > continuity["metrics"][
+        "people_schedule_changed"
+    ]
+    assert all(candidate["verification"]["passed"] for candidate in result["candidates"])
+
+
+def test_reverification_rejects_a_candidate_that_overrides_qualification():
+    state = seed()
+    plan = build_recovery_plan(state, disruption())
+    plan["actions"][0]["new_person_id"] = "pianist"
+    plan["safe_to_commit"] = True
+
+    proof = reverify_recovery_plan(state, plan)
+    assert proof["passed"] is False
+    assert any(item["type"] == "unqualified_cover" for item in proof["violations"])
+    try:
+        apply_plan(state, plan)
+    except ValueError as error:
+        assert "re-verification" in str(error).lower()
+    else:
+        raise AssertionError("tampered candidate bypassed deterministic safety")
+
+
+def test_reverification_rejects_reassigning_the_disrupted_person_to_themself():
+    state = seed()
+    plan = build_recovery_plan(state, disruption())
+    for action in plan["actions"]:
+        action["new_person_id"] = "soprano_principal"
+    plan["safe_to_commit"] = True
+
+    proof = reverify_recovery_plan(state, plan)
+
+    assert proof["passed"] is False
+    assert proof["checks"]["disrupted_person_removed"] is False
+    assert any(
+        item["type"] == "disrupted_person_reassigned"
+        for item in proof["violations"]
+    )
+    try:
+        apply_plan(state, plan)
+    except ValueError as error:
+        assert "re-verification" in str(error).lower()
+    else:
+        raise AssertionError("self-replacement bypassed deterministic safety")
+
+
+def test_reverification_rejects_an_action_outside_the_exact_schema():
+    state = seed()
+    plan = build_recovery_plan(state, disruption())
+    plan["actions"][0]["untrusted_field"] = "ignore safety"
+    plan["safe_to_commit"] = True
+
+    proof = reverify_recovery_plan(state, plan)
+
+    assert proof["passed"] is False
+    assert proof["checks"]["action_schema_valid"] is False
+    assert any(item["type"] == "invalid_action_schema" for item in proof["violations"])
+
+
+def test_reverification_rejects_an_unknown_action_type():
+    state = seed()
+    plan = build_recovery_plan(state, disruption())
+    plan["actions"][0]["type"] = "replace_and_notify"
+    plan["safe_to_commit"] = True
+
+    proof = reverify_recovery_plan(state, plan)
+
+    assert proof["passed"] is False
+    assert proof["checks"]["action_schema_valid"] is False
+    assert any(item["type"] == "invalid_action_type" for item in proof["violations"])

@@ -12,8 +12,10 @@ sys.path.insert(0, str(ROOT))
 
 from places_again.engine import (
     apply_plan,
+    build_recovery_candidates,
     build_recovery_plan,
     create_call_sheets,
+    reverify_recovery_plan,
     validate_schedule,
 )
 from places_again.repository import JsonRepository
@@ -47,6 +49,43 @@ def main() -> None:
     )
     assert len(messages) == 12
     assert all(message["status"] == "prepared_not_sent" for message in messages)
+
+    candidates = build_recovery_candidates(
+        state, disruption, plan_id="plan-1234567890abcdef"
+    )["candidates"]
+    assert len(candidates) == 2
+    preserve_priority, reduce_shift = candidates
+    assert preserve_priority["metrics"]["highest_priority_activities_moved"] == 0
+    assert reduce_shift["metrics"]["shifted_minutes"] < preserve_priority["metrics"][
+        "shifted_minutes"
+    ]
+    assert reduce_shift["metrics"]["people_schedule_changed"] > preserve_priority[
+        "metrics"
+    ]["people_schedule_changed"]
+    assert all(reverify_recovery_plan(state, candidate)["passed"] for candidate in candidates)
+
+    film_state = json.loads(
+        (ROOT / "data" / "scenarios" / "commercial_shoot.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    film_candidates = build_recovery_candidates(
+        film_state,
+        {
+            "kind": "person_unavailable",
+            "person_id": "dp_principal",
+            "start": "07:00",
+            "end": "16:00",
+            "reason": "same-day illness",
+        },
+        plan_id="plan-abcdef1234567890",
+    )["candidates"]
+    assert len(film_candidates) == 2
+    assert film_candidates[0]["metrics"]["qualified_covers_used"] == 1
+    assert film_candidates[1]["metrics"]["qualified_covers_used"] == 2
+    assert film_candidates[1]["metrics"]["maximum_cover_minutes"] < film_candidates[0][
+        "metrics"
+    ]["maximum_cover_minutes"]
 
     with TemporaryDirectory() as directory:
         repository = JsonRepository(Path(directory) / "state.json")

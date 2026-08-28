@@ -11,6 +11,9 @@
     "duplicate_side_effects": 0,
     "stale_rejection_rate": 100.0,
     "accepted_verification_rate": 100.0,
+    "gemini_invented_plan_commits": 0,
+    "hard_constraint_override_commits": 0,
+    "candidate_reverification_rate": 100.0,
     "secret_scan_pass": true
   },
   "external": {},

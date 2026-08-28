@@ -35,9 +35,47 @@ from places_again.workflow import (
 
 
 ROOT = Path(__file__).resolve().parent.parent
-app = FastAPI(title="Places, Again", version="0.6.0")
+app = FastAPI(title="Places, Again", version="0.7.0")
 _agent_run_times: deque[float] = deque()
 _agent_run_lock = Lock()
+
+
+def _env_enabled(name: str, default: bool = False) -> bool:
+    value = os.environ.get(name)
+    if value is None:
+        return default
+    return value.strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _synthetic_demo_reset_enabled() -> bool:
+    """Keep destructive demo reset local unless deployment opts in explicitly."""
+    return _env_enabled(
+        "PLACES_AGAIN_SYNTHETIC_DEMO_MODE",
+        default=not bool(os.environ.get("K_SERVICE")),
+    )
+
+
+def _local_manual_mutation_enabled() -> bool:
+    """The public Cloud Run API must not retain legacy direct commit routes."""
+    return not bool(os.environ.get("K_SERVICE")) and _env_enabled(
+        "PLACES_AGAIN_LOCAL_MANUAL_MODE", default=True
+    )
+
+
+def _require_synthetic_demo_reset() -> None:
+    if not _synthetic_demo_reset_enabled():
+        raise HTTPException(
+            status_code=403,
+            detail="Synthetic demo reset is disabled for this deployment.",
+        )
+
+
+def _require_local_manual_mutation() -> None:
+    if not _local_manual_mutation_enabled():
+        raise HTTPException(
+            status_code=403,
+            detail="Legacy direct schedule mutation is disabled on Cloud Run.",
+        )
 
 
 def _agent_runs_per_hour() -> int:
@@ -88,13 +126,14 @@ def capabilities() -> dict:
     uses_vertex = os.environ.get("GOOGLE_GENAI_USE_VERTEXAI", "").lower() == "true"
     uses_pubsub_worker = bool(os.environ.get("PLACES_AGAIN_PUBSUB_TOPIC"))
     service_role = os.environ.get("PLACES_AGAIN_SERVICE_ROLE", "all-in-one-local")
+    repository_mode = os.environ.get("PLACES_AGAIN_REPOSITORY", "json").lower()
     return {
         "agent_framework": "Google Agent Development Kit",
         "model": os.environ.get("PLACES_AGAIN_MODEL", "gemini-3.5-flash"),
         "model_backend": "Vertex AI" if uses_vertex or uses_pubsub_worker else "Gemini API",
         "gemini_configured": _gemini_configured() or uses_pubsub_worker,
         "runtime": "Google Cloud Run" if os.environ.get("K_SERVICE") else "local",
-        "repository": os.environ.get("PLACES_AGAIN_REPOSITORY", "json"),
+        "repository": repository_mode,
         "event_transport": (
             "Google Pub/Sub"
             if os.environ.get("PLACES_AGAIN_PUBSUB_TOPIC")
@@ -102,10 +141,19 @@ def capabilities() -> dict:
         ),
         "service_role": service_role,
         "private_worker_configured": uses_pubsub_worker,
-        "effect_semantics": "exactly-once via transactional event ledger",
+        "effect_semantics": (
+            "exactly-once business effect via Firestore transaction"
+            if repository_mode == "firestore"
+            else "single-process idempotent fallback; cloud proof required"
+        ),
         "scenarios": ["opera", "commercial_shoot"],
         "autonomy_policy": "safe auto-commit; unresolved human escalation",
+        "gemini_role": "structured selection among deterministic safe candidates",
+        "hard_safety_owner": "deterministic constraint engine and atomic transaction",
+        "candidate_limit": 5,
         "outbound_delivery": "disabled; prepared_not_sent only",
+        "synthetic_demo_reset_enabled": _synthetic_demo_reset_enabled(),
+        "legacy_direct_mutation_enabled": _local_manual_mutation_enabled(),
         "agent_runs_per_hour": _agent_runs_per_hour(),
         "cloud_service": os.environ.get("K_SERVICE"),
         "cloud_revision": os.environ.get("K_REVISION"),
@@ -135,11 +183,19 @@ def get_audit(
 
 @app.post("/api/demo/reset")
 def reset(scenario_id: str = "opera") -> dict:
-    return reset_demo(scenario_id)
+    _require_synthetic_demo_reset()
+    try:
+        return reset_demo(scenario_id)
+    except ValueError as error:
+        raise HTTPException(status_code=409, detail=str(error)) from error
+    except KeyError as error:
+        raise HTTPException(status_code=404, detail=str(error)) from error
 
 
 @app.post("/api/recover")
 def recover(request: RecoveryRequest) -> dict:
+    if request.commit:
+        _require_local_manual_mutation()
     disruption = request.disruption
     plan = analyze_person_disruption(
         disruption.person_id,
@@ -168,6 +224,8 @@ def recover(request: RecoveryRequest) -> dict:
 
 @app.post("/api/demo/run")
 def run_demo(scenario_id: str = "opera") -> dict:
+    _require_synthetic_demo_reset()
+    _require_local_manual_mutation()
     reset_demo(scenario_id)
     if scenario_id == "commercial_shoot":
         person_id, start, end = "dp_principal", "07:00", "16:00"
@@ -188,6 +246,8 @@ def run_demo(scenario_id: str = "opera") -> dict:
 
 @app.post("/api/demo/preview")
 def preview_demo(scenario_id: str = "opera") -> dict:
+    _require_synthetic_demo_reset()
+    _require_local_manual_mutation()
     reset_demo(scenario_id)
     if scenario_id == "commercial_shoot":
         person_id, start, end = "dp_principal", "07:00", "16:00"
@@ -208,6 +268,7 @@ def preview_demo(scenario_id: str = "opera") -> dict:
 
 @app.post("/api/plans/commit")
 def commit_plan(request: PlanCommitRequest) -> dict:
+    _require_local_manual_mutation()
     committed = commit_recovery_plan(request.plan_id, request.scenario_id)
     if committed["status"] == "error":
         raise HTTPException(status_code=409, detail=committed["message"])
@@ -303,6 +364,26 @@ async def _execute_event_agent(event_id: str) -> dict:
     return result
 
 
+def _record_ignored_pubsub_push(reason: str, message_id: str | None) -> None:
+    """Leave a compact audit record while acknowledging poison deliveries."""
+    def record(system: dict) -> tuple[dict, None]:
+        system.setdefault("audit", []).append(
+            {
+                "event": "pubsub_push_ignored",
+                "reason": reason,
+                "message_id": message_id,
+            }
+        )
+        return system, None
+
+    try:
+        repository.mutate_system(record)
+    except Exception:
+        # A poison payload must not turn a transient audit-write problem into an
+        # unbounded Pub/Sub retry. Cloud logging still captures the request.
+        return
+
+
 @app.post("/api/events", status_code=status.HTTP_202_ACCEPTED)
 def create_event(request: IncidentRequest, background_tasks: BackgroundTasks) -> dict:
     """Accept quickly, persist first, then publish an opaque id for background work."""
@@ -322,7 +403,13 @@ def create_event(request: IncidentRequest, background_tasks: BackgroundTasks) ->
     except Exception as error:
         raise HTTPException(
             status_code=503,
-            detail=f"incident persisted but Pub/Sub publish failed: {type(error).__name__}",
+            detail={
+                "event_id": event["event_id"],
+                "status": event["status"],
+                "retryable": True,
+                "message": "incident persisted but Pub/Sub publish failed; retry this event_id",
+                "error_type": type(error).__name__,
+            },
         ) from error
     if publication["mode"] == "local_background":
         background_tasks.add_task(
@@ -351,13 +438,20 @@ def event_status(event_id: str) -> dict:
 @app.post("/api/pubsub/push")
 async def pubsub_push(envelope: PubSubEnvelope) -> dict:
     """Private Cloud Run worker target; Cloud Run IAM verifies Pub/Sub OIDC."""
+    if os.environ.get("PLACES_AGAIN_SERVICE_ROLE") != "worker":
+        # Both Cloud Run services use the same immutable image. Keep the worker
+        # entrypoint unreachable on the public API deployment as defense in
+        # depth behind the private service's ingress and IAM controls.
+        raise HTTPException(status_code=404, detail="worker endpoint unavailable")
     try:
         event_id = decode_event_id(envelope.message.data)
-    except ValueError as error:
-        raise HTTPException(status_code=400, detail=str(error)) from error
+    except ValueError:
+        _record_ignored_pubsub_push("invalid_payload", envelope.message.message_id)
+        return {"status": "ignored", "reason": "invalid_payload"}
     event = get_event(event_id, repository=repository)
     if event is None:
-        raise HTTPException(status_code=404, detail="unknown event_id")
+        _record_ignored_pubsub_push("unknown_event_id", envelope.message.message_id)
+        return {"event_id": event_id, "status": "ignored", "reason": "unknown_event_id"}
     if event["status"] in {"completed", "human_required"}:
         replay = process_event(
             event_id,
@@ -389,6 +483,7 @@ def receive_person_unavailable_event(
 ) -> dict:
     """Compatibility alias for the generic event endpoint."""
     if request.reset_demo:
+        _require_synthetic_demo_reset()
         reset_demo(request.scenario_id)
     incident = IncidentRequest(
         scenario_id=request.scenario_id,

@@ -4,6 +4,13 @@
   "production": "Northline EV — launch film",
   "date": "2026-08-27",
   "timezone": "Europe/Bucharest",
+  "soft_priorities": [
+    {"code": "preserve_highest_priority_activity", "description": "Protect the two hero setups that depend on the talent and limited LED-volume window.", "rank": 1},
+    {"code": "balance_cover_workload", "description": "Avoid concentrating the full recovered production day on one cover DP when a safe split exists.", "rank": 2},
+    {"code": "minimize_people_schedule_changes", "description": "Reduce downstream call changes across talent, camera, lighting, direction, and production.", "rank": 3},
+    {"code": "minimize_resource_rescheduling", "description": "Preserve scarce camera, stage, LED-volume, and location allocations.", "rank": 4},
+    {"code": "minimize_shifted_minutes", "description": "Minimize total movement after the hero work and scarce resources are protected.", "rank": 5}
+  ],
   "version": 1,
   "people": {
     "dp_principal": {"name": "Synthetic Principal DP A", "role": "Director of Photography", "skills": ["role:director_of_photography", "camera:alexa35", "format:commercial"], "availability": [{"start": "07:00", "end": "19:00"}]},

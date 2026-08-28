@@ -19,7 +19,12 @@ sys.path.insert(0, str(ROOT))
 from places_again.engine import apply_plan, build_recovery_plan
 from places_again.models import IncidentRequest
 from places_again.repository import JsonRepository
-from places_again.workflow import process_event, receive_incident
+from places_again.workflow import (
+    commit_event_candidate,
+    prepare_event_candidates,
+    process_event,
+    receive_incident,
+)
 
 
 CASES_PATH = ROOT / "evaluation" / "cases.json"
@@ -84,6 +89,9 @@ def _evaluate_case(case: dict[str, Any], directory: Path) -> dict[str, Any]:
                 "unresolved_auto_commit": False,
                 "duplicate_side_effect": False,
                 "accepted_plan_failed_verification": False,
+                "invented_candidate_commit": False,
+                "hard_constraint_override_commit": False,
+                "committed_candidate_not_reverified": False,
             },
         }
 
@@ -110,6 +118,9 @@ def _evaluate_case(case: dict[str, Any], directory: Path) -> dict[str, Any]:
                 "unresolved_auto_commit": False,
                 "duplicate_side_effect": False,
                 "accepted_plan_failed_verification": False,
+                "invented_candidate_commit": False,
+                "hard_constraint_override_commit": False,
+                "committed_candidate_not_reverified": False,
             },
         }
 
@@ -120,7 +131,73 @@ def _evaluate_case(case: dict[str, Any], directory: Path) -> dict[str, Any]:
         source="evaluation",
         repository=repository,
     )
-    if delivery == "concurrent":
+    if delivery.startswith("gemini_"):
+        prepared = prepare_event_candidates(event["event_id"], repository=repository)
+        if delivery == "gemini_timeout":
+            result = prepared
+            outcome = "model_timeout_safe"
+        elif delivery == "gemini_invalid_candidate":
+            result = commit_event_candidate(
+                event["event_id"],
+                "candidate-invented-by-model",
+                ["minimize_shifted_minutes"],
+                repository=repository,
+            )
+            outcome = (
+                "candidate_rejected"
+                if result.get("failure", {}).get("type")
+                == "invalid_candidate_selection"
+                else result.get("outcome")
+            )
+        else:
+            if delivery == "gemini_balance_priority":
+                candidate_id = min(
+                    prepared["candidate_summaries"],
+                    key=lambda candidate: candidate["metrics"][
+                        "maximum_cover_minutes"
+                    ],
+                )["candidate_id"]
+            else:
+                candidate_id = prepared["candidate_summaries"][0]["candidate_id"]
+            if delivery == "gemini_reverify_tamper":
+                def tamper(system):
+                    candidate = system["events"][event["event_id"]]["candidate_set"]["candidates"][0]
+                    candidate["actions"][0]["new_person_id"] = "pianist"
+                    candidate["safe_to_commit"] = True
+                    return system, None
+
+                repository.mutate_system(tamper)
+            reason_codes = (
+                ["balance_cover_workload"]
+                if delivery == "gemini_balance_priority"
+                else [
+                    "preserve_highest_priority_activity",
+                    "minimize_people_schedule_changes",
+                ]
+            )
+            result = commit_event_candidate(
+                event["event_id"],
+                candidate_id,
+                reason_codes,
+                repository=repository,
+            )
+            if delivery == "gemini_reverify_tamper":
+                outcome = (
+                    "reverification_rejected"
+                    if result.get("failure", {}).get("type")
+                    == "deterministic_reverification_failed"
+                    else result.get("outcome")
+                )
+            elif delivery == "gemini_balance_priority":
+                outcome = (
+                    "soft_priority_applied"
+                    if "balance_cover_workload"
+                    in result.get("selection_reason_codes", [])
+                    else "soft_priority_missing"
+                )
+            else:
+                outcome = result.get("outcome")
+    elif delivery == "concurrent":
         second = receive_incident(
             scenario_id,
             disruption,
@@ -179,6 +256,14 @@ def _evaluate_case(case: dict[str, Any], directory: Path) -> dict[str, Any]:
         "duplicate_side_effect": version_delta > 1 or len(outbox_ids) != len(set(outbox_ids)),
         "accepted_plan_failed_verification": outcome == "autonomous_safe_commit"
         and not plan.get("verification", {}).get("passed", False),
+        "invented_candidate_commit": delivery == "gemini_invalid_candidate"
+        and version_delta > 0,
+        "hard_constraint_override_commit": delivery == "gemini_reverify_tamper"
+        and version_delta > 0,
+        "committed_candidate_not_reverified": result.get("selector")
+        == "gemini_structured_selection"
+        and result.get("outcome") == "autonomous_safe_commit"
+        and not result.get("deterministic_reverification", {}).get("passed", False),
     }
     return {
         "id": case["id"],
@@ -236,6 +321,38 @@ def run_evaluation(cases_path: Path = CASES_PATH) -> dict[str, Any]:
                     1,
                 )
                 if accepted
+                else None
+            ),
+            "gemini_invented_plan_commits": invariant_totals[
+                "invented_candidate_commit"
+            ],
+            "hard_constraint_override_commits": invariant_totals[
+                "hard_constraint_override_commit"
+            ],
+            "committed_candidates_reverified_rate": (
+                round(
+                    100
+                    * sum(
+                        not result["invariants"]["committed_candidate_not_reverified"]
+                        for result in results
+                        if result.get("actual") == "autonomous_safe_commit"
+                        and result.get("status") == "completed"
+                    )
+                    / len(
+                        [
+                            result
+                            for result in results
+                            if result.get("actual") == "autonomous_safe_commit"
+                            and result.get("status") == "completed"
+                        ]
+                    ),
+                    1,
+                )
+                if any(
+                    result.get("actual") == "autonomous_safe_commit"
+                    and result.get("status") == "completed"
+                    for result in results
+                )
                 else None
             ),
         },

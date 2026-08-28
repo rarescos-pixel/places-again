@@ -11,4 +11,7 @@ def test_labeled_evaluation_corpus_meets_acceptance_targets():
         "duplicate_side_effects": 0,
         "stale_plan_rejection_rate": 100.0,
         "accepted_plans_passing_verification_rate": 100.0,
+        "gemini_invented_plan_commits": 0,
+        "hard_constraint_override_commits": 0,
+        "committed_candidates_reverified_rate": 100.0,
     }

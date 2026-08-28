@@ -5,9 +5,10 @@
 > plan breaks.
 
 Places, Again turns one operational incident into a completed background
-workflow: it measures the blast radius, finds the smallest qualified recovery,
-proves the proposed state against deterministic constraints, atomically commits
-only a safe plan, and prepares an audited outbox that it cannot send.
+workflow. A deterministic engine maps the safe recovery space. Gemini compares
+the real operational trade-offs inside that space and selects one candidate ID.
+Deterministic code then re-proves the selected plan against current state,
+atomically commits it, and prepares an audited outbox that it cannot send.
 
 Opera is where we know the failure mode firsthand. **Opera is the proving
 ground, not the market.** The repository runs the same engine on an opera call
@@ -24,9 +25,15 @@ and a commercial film/broadcast shoot.
 | Unaffected activities moved | 0 | 0 |
 | Unresolved activities | 0 | 0 |
 
-- **47/47 labeled evaluation cases pass** across both domains.
+- **52/52 local labeled evaluation cases pass**: the original 47 two-domain
+  cases plus 5 bounded-agent contract/failure simulations. The local evaluator
+  exercises the deterministic fallback and stubbed selection calls; real Gemini
+  proof remains the cloud E2E hard gate below.
+- **59/59 automated tests pass.**
 - **0 unsafe commits, 0 unresolved auto-commits, 0 duplicate side effects.**
+- **0 Gemini-invented-plan commits; 0 hard-constraint overrides.**
 - **100% stale-plan rejection; 100% of accepted plans pass verification.**
+- **100% of committed candidates are deterministically re-verified.**
 - Duplicate Pub/Sub delivery, retry, three injected crash locations, concurrent
   incidents, impossible recovery, malformed data, unknown people/resources,
   and prompt injection are covered.
@@ -44,9 +51,9 @@ report against Google Cloud.
 flowchart TD
     I["Disruption event"] --> P["Google Pub/Sub"]
     P --> W["Private Cloud Run worker"]
-    W --> G["Gemini 3.5 + Google ADK"]
-    G --> E["Deterministic recovery engine"]
-    E --> S{"All safety gates pass?"}
+    W --> E["Deterministic engine: 1–5 heuristic non-dominated safe candidates"]
+    E --> G["Gemini 3.5 + ADK: select candidate_id"]
+    G --> S{"Deterministic re-verification passes?"}
     S -->|yes| C["Atomic state + ledger commit"]
     C --> O["Prepared outbox · zero sent"]
     S -->|no| H["Human decision required · no commit"]
@@ -56,7 +63,14 @@ The public API persists the incident first and responds with an `event_id`.
 Processing continues without a human selecting tools or approving intermediate
 steps:
 
-`received → analyzing → planned → verified → committed → outbox_prepared → completed`
+`received → analyzing → planned → candidate_selected → verified → committed → outbox_prepared → completed`
+
+Synthetic scenario reset is a demo-only control. It is enabled by default only
+for local development; a Cloud Run deployment must opt in with
+`PLACES_AGAIN_SYNTHETIC_DEMO_MODE=true`. Reset is transactional, preserves
+terminal event evidence, and refuses while the scenario has a non-terminal
+event. Cloud Run disables legacy direct schedule-commit routes; the public API
+can only persist and publish events for the private worker.
 
 The autonomy policy is intentionally narrow:
 
@@ -65,6 +79,35 @@ The autonomy policy is intentionally narrow:
 
 Manual Preview / Commit remains available only as reviewer inspection mode; it
 is not the primary Taskmaster workflow.
+
+## Why Gemini is not ornamental
+
+Removing Gemini changes the production behavior. The deterministic engine can
+produce several fully safe plans with different soft costs. In the opera
+baseline, for example:
+
+| Safe candidate | Highest-priority calls moved | People whose schedule changes | Shifted minutes |
+|---|---:|---:|---:|
+| Candidate A | 0 | 3 | 270 |
+| Candidate B | 1 | 7 | 240 |
+
+Candidate B moves fewer minutes, but it disrupts the highest-priority ensemble
+call and changes more people's day. Gemini receives only these already-safe
+candidates plus explicit operational priorities, then returns one structured
+`candidate_id` and up to two observable reason codes.
+
+The commercial-shoot fixture proves the same mechanism with a different
+trade-off: Candidate A keeps one cover DP across the recovered day, while
+Candidate B distributes work across two qualified covers and reduces maximum
+individual cover load from 330 to 180 minutes, at the cost of changing one more
+person's schedule.
+
+Gemini cannot invent actions, edit a candidate, mutate Firestore, or waive a
+constraint. An unknown ID fails closed. The chosen plan is rebuilt against the
+current version and deterministically re-verified before the transaction.
+
+> **Gemini decides what makes operational sense. Deterministic code proves what
+> is safe.**
 
 ## Architecture
 
@@ -79,13 +122,15 @@ is not the primary Taskmaster workflow.
 | Public Cloud Run API | Strict validation, durable receive, Pub/Sub publish | Call Gemini, commit recovery, send messages |
 | Pub/Sub | At-least-once delivery of opaque `event_id` | Read incident text or mutate state |
 | Private Cloud Run worker | Authenticated OIDC endpoint, ADK run | Accept public unauthenticated traffic |
-| Gemini 3.5 + Google ADK | Orchestrate a three-tool workflow | Override gates, use shell/HTTP, access secrets, send |
-| Deterministic engine | Qualification, availability, person/resource conflicts, minimum change | Commit an unresolved or stale plan |
+| Deterministic engine | Enumerate a 1–5 bounded, heuristically generated non-dominated candidate set; qualification, availability, people/resources | Ask Gemini to waive a hard constraint |
+| Gemini 3.5 + Google ADK | Select one returned candidate ID using explicit soft priorities | Invent/edit a plan, mutate state, use shell/HTTP/secrets/send |
+| Re-verification gate | Re-check candidate membership, current version, skills, duration, people and resources | Trust a model claim as proof |
 | Firestore transaction | Ledger + version + plan + audit + outbox as one effect | Produce a partial business commit |
 
-Pub/Sub is at-least-once, while Places, Again provides **exactly-once business
-effect semantics**. A stable event ID indexes the Firestore ledger. Replaying a
-completed event cannot increment the state version or recreate outbox items.
+Pub/Sub is at-least-once. In the **Firestore cloud deployment**, Places, Again
+provides exactly-once business-effect semantics: a stable event ID indexes the
+transactional ledger, so replaying a completed event cannot increment the state
+version or recreate outbox items.
 
 ## What is demonstrated — and what is not
 
@@ -94,7 +139,9 @@ Demonstrated now:
 - a person-unavailability incident across people, time, rooms/equipment, and
   required qualifications;
 - the same generic engine on opera and commercial production data;
-- minimum-change recovery under the implemented deterministic policy;
+- deterministic safe-candidate enumeration plus bounded Gemini selection over
+  soft operational priorities;
+- minimum-change recovery under the implemented policy;
 - safe automatic commit, stale-plan rejection, atomic replay protection, human
   escalation, audit, and prepared outbox;
 - synthetic data only.
@@ -104,7 +151,7 @@ Not claimed:
 - global mathematical optimality;
 - financial savings without customer data;
 - support for healthcare, manufacturing, logistics, or every disruption type;
-- use of proprietary employer data;
+- use of proprietary third-party data;
 - external message delivery.
 
 The architecture can be extended to broader time-critical field operations,
@@ -123,9 +170,10 @@ python -m venv .venv
 ```
 
 Open `http://127.0.0.1:8000`. Choose **Opera Production** or **Commercial Film /
-Broadcast Production**, then click **Inject disruption event** once. In local
-mode the same persisted workflow runs in a background task; the production
-deployment replaces that transport with Pub/Sub and a private ADK worker.
+Broadcast Production**, then click **Inject disruption event** once. Local mode
+runs the persisted deterministic fallback in a background task; it is not proof
+of Gemini selection. The production deployment replaces that transport with
+Pub/Sub and a private ADK worker, verified only by the cloud E2E gate.
 
 Additional checks:
 
@@ -149,6 +197,14 @@ runs the same audited deployment and E2E gate automatically. The source
 repository must be public for this button, and billing must already be enabled
 on the selected project. No service-account key is created or requested.
 
+Fresh-project Service Usage quotas are handled in code: required APIs are
+checked individually, only missing services are enabled, and transient 429/5xx
+errors use bounded exponential backoff with jitter. `europe-west1` is used for
+Cloud Run and Firestore; Gemini 3.5 uses the Vertex AI `global` endpoint.
+Those choices match the official [Cloud Run locations](https://docs.cloud.google.com/run/docs/locations),
+[Firestore locations](https://firebase.google.com/docs/firestore/locations),
+and [Vertex AI generative AI locations](https://cloud.google.com/vertex-ai/generative-ai/docs/learn/locations).
+
 ### CLI deploy
 
 ```bash
@@ -169,10 +225,12 @@ The script creates or configures:
 
 It then runs a real end-to-end test that:
 
-1. publishes a safe incident and waits for ADK/Gemini completion;
-2. verifies plan proof, state version `1 → 2`, and the unsent outbox;
-3. replays the same event and proves zero duplicate commit/outbox;
-4. sends an impossible/adversarial incident and proves human escalation with no
+1. publishes a safe incident and waits for the ADK/Gemini workflow;
+2. proves multiple deterministic safe candidates were considered, Gemini
+   selected a valid ID, and the selected plan passed deterministic re-verification;
+3. verifies state version `1 → 2` and the unsent outbox;
+4. replays the same event and proves zero duplicate commit/outbox;
+5. sends an impossible/adversarial incident and proves human escalation with no
    state mutation or message.
 
 The deployment transcript and JSON evidence are written under `runtime/`.
@@ -192,17 +250,23 @@ authentication and Cloud Run internal-ingress behavior for Pub/Sub.
 | `POST` | `/api/demo/preview` | Secondary reviewer inspection mode |
 | `POST` | `/api/plans/commit` | Secondary reviewer inspection mode |
 
+If Pub/Sub publish is temporarily unavailable, `/api/events` returns `503` with
+the persisted `event_id`; clients must retry that same request/event ID. The
+browser does this by retaining its generated UUID. This is bounded client-side
+recovery, not a durable dispatcher; an event still needs a client retry after a
+prolonged publish outage.
+
 No public arbitrary-prompt endpoint exists.
 
 ## Repository map
 
-- `places_again/agent.py` — Google ADK agent and explicit three-tool allowlist
-- `places_again/workflow.py` — event ledger and atomic exactly-once effects
+- `places_again/agent.py` — Google ADK agent and explicit four-tool allowlist
+- `places_again/workflow.py` — event ledger and Firestore-cloud atomic effects
 - `places_again/engine.py` — generic deterministic recovery/safety kernel
 - `places_again/repository.py` — JSON local + transactional Firestore adapters
 - `places_again/pubsub.py` — opaque event publishing/decoding
 - `places_again/models.py` — strict bounded Pydantic input models
-- `evaluation/cases.json` — 47 labeled two-domain cases
+- `evaluation/cases.json` — 52 labeled cases (47 original + 5 agentic-decision cases)
 - `reports/evaluation-report.json` — current reproducible local results
 - `SECURITY.md` — threat model and authority boundaries
 - `FAILURE_MODES.md` — failure detection and designed behavior
@@ -213,11 +277,14 @@ No public arbitrary-prompt endpoint exists.
 ## Security and observability
 
 Incident `reason` is data, never an instruction. The model sees a fixed command
-containing only the event ID. The tool allowlist contains no shell, arbitrary
-HTTP, secret access, or delivery capability. Structured logs and the ledger
-record the correlation/event ID, timestamps, model, observable tool/action
-trace, plan and versions, verification, retry count, latency/token metadata when
-available, outbox status, and failures—never hidden chain-of-thought.
+containing only the event ID. Its four tools can read context, request the
+deterministic candidate set, select one candidate ID, and read status. The
+allowlist contains no direct database mutation, shell, arbitrary HTTP, secret
+access, or delivery capability. Structured logs and the ledger record the
+correlation/event ID, candidate set and selected ID, bounded rationale codes,
+model, observable tool/action trace, plan and versions, re-verification, retry
+count, latency/token metadata when available, outbox status, and failures—never
+hidden chain-of-thought.
 
 See [`SECURITY.md`](SECURITY.md) and [`FAILURE_MODES.md`](FAILURE_MODES.md).
 
@@ -230,7 +297,7 @@ Recovery**.
 
 All names, schedules, and results are synthetic. The entrant must still provide
 the public YouTube/Vimeo video, submit the Devpost entry, and make the final
-eligibility and employer-policy attestations.
+eligibility and any applicable third-party-policy attestations.
 
 ## License
 

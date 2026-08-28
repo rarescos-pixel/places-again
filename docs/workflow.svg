@@ -1,24 +1,36 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="500" viewBox="0 0 1500 500" role="img" aria-labelledby="title desc">
-  <title id="title">Places, Again workflow state machine</title>
-  <desc id="desc">An incident progresses from received through analysis, planning, verification, atomic commit, prepared outbox, and completion. A failed safety proof branches to human required with no commit.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="760" viewBox="0 0 1600 760" role="img" aria-labelledby="title desc">
+  <title id="title">Places, Again bounded recovery state machine</title>
+  <desc id="desc">An incident is persisted, analyzed into a set of safe candidates, selected by Gemini using soft priorities, reverified deterministically, and either committed once or stopped for a human decision.</desc>
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#090b0f"/><stop offset="1" stop-color="#17120d"/></linearGradient>
-    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#92979f"/></marker>
-    <style>.title{font:700 38px Georgia,serif;fill:#f4f0e7}.sub{font:500 16px Inter,Arial,sans-serif;fill:#9c9a94}.label{font:800 15px Inter,Arial,sans-serif;fill:#f4f0e7}.small{font:500 12px Inter,Arial,sans-serif;fill:#9c9a94}.box{fill:#14171c;stroke:#353941;stroke-width:2}.done{fill:#11241a;stroke:#6ddd9b}.stop{fill:#291719;stroke:#ff7777}.line{fill:none;stroke:#92979f;stroke-width:2.5;marker-end:url(#arrow)}</style>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#090b0f"/><stop offset="1" stop-color="#18130e"/></linearGradient>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#969aa1"/></marker>
+    <style>.title{font:700 40px Georgia,serif;fill:#f5f0e7}.sub{font:500 16px Inter,Arial,sans-serif;fill:#9d9b95}.label{font:800 16px Inter,Arial,sans-serif;fill:#f5f0e7}.small{font:500 12px Inter,Arial,sans-serif;fill:#a4a29c}.tiny{font:700 11px Inter,Arial,sans-serif;fill:#ffb08e;letter-spacing:.08em}.box{fill:#14171c;stroke:#343840;stroke-width:2}.choice{fill:#1a1830;stroke:#a88dff;stroke-width:2}.done{fill:#11241a;stroke:#70dfa0;stroke-width:2}.stop{fill:#2b1819;stroke:#ff7878;stroke-width:2}.line{fill:none;stroke:#969aa1;stroke-width:2.5;marker-end:url(#arrow)}</style>
   </defs>
-  <rect width="1500" height="500" rx="24" fill="url(#bg)"/>
-  <text x="60" y="68" class="title">Exactly-once recovery workflow</text><text x="60" y="99" class="sub">Pub/Sub may deliver more than once; the business state changes once.</text>
-  <g>
-    <rect x="60" y="175" width="150" height="88" rx="15" class="box"/><text x="135" y="213" text-anchor="middle" class="label">received</text><text x="135" y="237" text-anchor="middle" class="small">ledger first</text>
-    <rect x="260" y="175" width="150" height="88" rx="15" class="box"/><text x="335" y="213" text-anchor="middle" class="label">analyzing</text><text x="335" y="237" text-anchor="middle" class="small">ADK + Gemini</text>
-    <rect x="460" y="175" width="150" height="88" rx="15" class="box"/><text x="535" y="213" text-anchor="middle" class="label">planned</text><text x="535" y="237" text-anchor="middle" class="small">minimum change</text>
-    <rect x="660" y="175" width="150" height="88" rx="15" class="box"/><text x="735" y="213" text-anchor="middle" class="label">verified</text><text x="735" y="237" text-anchor="middle" class="small">all gates</text>
-    <rect x="860" y="175" width="150" height="88" rx="15" class="done"/><text x="935" y="213" text-anchor="middle" class="label">committed</text><text x="935" y="237" text-anchor="middle" class="small">atomic version</text>
-    <rect x="1060" y="175" width="170" height="88" rx="15" class="done"/><text x="1145" y="213" text-anchor="middle" class="label">outbox prepared</text><text x="1145" y="237" text-anchor="middle" class="small">zero sent</text>
-    <rect x="1280" y="175" width="150" height="88" rx="15" class="done"/><text x="1355" y="213" text-anchor="middle" class="label">completed</text><text x="1355" y="237" text-anchor="middle" class="small">audited result</text>
-    <path d="M210 219 H250" class="line"/><path d="M410 219 H450" class="line"/><path d="M610 219 H650" class="line"/><path d="M810 219 H850" class="line"/><path d="M1010 219 H1050" class="line"/><path d="M1230 219 H1270" class="line"/>
-  </g>
-  <rect x="650" y="350" width="280" height="92" rx="16" class="stop"/><text x="790" y="388" text-anchor="middle" class="label">human_required</text><text x="790" y="414" text-anchor="middle" class="small">no commit · no outbox · no send</text>
-  <path d="M735 263 V315 Q735 335 755 350" class="line"/><text x="690" y="320" class="small">unsafe / unresolved</text>
-  <path d="M1355 263 V305 Q1355 326 1335 326 H190 Q135 326 135 273" class="line"/><text x="1040" y="316" class="small">duplicate delivery returns recorded result</text>
+  <rect width="1600" height="760" rx="24" fill="url(#bg)"/>
+  <text x="60" y="66" class="title">Bounded autonomy, Firestore-cloud exactly-once business effect</text>
+  <text x="60" y="99" class="sub">Pub/Sub may redeliver. Gemini may fail. A schedule can still change only once—and only after a fresh deterministic proof.</text>
+
+  <text x="60" y="151" class="tiny">PERSIST AND UNDERSTAND</text>
+  <rect x="60" y="177" width="190" height="92" rx="16" class="box"/><text x="155" y="216" text-anchor="middle" class="label">received</text><text x="155" y="241" text-anchor="middle" class="small">ledger first · event_id</text>
+  <rect x="330" y="177" width="190" height="92" rx="16" class="box"/><text x="425" y="216" text-anchor="middle" class="label">analyzing</text><text x="425" y="241" text-anchor="middle" class="small">incident + current state</text>
+  <rect x="600" y="177" width="230" height="92" rx="16" class="done"/><text x="715" y="210" text-anchor="middle" class="label">candidates ready</text><text x="715" y="235" text-anchor="middle" class="small">1–5 hard-safe plans</text><text x="715" y="254" text-anchor="middle" class="small">no side effect</text>
+  <path d="M250 223 H320" class="line"/><path d="M520 223 H590" class="line"/>
+
+  <text x="905" y="151" class="tiny">DECIDE AND PROVE</text>
+  <rect x="905" y="177" width="230" height="92" rx="16" class="choice"/><text x="1020" y="210" text-anchor="middle" class="label">candidate selected</text><text x="1020" y="235" text-anchor="middle" class="small">Gemini returns one valid ID</text><text x="1020" y="254" text-anchor="middle" class="small">+ observable reason codes</text>
+  <rect x="1210" y="177" width="210" height="92" rx="16" class="done"/><text x="1315" y="216" text-anchor="middle" class="label">reverified</text><text x="1315" y="241" text-anchor="middle" class="small">current-state proof</text>
+  <path d="M830 223 H895" class="line"/><path d="M1135 223 H1200" class="line"/>
+
+  <text x="60" y="376" class="tiny">ONE ATOMIC BUSINESS EFFECT</text>
+  <rect x="285" y="404" width="220" height="92" rx="16" class="done"/><text x="395" y="443" text-anchor="middle" class="label">committed</text><text x="395" y="468" text-anchor="middle" class="small">state v1 → v2 once</text>
+  <rect x="635" y="404" width="240" height="92" rx="16" class="done"/><text x="755" y="443" text-anchor="middle" class="label">outbox prepared</text><text x="755" y="468" text-anchor="middle" class="small">deterministic IDs · zero sent</text>
+  <rect x="1005" y="404" width="220" height="92" rx="16" class="done"/><text x="1115" y="443" text-anchor="middle" class="label">completed</text><text x="1115" y="468" text-anchor="middle" class="small">audited terminal result</text>
+  <path d="M1315 269 V326 Q1315 365 395 394" class="line"/><text x="955" y="344" class="small">PASS + Firestore transaction</text>
+  <path d="M505 450 H625" class="line"/><path d="M875 450 H995" class="line"/>
+
+  <rect x="590" y="600" width="420" height="102" rx="18" class="stop"/><text x="800" y="640" text-anchor="middle" class="label">human_required</text><text x="800" y="665" text-anchor="middle" class="small">no safe candidate · invalid model ID · stale state · failed re-verification</text><text x="800" y="684" text-anchor="middle" class="small">no commit · no outbox · no send</text>
+  <path d="M715 269 V556 Q715 580 750 600" class="line"/><text x="565" y="555" class="small">no safe candidate</text>
+  <path d="M1020 269 V545 Q1020 575 920 600" class="line"/><text x="1032" y="555" class="small">invalid / ambiguous choice</text>
+  <path d="M1315 269 V560 Q1315 590 1018 625" class="line"/><text x="1325" y="555" class="small">proof fails</text>
+  <path d="M1115 496 V540 Q1115 570 1160 570 H150 Q110 570 110 506 V279" class="line"/><text x="170" y="558" class="small">duplicate delivery returns the recorded result: no second version, no duplicate outbox</text>
 </svg>

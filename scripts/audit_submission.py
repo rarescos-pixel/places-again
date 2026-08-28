@@ -25,7 +25,7 @@ REQUIRED_FILES = [
     "scripts/cloud_e2e_test.py",
 ]
 PLACEHOLDERS = [
-    "[ADD CLOUD RUN URL AFTER E2E PASSES]",
+    "[ADD VERIFIED CLOUD RUN URL]",
     "[ADD PUBLIC YOUTUBE OR VIMEO URL]",
     "[ADD AFTER PUBLICATION]",
 ]
@@ -62,6 +62,15 @@ def check_local() -> dict:
         "accepted_verification_rate": targets[
             "accepted_plans_passing_verification_rate"
         ],
+        "gemini_invented_plan_commits": targets[
+            "gemini_invented_plan_commits"
+        ],
+        "hard_constraint_override_commits": targets[
+            "hard_constraint_override_commits"
+        ],
+        "candidate_reverification_rate": targets[
+            "committed_candidates_reverified_rate"
+        ],
         "secret_scan_pass": secrets["passed"],
     }
 
@@ -83,7 +92,7 @@ def check_external() -> dict:
         "manual_checks": [
             "Repository access verified for judges",
             "Public video is English/subtitled and <= 4:00",
-            "Entrant eligibility and employer-policy attestations completed",
+            "Entrant eligibility and applicable third-party-policy attestations completed",
             "Devpost category and prize selections match the submitted build",
             "Submitted commit tagged and deployed version frozen",
         ],
@@ -106,6 +115,9 @@ def main() -> int:
         and local["duplicate_side_effects"] == 0
         and local["stale_rejection_rate"] == 100.0
         and local["accepted_verification_rate"] == 100.0
+        and local["gemini_invented_plan_commits"] == 0
+        and local["hard_constraint_override_commits"] == 0
+        and local["candidate_reverification_rate"] == 100.0
         and local["secret_scan_pass"]
     )
     external_pass = arguments.local_only or (
