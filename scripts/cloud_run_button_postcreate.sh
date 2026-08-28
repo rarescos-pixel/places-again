@@ -6,4 +6,5 @@
 set -Eeuo pipefail
 
 PROJECT_ID="${GOOGLE_CLOUD_PROJECT:?Cloud Run Button did not provide GOOGLE_CLOUD_PROJECT}"
-exec bash deploy.sh "${PROJECT_ID}"
+PLACES_AGAIN_PREBUILT_IMAGE="${IMAGE_URL:?Cloud Run Button did not provide IMAGE_URL}" \
+  exec bash deploy.sh "${PROJECT_ID}"

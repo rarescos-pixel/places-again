@@ -1,43 +1,5 @@
 {
   "name": "places-again",
-  "env": {
-    "PLACES_AGAIN_MODEL": {
-      "description": "Gemini model used by the Google ADK agent",
-      "value": "gemini-3.5-flash",
-      "required": true,
-      "order": 10
-    },
-    "PLACES_AGAIN_REPOSITORY": {
-      "description": "Versioned production-state backend",
-      "value": "firestore",
-      "required": true,
-      "order": 20
-    },
-    "PLACES_AGAIN_AGENT_RUNS_PER_HOUR": {
-      "description": "Public-demo Gemini safety limit",
-      "value": "12",
-      "required": true,
-      "order": 30
-    },
-    "GOOGLE_GENAI_USE_VERTEXAI": {
-      "description": "Use Vertex AI through Application Default Credentials",
-      "value": "TRUE",
-      "required": true,
-      "order": 40
-    },
-    "GOOGLE_CLOUD_PROJECT": {
-      "description": "Google Cloud project for Vertex AI",
-      "value": "project-2ee12060-728f-434f-9ad",
-      "required": true,
-      "order": 50
-    },
-    "GOOGLE_CLOUD_LOCATION": {
-      "description": "Vertex AI endpoint location",
-      "value": "global",
-      "required": true,
-      "order": 60
-    }
-  },
   "options": {
     "allow-unauthenticated": true,
     "memory": "512Mi",

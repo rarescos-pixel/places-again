@@ -18,6 +18,7 @@ readonly FIRESTORE_LOCATION="europe-west1"
 readonly MODEL="gemini-3.5-flash"
 
 PROJECT_ID="${1:-${GOOGLE_CLOUD_PROJECT:-${DEFAULT_PROJECT_ID}}}"
+PREBUILT_IMAGE="${PLACES_AGAIN_PREBUILT_IMAGE:-}"
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 REPORT_DIR="${SCRIPT_DIR}/runtime"
 TIMESTAMP="$(date -u +%Y%m%dT%H%M%SZ)"
@@ -164,11 +165,17 @@ gcloud pubsub topics describe "${TOPIC}" --project="${PROJECT_ID}" >/dev/null 2>
   || gcloud pubsub topics create "${TOPIC}" --project="${PROJECT_ID}" --quiet
 
 section "Public Cloud Run API"
+if [[ -n "${PREBUILT_IMAGE}" ]]; then
+  [[ "${PREBUILT_IMAGE}" == *"/"* ]] || die "Invalid prebuilt image reference." 2
+  API_ARTIFACT_ARGS=(--image="${PREBUILT_IMAGE}")
+  note "Reusing the image already built by the guided deployment."
+else
+  API_ARTIFACT_ARGS=(--source="${SCRIPT_DIR}" --build-service-account="${BUILD_SA_RESOURCE}")
+fi
 gcloud run deploy "${API_SERVICE}" \
-  --source="${SCRIPT_DIR}" \
+  "${API_ARTIFACT_ARGS[@]}" \
   --project="${PROJECT_ID}" \
   --region="${REGION}" \
-  --build-service-account="${BUILD_SA_RESOURCE}" \
   --service-account="${API_SA}" \
   --allow-unauthenticated \
   --ingress=all \

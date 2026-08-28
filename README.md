@@ -140,6 +140,17 @@ The deployment requires an authenticated Google Cloud CLI session and an
 already billing-enabled project. It never chooses a billing account and never
 creates or downloads a service-account key.
 
+### Guided deploy — no terminal commands
+
+[![Run on Google Cloud](https://deploy.cloud.run/button.svg)](https://deploy.cloud.run?git_repo=https://github.com/rarescos-pixel/places-again&revision=main)
+
+The Google-hosted flow asks for the Google account, project, and region, then
+runs the same audited deployment and E2E gate automatically. The source
+repository must be public for this button, and billing must already be enabled
+on the selected project. No service-account key is created or requested.
+
+### CLI deploy
+
 ```bash
 bash deploy.sh YOUR_PROJECT_ID
 ```
