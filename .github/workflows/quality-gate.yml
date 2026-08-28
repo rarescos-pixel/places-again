@@ -71,3 +71,11 @@ jobs:
               ET.parse(path)
           print('JSON and SVG/XML parse checks passed')
           PY
+
+      - name: Publish reproducible evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: quality-evidence-${{ github.sha }}
+          path: reports/*.json
+          if-no-files-found: error
+          retention-days: 30
