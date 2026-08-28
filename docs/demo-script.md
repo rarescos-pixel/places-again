@@ -44,9 +44,7 @@ timeline visible. Do not click anything else until terminal state.
 
 Visual: pause on the two candidate cards and the Gemini decision.
 
-> highest-priority call and changes fewer people's schedules.
 > Gemini 3.5, through Google ADK, selects Candidate A because it preserves the
-> highest-priority call and changes fewer people's schedules.
 > highest-priority call and changes fewer people's schedules.
 >
 > Gemini cannot invent a plan or relax a constraint. It returns one candidate
@@ -109,7 +107,7 @@ architecture diagram. Make these names legible: `places-again`,
 
 > This runs on a public Cloud Run API, authenticated Pub/Sub delivery to a
 > private Cloud Run worker, Gemini 3.5 and Google ADK on Vertex AI, and a
-> Firestore transaction. Fifty-two labeled cases and forty-six automated tests
+> Firestore transaction. Fifty-two labeled cases and fifty-nine automated tests
 > protect replay, crashes, concurrency, stale state, model failure, and the
 > safety boundary.
 
