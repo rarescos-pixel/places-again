@@ -8,6 +8,18 @@ import places_again.tools as tools_module
 import places_again.web as web_module
 
 
+def test_finalist_ui_exposes_taskmaster_proof_points():
+    client = TestClient(web_module.app)
+    response = client.get("/")
+    assert response.status_code == 200
+    page = response.text
+    assert "The plan breaks." in page
+    assert "Commercial Film / Broadcast Production" in page
+    assert "Operational Blast Radius" in page
+    assert "Pub/Sub" in page
+    assert "prepared not sent" in page.lower()
+
+
 def test_demo_runs_end_to_end(tmp_path, monkeypatch):
     test_repository = JsonRepository(tmp_path / "state.json")
     monkeypatch.setattr(repository_module, "repository", test_repository)
@@ -24,21 +36,23 @@ def test_demo_runs_end_to_end(tmp_path, monkeypatch):
     assert payload["call_sheets"]
 
 
-def test_agent_requires_key(monkeypatch):
-    monkeypatch.delenv("GEMINI_API_KEY", raising=False)
-    monkeypatch.delenv("GOOGLE_API_KEY", raising=False)
-    monkeypatch.delenv("GOOGLE_GENAI_USE_VERTEXAI", raising=False)
-    monkeypatch.delenv("GOOGLE_CLOUD_PROJECT", raising=False)
+def test_public_arbitrary_agent_prompt_is_not_exposed():
     client = TestClient(web_module.app)
     response = client.post("/api/agent", json={"message": "Recover the schedule"})
-    assert response.status_code == 503
+    assert response.status_code == 404
 
 
-def test_event_endpoint_requires_gemini_configuration(monkeypatch):
+def test_event_endpoint_runs_as_background_workflow_without_local_gemini(
+    tmp_path, monkeypatch
+):
     monkeypatch.delenv("GEMINI_API_KEY", raising=False)
     monkeypatch.delenv("GOOGLE_API_KEY", raising=False)
     monkeypatch.delenv("GOOGLE_GENAI_USE_VERTEXAI", raising=False)
     monkeypatch.delenv("GOOGLE_CLOUD_PROJECT", raising=False)
+    test_repository = JsonRepository(tmp_path / "state.json")
+    monkeypatch.setattr(repository_module, "repository", test_repository)
+    monkeypatch.setattr(tools_module, "repository", test_repository)
+    monkeypatch.setattr(web_module, "repository", test_repository)
     client = TestClient(web_module.app)
     response = client.post(
         "/api/events/person-unavailable",
@@ -51,7 +65,11 @@ def test_event_endpoint_requires_gemini_configuration(monkeypatch):
             }
         },
     )
-    assert response.status_code == 503
+    assert response.status_code == 202
+    event = client.get(response.json()["status_url"]).json()
+    assert event["status"] == "completed"
+    assert event["outcome"] == "autonomous_safe_commit"
+    assert event["messages_sent"] == 0
 
 
 def test_vertex_configuration_is_reported(monkeypatch):

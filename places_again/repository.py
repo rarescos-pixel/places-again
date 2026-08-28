@@ -9,49 +9,151 @@ from typing import Any, Callable, TypeVar
 
 
 ROOT = Path(__file__).resolve().parent.parent
-SEED_PATH = ROOT / "data" / "demo_state.json"
+SCENARIO_DIR = ROOT / "data" / "scenarios"
+LEGACY_SEED_PATH = ROOT / "data" / "demo_state.json"
+DEFAULT_SCENARIO = "opera"
 MutationResult = TypeVar("MutationResult")
+
+
+def _scenario_seed(scenario_id: str) -> dict[str, Any]:
+    path = SCENARIO_DIR / f"{scenario_id}.json"
+    if path.exists():
+        return json.loads(path.read_text(encoding="utf-8"))
+    if scenario_id == DEFAULT_SCENARIO:
+        return json.loads(LEGACY_SEED_PATH.read_text(encoding="utf-8"))
+    raise KeyError(f"Unknown scenario: {scenario_id}")
+
+
+def seed_system() -> dict[str, Any]:
+    scenarios = {
+        path.stem: json.loads(path.read_text(encoding="utf-8"))
+        for path in sorted(SCENARIO_DIR.glob("*.json"))
+    }
+    if DEFAULT_SCENARIO not in scenarios:
+        scenarios[DEFAULT_SCENARIO] = _scenario_seed(DEFAULT_SCENARIO)
+    return {
+        "schema_version": 2,
+        "scenarios": scenarios,
+        "events": {},
+        "audit": [
+            {
+                "event": "system_seeded",
+                "source": "synthetic_scenarios",
+                "scenario_count": len(scenarios),
+            }
+        ],
+    }
+
+
+def _normalize_system(payload: dict[str, Any]) -> dict[str, Any]:
+    if "scenarios" in payload and "events" in payload:
+        return payload
+    system = seed_system()
+    system["scenarios"][DEFAULT_SCENARIO] = payload
+    system["audit"].append(
+        {"event": "legacy_state_migrated", "scenario_id": DEFAULT_SCENARIO}
+    )
+    return system
 
 
 class JsonRepository:
     def __init__(self, path: Path | None = None):
         configured = os.environ.get("PLACES_AGAIN_STATE_PATH")
-        self.path = path or (Path(configured) if configured else ROOT / "runtime" / "state.json")
+        self.path = path or (
+            Path(configured) if configured else ROOT / "runtime" / "state.json"
+        )
         self._lock = RLock()
 
-    def reset(self) -> dict[str, Any]:
-        state = json.loads(SEED_PATH.read_text(encoding="utf-8"))
-        self.save(state)
-        return state
-
-    def load(self) -> dict[str, Any]:
+    def _read_system(self) -> dict[str, Any]:
         if not self.path.exists():
-            return self.reset()
-        return json.loads(self.path.read_text(encoding="utf-8"))
+            system = seed_system()
+            self._write_system(system)
+            return system
+        return _normalize_system(
+            json.loads(self.path.read_text(encoding="utf-8"))
+        )
 
-    def save(self, state: dict[str, Any]) -> None:
+    def _write_system(self, system: dict[str, Any]) -> None:
         self.path.parent.mkdir(parents=True, exist_ok=True)
         temporary = self.path.with_suffix(".tmp")
-        temporary.write_text(json.dumps(state, indent=2, ensure_ascii=False), encoding="utf-8")
+        temporary.write_text(
+            json.dumps(system, indent=2, ensure_ascii=False), encoding="utf-8"
+        )
         temporary.replace(self.path)
 
-    def snapshot(self) -> dict[str, Any]:
-        return deepcopy(self.load())
+    def reset_all(self) -> dict[str, Any]:
+        with self._lock:
+            system = seed_system()
+            self._write_system(system)
+            return deepcopy(system)
+
+    def reset(self, scenario_id: str = DEFAULT_SCENARIO) -> dict[str, Any]:
+        with self._lock:
+            system = self._read_system()
+            state = _scenario_seed(scenario_id)
+            system["scenarios"][scenario_id] = state
+            system["events"] = {
+                event_id: event
+                for event_id, event in system.get("events", {}).items()
+                if event.get("scenario_id") != scenario_id
+            }
+            self._write_system(system)
+            return deepcopy(state)
+
+    def load(self, scenario_id: str = DEFAULT_SCENARIO) -> dict[str, Any]:
+        system = self._read_system()
+        if scenario_id not in system["scenarios"]:
+            raise KeyError(f"Unknown scenario: {scenario_id}")
+        return deepcopy(system["scenarios"][scenario_id])
+
+    def save(
+        self, state: dict[str, Any], scenario_id: str = DEFAULT_SCENARIO
+    ) -> None:
+        with self._lock:
+            system = self._read_system()
+            system["scenarios"][scenario_id] = deepcopy(state)
+            self._write_system(system)
+
+    def snapshot(self, scenario_id: str = DEFAULT_SCENARIO) -> dict[str, Any]:
+        return self.load(scenario_id)
+
+    def system_snapshot(self) -> dict[str, Any]:
+        with self._lock:
+            return deepcopy(self._read_system())
 
     def mutate(
         self,
         mutation: Callable[[dict[str, Any]], tuple[dict[str, Any], MutationResult]],
+        scenario_id: str = DEFAULT_SCENARIO,
     ) -> MutationResult:
-        """Apply one state transition under a process-local lock."""
+        """Apply one scenario transition under a process-local lock."""
         with self._lock:
-            state = self.load()
-            updated, result = mutation(deepcopy(state))
-            self.save(updated)
+            system = self._read_system()
+            state = deepcopy(system["scenarios"][scenario_id])
+            updated, result = mutation(state)
+            system["scenarios"][scenario_id] = updated
+            self._write_system(system)
+            return result
+
+    def mutate_system(
+        self,
+        mutation: Callable[[dict[str, Any]], tuple[dict[str, Any], MutationResult]],
+    ) -> MutationResult:
+        """Atomically transition scenarios and the persistent event ledger."""
+        with self._lock:
+            system = self._read_system()
+            updated, result = mutation(deepcopy(system))
+            self._write_system(updated)
             return result
 
 
 class FirestoreRepository:
-    """Cloud Run repository using Application Default Credentials."""
+    """Single-document transactional store used by the contest deployment.
+
+    Keeping the synthetic schedules and the event ledger in one document makes
+    the schedule version, event terminal state, audit, and outbox one atomic
+    write. Pub/Sub can redeliver freely without duplicating business effects.
+    """
 
     def __init__(self, client: Any | None = None):
         if client is None:
@@ -59,38 +161,90 @@ class FirestoreRepository:
 
             client = firestore.Client()
         self.client = client
-        collection = os.environ.get("PLACES_AGAIN_FIRESTORE_COLLECTION", "places_again")
-        document = os.environ.get("PLACES_AGAIN_PRODUCTION_ID", "demo-production")
+        collection = os.environ.get(
+            "PLACES_AGAIN_FIRESTORE_COLLECTION", "places_again"
+        )
+        document = os.environ.get(
+            "PLACES_AGAIN_PRODUCTION_ID", "taskmaster-system"
+        )
         self.document = client.collection(collection).document(document)
 
-    def reset(self) -> dict[str, Any]:
-        state = json.loads(SEED_PATH.read_text(encoding="utf-8"))
-        self.save(state)
-        return state
+    @staticmethod
+    def _decode(payload: dict[str, Any] | None) -> dict[str, Any]:
+        if not payload:
+            return seed_system()
+        if "system" in payload:
+            return _normalize_system(payload["system"])
+        if "state" in payload:
+            return _normalize_system(payload["state"])
+        return _normalize_system(payload)
 
-    def load(self) -> dict[str, Any]:
+    @staticmethod
+    def _encode(system: dict[str, Any]) -> dict[str, Any]:
+        # `state` remains as a migration/read-compatibility view for v1.
+        return {
+            "system": deepcopy(system),
+            "state": deepcopy(system["scenarios"][DEFAULT_SCENARIO]),
+        }
+
+    def reset_all(self) -> dict[str, Any]:
+        system = seed_system()
+        self.document.set(self._encode(system))
+        return deepcopy(system)
+
+    def reset(self, scenario_id: str = DEFAULT_SCENARIO) -> dict[str, Any]:
+        system = self.system_snapshot()
+        state = _scenario_seed(scenario_id)
+        system["scenarios"][scenario_id] = state
+        system["events"] = {
+            event_id: event
+            for event_id, event in system.get("events", {}).items()
+            if event.get("scenario_id") != scenario_id
+        }
+        self.document.set(self._encode(system))
+        return deepcopy(state)
+
+    def system_snapshot(self) -> dict[str, Any]:
         snapshot = self.document.get()
         if not snapshot.exists:
-            return self.reset()
-        payload = snapshot.to_dict() or {}
-        return payload["state"]
+            return self.reset_all()
+        return deepcopy(self._decode(snapshot.to_dict() or {}))
 
-    def save(self, state: dict[str, Any]) -> None:
-        self.document.set({"state": deepcopy(state)})
+    def load(self, scenario_id: str = DEFAULT_SCENARIO) -> dict[str, Any]:
+        system = self.system_snapshot()
+        if scenario_id not in system["scenarios"]:
+            raise KeyError(f"Unknown scenario: {scenario_id}")
+        return deepcopy(system["scenarios"][scenario_id])
 
-    def snapshot(self) -> dict[str, Any]:
-        return deepcopy(self.load())
+    def save(
+        self, state: dict[str, Any], scenario_id: str = DEFAULT_SCENARIO
+    ) -> None:
+        system = self.system_snapshot()
+        system["scenarios"][scenario_id] = deepcopy(state)
+        self.document.set(self._encode(system))
+
+    def snapshot(self, scenario_id: str = DEFAULT_SCENARIO) -> dict[str, Any]:
+        return self.load(scenario_id)
 
     def mutate(
         self,
         mutation: Callable[[dict[str, Any]], tuple[dict[str, Any], MutationResult]],
+        scenario_id: str = DEFAULT_SCENARIO,
     ) -> MutationResult:
-        """Apply one state transition atomically in Firestore.
+        def mutate_scenario(
+            system: dict[str, Any],
+        ) -> tuple[dict[str, Any], MutationResult]:
+            updated, result = mutation(deepcopy(system["scenarios"][scenario_id]))
+            system["scenarios"][scenario_id] = updated
+            return system, result
 
-        Firestore may retry the callback after a concurrent write, so callers
-        must keep mutation callbacks deterministic apart from values already
-        captured before this method is invoked.
-        """
+        return self.mutate_system(mutate_scenario)
+
+    def mutate_system(
+        self,
+        mutation: Callable[[dict[str, Any]], tuple[dict[str, Any], MutationResult]],
+    ) -> MutationResult:
+        """Apply a whole-system transition in a retry-safe transaction."""
         from google.cloud import firestore
 
         transaction = self.client.transaction()
@@ -98,13 +252,10 @@ class FirestoreRepository:
         @firestore.transactional
         def apply_in_transaction(active_transaction):
             snapshot = self.document.get(transaction=active_transaction)
-            if snapshot.exists:
-                payload = snapshot.to_dict() or {}
-                state = payload["state"]
-            else:
-                state = json.loads(SEED_PATH.read_text(encoding="utf-8"))
-            updated, result = mutation(deepcopy(state))
-            active_transaction.set(self.document, {"state": deepcopy(updated)})
+            payload = snapshot.to_dict() if snapshot.exists else None
+            system = self._decode(payload)
+            updated, result = mutation(deepcopy(system))
+            active_transaction.set(self.document, self._encode(updated))
             return result
 
         return apply_in_transaction(transaction)

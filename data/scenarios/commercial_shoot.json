@@ -1,0 +1,35 @@
+{
+  "scenario_id": "commercial_shoot",
+  "domain": "Commercial Film / Broadcast Production",
+  "production": "Northline EV — launch film",
+  "date": "2026-08-27",
+  "timezone": "Europe/Bucharest",
+  "version": 1,
+  "people": {
+    "dp_principal": {"name": "Synthetic Principal DP A", "role": "Director of Photography", "skills": ["role:director_of_photography", "camera:alexa35", "format:commercial"], "availability": [{"start": "07:00", "end": "19:00"}]},
+    "dp_cover_early": {"name": "Synthetic Cover DP B", "role": "Cover Director of Photography", "skills": ["role:director_of_photography", "camera:alexa35", "format:commercial"], "availability": [{"start": "09:00", "end": "16:30"}]},
+    "dp_cover_late": {"name": "Synthetic Cover DP C", "role": "Cover Director of Photography", "skills": ["role:director_of_photography", "camera:alexa35", "format:commercial"], "availability": [{"start": "12:00", "end": "19:00"}]},
+    "director": {"name": "Synthetic Director D", "role": "Director", "skills": ["direction:commercial"], "availability": [{"start": "07:00", "end": "19:00"}]},
+    "focus_puller": {"name": "Synthetic First AC E", "role": "First AC", "skills": ["camera:alexa35", "focus"], "availability": [{"start": "07:00", "end": "18:00"}]},
+    "gaffer": {"name": "Synthetic Gaffer F", "role": "Gaffer", "skills": ["lighting:commercial"], "availability": [{"start": "08:00", "end": "18:00"}]},
+    "talent": {"name": "Synthetic Lead Talent G", "role": "Lead talent", "skills": ["performance:on_camera"], "availability": [{"start": "10:00", "end": "16:30"}]},
+    "producer": {"name": "Synthetic Line Producer H", "role": "Line producer", "skills": ["production_management"], "availability": [{"start": "07:00", "end": "19:00"}]}
+  },
+  "resources": {
+    "stage_2": {"name": "Stage 2", "availability": [{"start": "07:00", "end": "19:00"}]},
+    "led_volume": {"name": "LED volume", "availability": [{"start": "08:00", "end": "17:00"}]},
+    "alexa_35_a": {"name": "ARRI Alexa 35 A", "availability": [{"start": "07:00", "end": "19:00"}]},
+    "camera_prep": {"name": "Camera prep bay", "availability": [{"start": "07:00", "end": "19:00"}]},
+    "exterior_lot": {"name": "Exterior lot", "availability": [{"start": "10:00", "end": "18:00"}]}
+  },
+  "activities": [
+    {"id": "f1", "title": "Camera and lens calibration", "start": "08:00", "end": "09:00", "resources": ["camera_prep", "alexa_35_a"], "priority": 4, "participants": ["dp_principal", "focus_puller"]},
+    {"id": "f2", "title": "LED volume hero setup", "start": "09:15", "end": "10:45", "resources": ["stage_2", "led_volume", "alexa_35_a"], "priority": 5, "participants": ["dp_principal", "director", "focus_puller", "gaffer", "producer"]},
+    {"id": "f3", "title": "Lead talent hero performance", "start": "11:00", "end": "12:30", "resources": ["stage_2", "led_volume", "alexa_35_a"], "priority": 5, "participants": ["dp_principal", "director", "focus_puller", "gaffer", "talent", "producer"]},
+    {"id": "f4", "title": "Exterior tracking plates", "start": "14:00", "end": "15:30", "resources": ["exterior_lot", "alexa_35_a"], "priority": 4, "participants": ["dp_principal", "director", "focus_puller", "talent", "producer"]},
+    {"id": "f5", "title": "Product insert macro unit", "start": "12:45", "end": "13:30", "resources": ["stage_2"], "priority": 2, "participants": ["gaffer", "producer"]}
+  ],
+  "audit": [{"event": "schedule_loaded", "version": 1, "source": "synthetic_demo"}],
+  "outbox": [],
+  "recovery_plans": {}
+}

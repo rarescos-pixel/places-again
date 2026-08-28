@@ -5,43 +5,43 @@
   "version": 1,
   "people": {
     "soprano_principal": {
-      "name": "Maria Ionescu",
+      "name": "Synthetic Principal Soprano A",
       "role": "Violetta principal",
       "skills": ["role:violetta", "language:italian"],
       "availability": [{"start": "08:00", "end": "18:00"}]
     },
     "soprano_cover": {
-      "name": "Ana Pop",
+      "name": "Synthetic Cover Soprano B",
       "role": "Violetta cover",
       "skills": ["role:violetta", "language:italian"],
       "availability": [{"start": "10:00", "end": "18:00"}]
     },
     "pianist": {
-      "name": "Radu Pavel",
+      "name": "Synthetic Repetiteur C",
       "role": "Répétiteur",
       "skills": ["piano:traviata", "language:italian"],
       "availability": [{"start": "08:00", "end": "17:00"}]
     },
     "conductor": {
-      "name": "Elena Marin",
+      "name": "Synthetic Conductor D",
       "role": "Conductor",
       "skills": ["conducting:traviata"],
       "availability": [{"start": "09:30", "end": "15:00"}]
     },
     "tenor": {
-      "name": "Victor Dima",
+      "name": "Synthetic Tenor E",
       "role": "Alfredo",
       "skills": ["role:alfredo"],
       "availability": [{"start": "10:00", "end": "16:00"}]
     },
     "director": {
-      "name": "Sofia Matei",
+      "name": "Synthetic Stage Director F",
       "role": "Stage director",
       "skills": ["direction:traviata"],
       "availability": [{"start": "09:00", "end": "16:00"}]
     },
     "stage_manager": {
-      "name": "Dan Luca",
+      "name": "Synthetic Stage Manager G",
       "role": "Stage manager",
       "skills": ["stage_management"],
       "availability": [{"start": "08:00", "end": "18:00"}]

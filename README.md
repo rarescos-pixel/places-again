@@ -1,186 +1,226 @@
 # Places, Again
 
-[![Run on Google Cloud](https://deploy.cloud.run/button.svg)](https://deploy.cloud.run?git_repo=https://github.com/rarescos-pixel/places-again&revision=main)
+> **Autonomous operational disruption recovery.** Every organization has
+> software for when the plan works. Places, Again is for the moment when the
+> plan breaks.
 
-The button above opens Google's guided Cloud Run deployment. The repository's
-`app.json` prepares the required APIs, Firestore database, bounded public-demo
-settings, and dedicated runtime identity, then runs an end-to-end smoke test.
+Places, Again turns one operational incident into a completed background
+workflow: it measures the blast radius, finds the smallest qualified recovery,
+proves the proposed state against deterministic constraints, atomically commits
+only a safe plan, and prepares an audited outbox that it cannot send.
 
-**Places, Again** is a same-day recovery agent for live productions. A performer
-or specialist disappears from the plan; the agent identifies every
-affected call, finds a qualified cover, changes only what it must, verifies the
-new schedule, commits a versioned plan, and prepares bilingual call sheets in a
-human-approved outbox.
+Opera is where we know the failure mode firsthand. **Opera is the proving
+ground, not the market.** The repository runs the same engine on an opera call
+and a commercial film/broadcast shoot.
 
-The opera scenario is an authentic, high-friction test bed. The underlying
-workflow applies to theatre, film, festivals, conferences, broadcast, and other
-live operations where one disruption cascades across people, rooms, and time.
+## Evidence at a glance
 
-## The narrow claim
+| Proof | Opera scenario | Commercial shoot scenario |
+|---|---:|---:|
+| Affected activities | 3 | 4 |
+| Person-hours at risk | 12.0 | 26.0 |
+| Activities recovered | 3 | 4 |
+| Person-hours restored | 12.0 | 26.0 |
+| Unaffected activities moved | 0 | 0 |
+| Unresolved activities | 0 | 0 |
 
-This is not another production calendar. Existing tools already schedule calls
-and flag conflicts. Places, Again focuses on the failure moment: autonomous,
-policy-bounded low-change recovery after a same-day disruption, with explicit safety
-gates, a version check, and an auditable unsent outbox.
+- **47/47 labeled evaluation cases pass** across both domains.
+- **0 unsafe commits, 0 unresolved auto-commits, 0 duplicate side effects.**
+- **100% stale-plan rejection; 100% of accepted plans pass verification.**
+- Duplicate Pub/Sub delivery, retry, three injected crash locations, concurrent
+  incidents, impossible recovery, malformed data, unknown people/resources,
+  and prompt injection are covered.
+- External communication remains `prepared_not_sent`; **messages sent = 0**.
 
-## Why it is agentic
+The full reproducible result is in
+[`reports/evaluation-report.json`](reports/evaluation-report.json). Cloud claims
+are deliberately a hard gate: a real deployment is not considered proven until
+[`scripts/cloud_e2e_test.py`](scripts/cloud_e2e_test.py) produces its evidence
+report against Google Cloud.
 
-Gemini 3.5 and Google Agent Development Kit decide which tools to call and in
-what order. A production event makes the tools read current state, simulate a
-recovery, commit a safe plan, prepare call sheets, and inspect the audit log.
-Deterministic code owns the constraints and irreversible boundaries; the model
-cannot silently bypass a failed safety check or send a message.
+## The Taskmaster workflow
+
+```mermaid
+flowchart TD
+    I["Disruption event"] --> P["Google Pub/Sub"]
+    P --> W["Private Cloud Run worker"]
+    W --> G["Gemini 3.5 + Google ADK"]
+    G --> E["Deterministic recovery engine"]
+    E --> S{"All safety gates pass?"}
+    S -->|yes| C["Atomic state + ledger commit"]
+    C --> O["Prepared outbox · zero sent"]
+    S -->|no| H["Human decision required · no commit"]
+```
+
+The public API persists the incident first and responds with an `event_id`.
+Processing continues without a human selecting tools or approving intermediate
+steps:
+
+`received → analyzing → planned → verified → committed → outbox_prepared → completed`
+
+The autonomy policy is intentionally narrow:
+
+> **Autonomous where safety can be deterministically proved. Human-gated where
+> ambiguity or irreversible external action remains.**
+
+Manual Preview / Commit remains available only as reviewer inspection mode; it
+is not the primary Taskmaster workflow.
 
 ## Architecture
 
 ![Places, Again architecture](docs/architecture.svg)
 
-```mermaid
-flowchart LR
-    E[Production outage event] --> W[FastAPI control room]
-    W --> A[Gemini 3.5 agent]
-    A -->|Google ADK tool calls| T[Recovery tools]
-    T --> S[Constraint engine]
-    S --> V{Safety gates}
-    V -->|pass + explicit commit| R[(Versioned state)]
-    V -->|fail| H[Human decision required]
-    R --> O[Prepared outbox]
-    O -->|human approval only| X[External delivery — not in prototype]
-    W -. hosted on .-> C[Google Cloud Run]
-```
+![Places, Again workflow state machine](docs/workflow.svg)
 
-Local mode uses a JSON repository so it is reproducible and costs nothing to
-run. Cloud mode switches to Firestore so previewed plans, versions, audit events,
-and the outbox survive Cloud Run instance changes. State transitions use a
-Firestore transaction, so concurrent Cloud Run instances cannot both commit a
-plan against the same version.
+### Separation of authority
 
-## Five-minute local demo
+| Layer | Responsibility | Cannot do |
+|---|---|---|
+| Public Cloud Run API | Strict validation, durable receive, Pub/Sub publish | Call Gemini, commit recovery, send messages |
+| Pub/Sub | At-least-once delivery of opaque `event_id` | Read incident text or mutate state |
+| Private Cloud Run worker | Authenticated OIDC endpoint, ADK run | Accept public unauthenticated traffic |
+| Gemini 3.5 + Google ADK | Orchestrate a three-tool workflow | Override gates, use shell/HTTP, access secrets, send |
+| Deterministic engine | Qualification, availability, person/resource conflicts, minimum change | Commit an unresolved or stale plan |
+| Firestore transaction | Ledger + version + plan + audit + outbox as one effect | Produce a partial business commit |
+
+Pub/Sub is at-least-once, while Places, Again provides **exactly-once business
+effect semantics**. A stable event ID indexes the Firestore ledger. Replaying a
+completed event cannot increment the state version or recreate outbox items.
+
+## What is demonstrated — and what is not
+
+Demonstrated now:
+
+- a person-unavailability incident across people, time, rooms/equipment, and
+  required qualifications;
+- the same generic engine on opera and commercial production data;
+- minimum-change recovery under the implemented deterministic policy;
+- safe automatic commit, stale-plan rejection, atomic replay protection, human
+  escalation, audit, and prepared outbox;
+- synthetic data only.
+
+Not claimed:
+
+- global mathematical optimality;
+- financial savings without customer data;
+- support for healthcare, manufacturing, logistics, or every disruption type;
+- use of proprietary employer data;
+- external message delivery.
+
+The architecture can be extended to broader time-critical field operations,
+but those are future extensions, not current product claims.
+
+## One-command local reproduction
+
+Python 3.12 is recommended.
 
 ```bash
 python -m venv .venv
 .venv/bin/pip install -r requirements-dev.txt
-.venv/bin/uvicorn places_again.web:app --reload
-```
-
-Open `http://127.0.0.1:8000`, then either:
-
-1. trigger the complete Gemini/ADK workflow with **Simulate 08:05 outage
-   event**; or
-2. use **Inspect deterministic plan** and **Commit inspected plan** to examine
-   the safety boundary without an external model call.
-
-In both paths, inspect the proposed replacements, time shifts, four safety gates,
-versioned schedule, tool/audit trace, and bilingual call sheets. Call sheets
-remain `prepared_not_sent`.
-
-The preview is deterministic and needs no external service. All names and
-production details are synthetic.
-
-## Gemini / Google ADK path — local API key
-
-```bash
-export GEMINI_API_KEY=your_key
-export PLACES_AGAIN_MODEL=gemini-3.5-flash
-.venv/bin/uvicorn places_again.web:app --reload
-```
-
-Use **Simulate 08:05 outage event** in the interface, or call:
-
-```bash
-curl -X POST http://127.0.0.1:8000/api/events/person-unavailable \
-  -H 'content-type: application/json' \
-  -d '{"disruption":{"person_id":"soprano_principal","start":"08:00","end":"14:00","reason":"same-day illness"},"reset_demo":true}'
-```
-
-The response includes the agent's answer and its tool-call trace.
-
-## Safety contract
-
-- A replacement must have every skill required by the unavailable person.
-- Participant availability, room collisions, and person collisions are checked.
-- Sessions not affected by the disruption are never moved by this policy.
-- A plan is rejected if the state version changed after analysis.
-- Unresolved plans cannot be auto-committed.
-- Commit requires an explicit action.
-- Messages are prepared, persisted, and audited, but never sent.
-
-## Tests
-
-```bash
-python scripts/verify_core.py
 .venv/bin/pytest -q
+.venv/bin/python scripts/run_evaluation.py --summary
+.venv/bin/uvicorn places_again.web:app --host 127.0.0.1 --port 8000
 ```
 
-The first command verifies the deterministic engine without third-party test
-packages. The pytest suite also verifies the HTTP API, repository adapters,
-stale-plan rejection, and unsent-message boundary.
+Open `http://127.0.0.1:8000`. Choose **Opera Production** or **Commercial Film /
+Broadcast Production**, then click **Inject disruption event** once. In local
+mode the same persisted workflow runs in a background task; the production
+deployment replaces that transport with Pub/Sub and a private ADK worker.
 
-## Google Cloud Run
-
-The preferred Cloud Run path uses Vertex AI through the service identity, so no
-Gemini key file is copied into the container:
-
-From Google Cloud Shell, the checked recovery and deployment path is one command:
+Additional checks:
 
 ```bash
-bash deploy.sh
+.venv/bin/python scripts/secret_scan.py --history
+.venv/bin/python scripts/verify_core.py
 ```
 
-The script targets the contest project by default, records the most recent
-`europe-west1` build and its log, checks that billing is already enabled, and
-uses an explicit least-privilege build identity instead of relying on Google's
-changing default Cloud Build account. It then creates the runtime identity,
-provisions Firestore when needed, deploys with zero minimum instances and one
-maximum instance, permits one request at a time, limits the public Gemini path
-to 12 runs per hour, and runs the public smoke test. A failed first deployment
-gets one bounded IAM-propagation retry. The complete result is left in
-`runtime/deployment-report-latest.txt`. The deterministic preview does not call
-Gemini and remains available after the public-agent safety limit. The script
-never creates or downloads a service-account key and never attaches a billing
-account.
+## One-command Google Cloud deployment
 
-The equivalent manual commands are retained below for inspection and recovery:
+The deployment requires an authenticated Google Cloud CLI session and an
+already billing-enabled project. It never chooses a billing account and never
+creates or downloads a service-account key.
 
 ```bash
-export GOOGLE_CLOUD_PROJECT=your-project-id
-gcloud config set project "$GOOGLE_CLOUD_PROJECT"
-gcloud services enable run.googleapis.com cloudbuild.googleapis.com \
-  aiplatform.googleapis.com firestore.googleapis.com
-gcloud firestore databases create --location=europe-west1
-
-gcloud run deploy places-again \
-  --source . \
-  --region europe-west1 \
-  --allow-unauthenticated \
-  --min-instances 0 \
-  --max-instances 1 \
-  --memory 512Mi \
-  --cpu 1 \
-  --concurrency 1 \
-  --set-env-vars PLACES_AGAIN_MODEL=gemini-3.5-flash,PLACES_AGAIN_REPOSITORY=firestore,PLACES_AGAIN_AGENT_RUNS_PER_HOUR=12,GOOGLE_GENAI_USE_VERTEXAI=TRUE,GOOGLE_CLOUD_PROJECT="$GOOGLE_CLOUD_PROJECT",GOOGLE_CLOUD_LOCATION=global
+bash deploy.sh YOUR_PROJECT_ID
 ```
 
-The Cloud Run service identity needs the least-privilege
-`roles/datastore.user` and `roles/aiplatform.user` roles. When deployed,
-`/api/capabilities` reports the Cloud Run service, revision, and repository
-from `K_SERVICE` and `K_REVISION`; locally it says `local`. This gives the demo
-visible proof of where the backend is running without hard-coded claims.
+The script creates or configures:
 
-After deployment, verify all three mandatory Google layers in one run:
+- public `places-again` Cloud Run API;
+- IAM-private, internal-ingress `places-again-worker` Cloud Run service;
+- `places-again-events` Pub/Sub topic and authenticated push subscription;
+- Firestore native database;
+- dedicated builder, API, worker, and Pub/Sub push service accounts;
+- API roles limited to Firestore + Pub/Sub publish;
+- worker roles limited to Firestore + Vertex AI;
+- Pub/Sub push identity limited to invoking the private worker;
+- zero minimum instances and bounded maximum instances.
 
-```bash
-python scripts/smoke_test.py https://YOUR-SERVICE-URL.run.app
-```
+It then runs a real end-to-end test that:
 
-## Submission assets still requiring the owner
+1. publishes a safe incident and waits for ADK/Gemini completion;
+2. verifies plan proof, state version `1 → 2`, and the unsent outbox;
+3. replays the same event and proves zero duplicate commit/outbox;
+4. sends an impossible/adversarial incident and proves human escalation with no
+   state mutation or message.
 
-- Google Cloud project with billing and the required APIs enabled
-- Cloud Run deployment and smoke test
-- Public 4-minute-or-shorter YouTube or Vimeo demo
-- Devpost entry and contributor identity
-- Final eligibility self-attestation
+The deployment transcript and JSON evidence are written under `runtime/`.
+
+The OIDC and ingress setup follows Google Cloud's documented service-to-service
+authentication and Cloud Run internal-ingress behavior for Pub/Sub.
+
+## API surface
+
+| Method | Route | Purpose |
+|---|---|---|
+| `POST` | `/api/events` | Validate, persist, publish; returns `202 + event_id` |
+| `GET` | `/api/events/{event_id}` | Workflow state, metrics, proof, observable trace |
+| `POST` | `/api/pubsub/push` | IAM-private Pub/Sub worker entrypoint |
+| `GET` | `/api/state?scenario_id=…` | Synthetic scenario state |
+| `GET` | `/api/capabilities` | Runtime and Google stack evidence |
+| `POST` | `/api/demo/preview` | Secondary reviewer inspection mode |
+| `POST` | `/api/plans/commit` | Secondary reviewer inspection mode |
+
+No public arbitrary-prompt endpoint exists.
+
+## Repository map
+
+- `places_again/agent.py` — Google ADK agent and explicit three-tool allowlist
+- `places_again/workflow.py` — event ledger and atomic exactly-once effects
+- `places_again/engine.py` — generic deterministic recovery/safety kernel
+- `places_again/repository.py` — JSON local + transactional Firestore adapters
+- `places_again/pubsub.py` — opaque event publishing/decoding
+- `places_again/models.py` — strict bounded Pydantic input models
+- `evaluation/cases.json` — 47 labeled two-domain cases
+- `reports/evaluation-report.json` — current reproducible local results
+- `SECURITY.md` — threat model and authority boundaries
+- `FAILURE_MODES.md` — failure detection and designed behavior
+- `JUDGE_EVIDENCE.md` — rubric claim-to-proof map
+- `docs/demo-script.md` — public video script, under four minutes
+- `docs/submission.md` — Devpost draft
+
+## Security and observability
+
+Incident `reason` is data, never an instruction. The model sees a fixed command
+containing only the event ID. The tool allowlist contains no shell, arbitrary
+HTTP, secret access, or delivery capability. Structured logs and the ledger
+record the correlation/event ID, timestamps, model, observable tool/action
+trace, plan and versions, verification, retry count, latency/token metadata when
+available, outbox status, and failures—never hidden chain-of-thought.
+
+See [`SECURITY.md`](SECURITY.md) and [`FAILURE_MODES.md`](FAILURE_MODES.md).
+
+## Contest positioning
+
+Primary category: **Taskmaster**. The firsthand friction is backstage opera
+recovery; the commercial proof is the second domain. The commercial category is
+not “opera scheduling software,” but **Autonomous Operational Disruption
+Recovery**.
+
+All names, schedules, and results are synthetic. The entrant must still provide
+the public YouTube/Vimeo video, submit the Devpost entry, and make the final
+eligibility and employer-policy attestations.
 
 ## License
 
-Created by Rareș Păltineanu. MIT licensed; see `LICENSE`.
+Created by Rareș Păltineanu. MIT licensed; see [`LICENSE`](LICENSE).

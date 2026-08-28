@@ -1,86 +1,100 @@
 # Google All Things Agentic — internal audit
 
-Checked: 2026-08-27. This is a working audit, not legal advice.
+Checked against the official pages on **2026-08-28**. This is a working audit,
+not legal or tax advice.
 
-## Verified facts
+## Official requirements verified
 
-- Deadline: 2026-08-31 at 17:00 Pacific Time.
-- Winners announced on or around 2026-10-08.
-- Required stack: Gemini 3.5+, a listed Google agent framework, and a Google
-  Cloud infrastructure service.
-- Required assets include a code repository, reproducible README, architecture
-  diagram, and public demo video no longer than four minutes showing Google
-  Cloud execution.
-- Grand Prize: USD 50,000 gross. Taskmaster: USD 20,000 gross.
-  Individual/Hobbyist: two prizes of USD 10,000 gross. Best Architectural
-  Design and Best Multimodal UX: two prizes each of USD 5,000 gross. Honorable
-  Mentions are USD 2,000 and therefore below the user's target. One project can
-  receive at most one prize.
-- Prize delivery: within 60 days after completed winner forms are received.
-- Fees, exchange costs, withholding, and Romanian tax treatment are not included
-  in the headline prize.
-- AI coding assistants are permitted by the new-project rule; the entrant owns
-  and takes responsibility for the submission.
-- The official USD 150 credit form is already closed because the available
-  credits were exhausted. The official resources page still permits use of the
-  Google Cloud free tier or a no-cost trial. Deployment is therefore capped at
-  zero minimum and one maximum Cloud Run instance.
+- Submission deadline: **2026-08-31, 5:00 PM Pacific Time**.
+- Winners expected on or around **2026-10-08**.
+- Mandatory stack: Gemini 3.5 or newer, a qualifying Google agent framework,
+  and Google Cloud infrastructure.
+- Taskmaster asks for a multi-step background workflow completed without human
+  intervention and a “bring your own friction” origin.
+- Required submission assets include a repository with reproducible README,
+  architecture diagram, and a public YouTube/Vimeo demo no longer than four
+  minutes that visibly proves Google Cloud use.
+- Scoring: Innovation & Operational Utility 40%; Architectural Discipline &
+  Tech Stack 30%; Demo & Production Readiness 30%.
+- Taskmaster prize: USD 20,000 gross. Individual/Hobbyist awards: USD 10,000
+  gross. Only one prize may be awarded to a project.
+- Prize delivery is stated as within 60 days after completed winner forms are
+  received; tax, withholding, transfer cost, and EUR conversion are not the
+  headline amount.
+- AI coding assistants are allowed under the official FAQ.
+- The contest credit pool is exhausted; deployment must use an existing trial,
+  free tier, or ordinary billing.
 
-Primary source: https://allthingsagentichackathon.devpost.com/rules
+Primary sources:
 
-## Eligibility uncertainty
+- https://allthingsagentichackathon.devpost.com/rules
+- https://allthingsagentichackathon.devpost.com/details/faqs
+- https://allthingsagentichackathon.devpost.com/
 
-The rule excludes individuals or organizations "employed by a government
-agency." The user's employer is a Romanian public cultural institution
-subordinate to the Ministry of Culture. Those descriptions are not identical,
-and the rule does not define "government agency." Therefore:
+## Eligibility
 
-- It is not defensible to state that the user is certainly excluded.
-- It is also not defensible to promise eligibility.
-- The sponsor keeps sole discretion to verify eligibility and conflicts.
-- No organizer has been contacted, per the user's explicit instruction.
+The entrant must independently confirm that the official eligibility terms and
+any applicable employer policy are satisfied before the final submission. The
+repository makes no eligibility representation; the sponsor retains final
+eligibility discretion. This attestation is separate from the technical score.
 
-Working classification: **plausible but unconfirmed eligibility**. This is the
-only current stop-risk that could invalidate a technically complete entry.
+## Competition calibration
 
-## Fit and feasibility
+Public entries are technically strong. Two relevant benchmarks:
 
-- Personal fit: strong. The problem comes from extensive direct opera-rehearsal
-  experience rather than a generic invented use case.
-- Category fit: strong for Taskmaster because the system mutates state and
-  completes a multi-step workflow instead of returning advice.
-- Technical status: the deterministic verification and the full dependency
-  suite both pass locally. On 2026-08-27, all 14 pytest tests passed, covering
-  the HTTP API, preview/commit boundary, stale-plan rejection, the unsent
-  outbox, both repository adapters, and the public Gemini usage limit. The
-  mandatory Gemini/Google ADK integration and transactional Firestore
-  repository are in code. Cloud Run deployment and a real Gemini 3.5 run still
-  require the owner's Google Cloud project.
-- Competitive volume: the public page showed 9,533 registered participants on
-  2026-08-27. That is not the number of valid final submissions and cannot be
-  converted into a success probability.
-- Financial fit: the USD 10,000 and USD 20,000 cash prizes exceed the requested
-  EUR 5,000 floor at ordinary recent exchange-rate ranges, but this audit does
-  not guarantee a future exchange rate or net amount after tax.
-- Calendar fit: announcement is before 2026-12-31. A prompt winner response and
-  completed forms would ordinarily put the stated 60-day delivery window before
-  2027-02-28, but administrative delay is possible.
+- **ShiftZero** demonstrates Cloud Run, Pub/Sub, Firestore, a deterministic
+  safety kernel, adversarial input, observability, and measured autonomous
+  recovery in factory operations:
+  https://devpost.com/software/shiftzero-autonomous-factory-operations
+- **AgentProof** demonstrates deterministic execution receipts, stale authority,
+  duplicate protection, concurrency, and observable evidence around a simulated
+  payment workflow:
+  https://devpost.com/software/agentproof-26sza5
 
-## Competitive and claim risks
+Implication: an attractive UI plus a plausible agent loop is not competitive.
+Places, Again must prove event-driven execution, replay/crash safety, actual
+Google Cloud behavior, a personal operational origin, and a credible second
+domain. The current rebuild targets precisely those gaps rather than imitating
+multi-agent complexity.
 
-- Production scheduling, conflict detection, and call sheets already exist in
-  commercial products. Do not claim invention of that category.
-- The defensible difference is narrow: same-day autonomous recovery,
-  policy-bounded minimum change, versioned commit, explicit safety proof, and an
-  audited outbox.
-- "Places, Again" passed only a preliminary exact-name web search. It is not a
-  trademark clearance.
-- The prototype currently handles person unavailability, not every disruption
-  type mentioned in the product roadmap.
+## Current evidence
 
-## Decision gate
+- 35 local tests pass.
+- 47/47 labeled two-domain evaluation cases pass.
+- Measured acceptance targets: 0 unsafe commits, 0 unresolved auto-commits, 0
+  duplicate side effects, 100% stale-plan rejection, 100% accepted-plan
+  verification.
+- Worktree plus reachable Git history secret scan: 0 findings.
+- Main workflow: public API → Pub/Sub → private Cloud Run worker → Gemini/ADK →
+  deterministic engine → Firestore transaction → prepared outbox.
+- Cloud deployment code and E2E proof script exist, but a real cloud evidence
+  report does not yet exist. Therefore cloud execution claims remain pending.
 
-Continue: local work is reversible and currently costs EUR 0. Before external
-submission, verify the real Gemini path, deploy to Cloud Run, record the demo,
-and have the entrant make the final eligibility and employer-policy
-attestations.
+## Fit and honest positioning
+
+- Personal fit: strong. Opera disruption recovery is firsthand friction.
+- Taskmaster fit: strong if the cloud E2E proves the one-click background flow.
+- Commercial category: Autonomous Operational Disruption Recovery.
+- Opera is the proving ground; commercial film/broadcast is the implemented
+  portability proof.
+- Do not call it “opera scheduling software.”
+- Do not claim logistics, manufacturing, healthcare, or global optimization.
+- All production data is synthetic and contains no employer-proprietary details.
+
+## Prize and calendar facts
+
+The official rules list USD 10,000 and USD 20,000 gross awards. Currency
+conversion, tax, withholding, transfer costs, and administrative timing are not
+guaranteed by this repository. The published winner announcement is expected on
+or around 2026-10-08.
+
+## Hard gates before submission
+
+1. Real Cloud Run + Pub/Sub OIDC + Vertex AI/ADK + Firestore E2E report passes.
+2. Public demo video is ≤ 4 minutes and visibly proves Google Cloud.
+3. Repository is accessible to judges under the official rule.
+4. Devpost claims are reconciled with the actual submitted commit.
+5. Entrant makes the final eligibility and employer-policy attestations.
+
+Working verdict: **continue aggressively, but do not call the entry complete or
+5/5-ready until the cloud hard gate and public video pass.**

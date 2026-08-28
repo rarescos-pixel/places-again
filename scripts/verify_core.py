@@ -20,7 +20,9 @@ from places_again.repository import JsonRepository
 
 
 def main() -> None:
-    state = json.loads((ROOT / "data" / "demo_state.json").read_text(encoding="utf-8"))
+    state = json.loads(
+        (ROOT / "data" / "scenarios" / "opera.json").read_text(encoding="utf-8")
+    )
     disruption = {
         "kind": "person_unavailable",
         "person_id": "soprano_principal",
@@ -30,13 +32,13 @@ def main() -> None:
     }
     plan = build_recovery_plan(state, disruption)
     assert plan["safe_to_commit"] is True
-    assert plan["metrics"] == {
-        "affected_sessions": 3,
-        "changed_sessions": 3,
-        "shifted_minutes": 270,
-        "unaffected_sessions_moved": 0,
-        "unresolved": 0,
-    }
+    assert plan["metrics"]["affected_activities"] == 3
+    assert plan["metrics"]["activities_recovered"] == 3
+    assert plan["metrics"]["person_hours_at_risk"] == 12.0
+    assert plan["metrics"]["person_hours_restored"] == 12.0
+    assert plan["metrics"]["shifted_minutes"] == 270
+    assert plan["metrics"]["unaffected_activities_moved"] == 0
+    assert plan["metrics"]["unresolved_activities"] == 0
     updated = apply_plan(state, plan)
     assert updated["version"] == 2
     assert validate_schedule(updated)["passed"] is True
@@ -53,8 +55,8 @@ def main() -> None:
             current["version"] += 1
             return current, current["version"]
 
-        assert repository.mutate(advance) == 2
-        assert repository.load()["version"] == 2
+        assert repository.mutate(advance, "opera") == 2
+        assert repository.load("opera")["version"] == 2
 
     print("core verification passed")
 

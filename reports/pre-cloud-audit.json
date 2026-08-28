@@ -1,0 +1,20 @@
+{
+  "local": {
+    "required_files_present": true,
+    "missing_files": [],
+    "tests_pass": true,
+    "test_summary": "...................................                                      [100%]",
+    "evaluation_pass": true,
+    "evaluation_cases": 47,
+    "unsafe_commits": 0,
+    "unresolved_auto_commits": 0,
+    "duplicate_side_effects": 0,
+    "stale_rejection_rate": 100.0,
+    "accepted_verification_rate": 100.0,
+    "secret_scan_pass": true
+  },
+  "external": {},
+  "local_pass": true,
+  "external_automated_pass": true,
+  "passed": true
+}

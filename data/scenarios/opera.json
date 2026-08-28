@@ -1,0 +1,31 @@
+{
+  "scenario_id": "opera",
+  "domain": "Opera Production",
+  "production": "La Traviata — recovery rehearsal",
+  "date": "2026-08-27",
+  "timezone": "Europe/Bucharest",
+  "version": 1,
+  "people": {
+    "soprano_principal": {"name": "Synthetic Principal Soprano A", "role": "Violetta principal", "skills": ["role:violetta", "language:italian"], "availability": [{"start": "08:00", "end": "18:00"}]},
+    "soprano_cover": {"name": "Synthetic Cover Soprano B", "role": "Violetta cover", "skills": ["role:violetta", "language:italian"], "availability": [{"start": "10:00", "end": "18:00"}]},
+    "pianist": {"name": "Synthetic Repetiteur C", "role": "Repetiteur", "skills": ["piano:traviata", "language:italian"], "availability": [{"start": "08:00", "end": "17:00"}]},
+    "conductor": {"name": "Synthetic Conductor D", "role": "Conductor", "skills": ["conducting:traviata"], "availability": [{"start": "09:30", "end": "15:00"}]},
+    "tenor": {"name": "Synthetic Tenor E", "role": "Alfredo", "skills": ["role:alfredo"], "availability": [{"start": "10:00", "end": "16:00"}]},
+    "director": {"name": "Synthetic Stage Director F", "role": "Stage director", "skills": ["direction:traviata"], "availability": [{"start": "09:00", "end": "16:00"}]},
+    "stage_manager": {"name": "Synthetic Stage Manager G", "role": "Stage manager", "skills": ["stage_management"], "availability": [{"start": "08:00", "end": "18:00"}]}
+  },
+  "resources": {
+    "studio_a": {"name": "Studio A", "availability": [{"start": "08:00", "end": "19:00"}]},
+    "studio_b": {"name": "Studio B", "availability": [{"start": "08:00", "end": "19:00"}]},
+    "main_stage": {"name": "Main Stage", "availability": [{"start": "08:00", "end": "19:00"}]}
+  },
+  "activities": [
+    {"id": "s1", "title": "Violetta piano call", "start": "09:00", "end": "10:00", "resources": ["studio_a"], "priority": 3, "participants": ["soprano_principal", "pianist"]},
+    {"id": "s2", "title": "Act II stage-and-piano", "start": "10:30", "end": "12:00", "resources": ["main_stage"], "priority": 5, "participants": ["soprano_principal", "tenor", "conductor", "director", "pianist", "stage_manager"]},
+    {"id": "s3", "title": "Alfredo coaching", "start": "12:15", "end": "13:00", "resources": ["studio_a"], "priority": 2, "participants": ["tenor", "pianist"]},
+    {"id": "s4", "title": "Violetta diction notes", "start": "13:00", "end": "13:30", "resources": ["studio_b"], "priority": 2, "participants": ["soprano_principal", "pianist"]}
+  ],
+  "audit": [{"event": "schedule_loaded", "version": 1, "source": "synthetic_demo"}],
+  "outbox": [],
+  "recovery_plans": {}
+}

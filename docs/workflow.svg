@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="500" viewBox="0 0 1500 500" role="img" aria-labelledby="title desc">
+  <title id="title">Places, Again workflow state machine</title>
+  <desc id="desc">An incident progresses from received through analysis, planning, verification, atomic commit, prepared outbox, and completion. A failed safety proof branches to human required with no commit.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#090b0f"/><stop offset="1" stop-color="#17120d"/></linearGradient>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#92979f"/></marker>
+    <style>.title{font:700 38px Georgia,serif;fill:#f4f0e7}.sub{font:500 16px Inter,Arial,sans-serif;fill:#9c9a94}.label{font:800 15px Inter,Arial,sans-serif;fill:#f4f0e7}.small{font:500 12px Inter,Arial,sans-serif;fill:#9c9a94}.box{fill:#14171c;stroke:#353941;stroke-width:2}.done{fill:#11241a;stroke:#6ddd9b}.stop{fill:#291719;stroke:#ff7777}.line{fill:none;stroke:#92979f;stroke-width:2.5;marker-end:url(#arrow)}</style>
+  </defs>
+  <rect width="1500" height="500" rx="24" fill="url(#bg)"/>
+  <text x="60" y="68" class="title">Exactly-once recovery workflow</text><text x="60" y="99" class="sub">Pub/Sub may deliver more than once; the business state changes once.</text>
+  <g>
+    <rect x="60" y="175" width="150" height="88" rx="15" class="box"/><text x="135" y="213" text-anchor="middle" class="label">received</text><text x="135" y="237" text-anchor="middle" class="small">ledger first</text>
+    <rect x="260" y="175" width="150" height="88" rx="15" class="box"/><text x="335" y="213" text-anchor="middle" class="label">analyzing</text><text x="335" y="237" text-anchor="middle" class="small">ADK + Gemini</text>
+    <rect x="460" y="175" width="150" height="88" rx="15" class="box"/><text x="535" y="213" text-anchor="middle" class="label">planned</text><text x="535" y="237" text-anchor="middle" class="small">minimum change</text>
+    <rect x="660" y="175" width="150" height="88" rx="15" class="box"/><text x="735" y="213" text-anchor="middle" class="label">verified</text><text x="735" y="237" text-anchor="middle" class="small">all gates</text>
+    <rect x="860" y="175" width="150" height="88" rx="15" class="done"/><text x="935" y="213" text-anchor="middle" class="label">committed</text><text x="935" y="237" text-anchor="middle" class="small">atomic version</text>
+    <rect x="1060" y="175" width="170" height="88" rx="15" class="done"/><text x="1145" y="213" text-anchor="middle" class="label">outbox prepared</text><text x="1145" y="237" text-anchor="middle" class="small">zero sent</text>
+    <rect x="1280" y="175" width="150" height="88" rx="15" class="done"/><text x="1355" y="213" text-anchor="middle" class="label">completed</text><text x="1355" y="237" text-anchor="middle" class="small">audited result</text>
+    <path d="M210 219 H250" class="line"/><path d="M410 219 H450" class="line"/><path d="M610 219 H650" class="line"/><path d="M810 219 H850" class="line"/><path d="M1010 219 H1050" class="line"/><path d="M1230 219 H1270" class="line"/>
+  </g>
+  <rect x="650" y="350" width="280" height="92" rx="16" class="stop"/><text x="790" y="388" text-anchor="middle" class="label">human_required</text><text x="790" y="414" text-anchor="middle" class="small">no commit · no outbox · no send</text>
+  <path d="M735 263 V315 Q735 335 755 350" class="line"/><text x="690" y="320" class="small">unsafe / unresolved</text>
+  <path d="M1355 263 V305 Q1355 326 1335 326 H190 Q135 326 135 273" class="line"/><text x="1040" y="316" class="small">duplicate delivery returns recorded result</text>
+</svg>

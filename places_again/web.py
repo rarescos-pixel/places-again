@@ -4,19 +4,21 @@ import os
 from collections import deque
 from pathlib import Path
 from threading import Lock
-from time import monotonic
+from time import monotonic, perf_counter
 
-from fastapi import FastAPI, HTTPException
+from fastapi import BackgroundTasks, FastAPI, HTTPException, Query, status
 from fastapi.responses import FileResponse
 from google.adk.runners import InMemoryRunner
 
 from places_again.agent import root_agent
 from places_again.models import (
-    AgentRequest,
+    IncidentRequest,
     PlanCommitRequest,
+    PubSubEnvelope,
     RecoveryEventRequest,
     RecoveryRequest,
 )
+from places_again.pubsub import decode_event_id, publish_event
 from places_again.repository import repository
 from places_again.tools import (
     analyze_person_disruption,
@@ -24,10 +26,16 @@ from places_again.tools import (
     prepare_call_sheets,
     reset_demo,
 )
+from places_again.workflow import (
+    get_event,
+    process_event,
+    receive_incident,
+    record_agent_observation,
+)
 
 
 ROOT = Path(__file__).resolve().parent.parent
-app = FastAPI(title="Places, Again", version="0.3.0")
+app = FastAPI(title="Places, Again", version="0.6.0")
 _agent_run_times: deque[float] = deque()
 _agent_run_lock = Lock()
 
@@ -78,13 +86,26 @@ def health() -> dict[str, str]:
 @app.get("/api/capabilities")
 def capabilities() -> dict:
     uses_vertex = os.environ.get("GOOGLE_GENAI_USE_VERTEXAI", "").lower() == "true"
+    uses_pubsub_worker = bool(os.environ.get("PLACES_AGAIN_PUBSUB_TOPIC"))
+    service_role = os.environ.get("PLACES_AGAIN_SERVICE_ROLE", "all-in-one-local")
     return {
         "agent_framework": "Google Agent Development Kit",
         "model": os.environ.get("PLACES_AGAIN_MODEL", "gemini-3.5-flash"),
-        "model_backend": "Vertex AI" if uses_vertex else "Gemini API",
-        "gemini_configured": _gemini_configured(),
+        "model_backend": "Vertex AI" if uses_vertex or uses_pubsub_worker else "Gemini API",
+        "gemini_configured": _gemini_configured() or uses_pubsub_worker,
         "runtime": "Google Cloud Run" if os.environ.get("K_SERVICE") else "local",
         "repository": os.environ.get("PLACES_AGAIN_REPOSITORY", "json"),
+        "event_transport": (
+            "Google Pub/Sub"
+            if os.environ.get("PLACES_AGAIN_PUBSUB_TOPIC")
+            else "local background worker"
+        ),
+        "service_role": service_role,
+        "private_worker_configured": uses_pubsub_worker,
+        "effect_semantics": "exactly-once via transactional event ledger",
+        "scenarios": ["opera", "commercial_shoot"],
+        "autonomy_policy": "safe auto-commit; unresolved human escalation",
+        "outbound_delivery": "disabled; prepared_not_sent only",
         "agent_runs_per_hour": _agent_runs_per_hour(),
         "cloud_service": os.environ.get("K_SERVICE"),
         "cloud_revision": os.environ.get("K_REVISION"),
@@ -92,34 +113,48 @@ def capabilities() -> dict:
 
 
 @app.get("/api/state")
-def get_state() -> dict:
-    return repository.snapshot()
+def get_state(
+    scenario_id: str = Query(default="opera", pattern=r"^[a-z][a-z0-9_-]{1,63}$")
+) -> dict:
+    try:
+        return repository.snapshot(scenario_id)
+    except KeyError as error:
+        raise HTTPException(status_code=404, detail=str(error)) from error
 
 
 @app.get("/api/audit")
-def get_audit() -> dict:
-    state = repository.snapshot()
+def get_audit(
+    scenario_id: str = Query(default="opera", pattern=r"^[a-z][a-z0-9_-]{1,63}$")
+) -> dict:
+    try:
+        state = repository.snapshot(scenario_id)
+    except KeyError as error:
+        raise HTTPException(status_code=404, detail=str(error)) from error
     return {"version": state["version"], "audit": state.get("audit", []), "outbox": state.get("outbox", [])}
 
 
 @app.post("/api/demo/reset")
-def reset() -> dict:
-    return reset_demo()
+def reset(scenario_id: str = "opera") -> dict:
+    return reset_demo(scenario_id)
 
 
 @app.post("/api/recover")
 def recover(request: RecoveryRequest) -> dict:
     disruption = request.disruption
     plan = analyze_person_disruption(
-        disruption.person_id, disruption.start, disruption.end, disruption.reason
+        disruption.person_id,
+        disruption.start,
+        disruption.end,
+        disruption.reason,
+        request.scenario_id,
     )
     result: dict = {"plan": plan, "committed": False, "call_sheets": []}
     if request.commit and plan["safe_to_commit"]:
-        committed = commit_recovery_plan(plan["plan_id"])
+        committed = commit_recovery_plan(plan["plan_id"], request.scenario_id)
         if committed["status"] == "error":
             raise HTTPException(status_code=409, detail=committed["message"])
-        english = prepare_call_sheets(plan["plan_id"], "en")
-        romanian = prepare_call_sheets(plan["plan_id"], "ro")
+        english = prepare_call_sheets(plan["plan_id"], "en", request.scenario_id)
+        romanian = prepare_call_sheets(plan["plan_id"], "ro", request.scenario_id)
         result.update(
             {
                 "committed": True,
@@ -132,13 +167,18 @@ def recover(request: RecoveryRequest) -> dict:
 
 
 @app.post("/api/demo/run")
-def run_demo() -> dict:
-    reset_demo()
+def run_demo(scenario_id: str = "opera") -> dict:
+    reset_demo(scenario_id)
+    if scenario_id == "commercial_shoot":
+        person_id, start, end = "dp_principal", "07:00", "16:00"
+    else:
+        person_id, start, end = "soprano_principal", "08:00", "14:00"
     request = RecoveryRequest(
+        scenario_id=scenario_id,
         disruption={
-            "person_id": "soprano_principal",
-            "start": "08:00",
-            "end": "14:00",
+            "person_id": person_id,
+            "start": start,
+            "end": end,
             "reason": "same-day illness",
         },
         commit=True,
@@ -147,13 +187,18 @@ def run_demo() -> dict:
 
 
 @app.post("/api/demo/preview")
-def preview_demo() -> dict:
-    reset_demo()
+def preview_demo(scenario_id: str = "opera") -> dict:
+    reset_demo(scenario_id)
+    if scenario_id == "commercial_shoot":
+        person_id, start, end = "dp_principal", "07:00", "16:00"
+    else:
+        person_id, start, end = "soprano_principal", "08:00", "14:00"
     request = RecoveryRequest(
+        scenario_id=scenario_id,
         disruption={
-            "person_id": "soprano_principal",
-            "start": "08:00",
-            "end": "14:00",
+            "person_id": person_id,
+            "start": start,
+            "end": end,
             "reason": "same-day illness",
         },
         commit=False,
@@ -163,15 +208,15 @@ def preview_demo() -> dict:
 
 @app.post("/api/plans/commit")
 def commit_plan(request: PlanCommitRequest) -> dict:
-    committed = commit_recovery_plan(request.plan_id)
+    committed = commit_recovery_plan(request.plan_id, request.scenario_id)
     if committed["status"] == "error":
         raise HTTPException(status_code=409, detail=committed["message"])
-    english = prepare_call_sheets(request.plan_id, "en")
-    romanian = prepare_call_sheets(request.plan_id, "ro")
+    english = prepare_call_sheets(request.plan_id, "en", request.scenario_id)
+    romanian = prepare_call_sheets(request.plan_id, "ro", request.scenario_id)
     return {
         "committed": True,
         "new_version": committed["new_version"],
-        "state": repository.snapshot(),
+        "state": repository.snapshot(request.scenario_id),
         "call_sheets": english["messages"] + romanian["messages"],
     }
 
@@ -186,11 +231,24 @@ async def _execute_agent(message: str) -> dict:
             ),
         )
     _claim_agent_run_slot()
+    started = perf_counter()
     runner = InMemoryRunner(agent=root_agent, app_name="places_again")
     events = await runner.run_debug(message, quiet=True)
     messages = []
     trace = []
+    usage = {"prompt_tokens": 0, "candidate_tokens": 0, "total_tokens": 0}
     for event in events:
+        metadata = getattr(event, "usage_metadata", None)
+        if metadata:
+            usage["prompt_tokens"] += int(
+                getattr(metadata, "prompt_token_count", 0) or 0
+            )
+            usage["candidate_tokens"] += int(
+                getattr(metadata, "candidates_token_count", 0) or 0
+            )
+            usage["total_tokens"] += int(
+                getattr(metadata, "total_token_count", 0) or 0
+            )
         content = getattr(event, "content", None)
         if not content:
             continue
@@ -219,31 +277,122 @@ async def _execute_agent(message: str) -> dict:
         text = "".join(text_parts)
         if text:
             messages.append(text)
-    return {"messages": messages, "trace": trace, "event_count": len(events)}
-
-
-@app.post("/api/agent")
-async def run_agent(request: AgentRequest) -> dict:
-    return await _execute_agent(request.message)
-
-
-@app.post("/api/events/person-unavailable")
-async def receive_person_unavailable_event(request: RecoveryEventRequest) -> dict:
-    """Turn an incoming production event into an autonomous recovery workflow."""
-    if request.reset_demo:
-        reset_demo()
-    disruption = request.disruption
-    message = (
-        "A production-system event reports that "
-        f"person_id={disruption.person_id} is unavailable from {disruption.start} "
-        f"to {disruption.end}. Reason: {disruption.reason}. Read current state, "
-        "analyze every affected call, commit only if all safety gates pass, then "
-        "prepare both English and Romanian call sheets. Do not send messages."
-    )
-    result = await _execute_agent(message)
     return {
-        "trigger": "person_unavailable",
-        "source": "production_event",
-        "disruption": disruption.model_dump(),
-        **result,
+        "messages": messages,
+        "trace": trace,
+        "event_count": len(events),
+        "latency_ms": round((perf_counter() - started) * 1000, 2),
+        "usage": usage,
     }
+
+
+async def _execute_event_agent(event_id: str) -> dict:
+    result = await _execute_agent(
+        "Process trusted event_id="
+        f"{event_id}. Follow the fixed event workflow and use only the allowed tools."
+    )
+    record_agent_observation(
+        event_id,
+        trace=result["trace"],
+        event_count=result["event_count"],
+        model=os.environ.get("PLACES_AGAIN_MODEL", "gemini-3.5-flash"),
+        latency_ms=result["latency_ms"],
+        usage=result["usage"],
+        repository=repository,
+    )
+    return result
+
+
+@app.post("/api/events", status_code=status.HTTP_202_ACCEPTED)
+def create_event(request: IncidentRequest, background_tasks: BackgroundTasks) -> dict:
+    """Accept quickly, persist first, then publish an opaque id for background work."""
+    try:
+        event = receive_incident(
+            request.scenario_id,
+            request.disruption.model_dump(),
+            event_id=request.event_id,
+            source=request.source,
+            repository=repository,
+        )
+    except ValueError as error:
+        raise HTTPException(status_code=409, detail=str(error)) from error
+
+    try:
+        publication = publish_event(event["event_id"])
+    except Exception as error:
+        raise HTTPException(
+            status_code=503,
+            detail=f"incident persisted but Pub/Sub publish failed: {type(error).__name__}",
+        ) from error
+    if publication["mode"] == "local_background":
+        background_tasks.add_task(
+            process_event,
+            event["event_id"],
+            repository=repository,
+            orchestration="local_background_worker",
+        )
+    return {
+        "event_id": event["event_id"],
+        "status": event["status"],
+        "duplicate_delivery": event.get("duplicate_delivery", False),
+        "transport": publication["mode"],
+        "status_url": f"/api/events/{event['event_id']}",
+    }
+
+
+@app.get("/api/events/{event_id}")
+def event_status(event_id: str) -> dict:
+    event = get_event(event_id, repository=repository)
+    if event is None:
+        raise HTTPException(status_code=404, detail="unknown event_id")
+    return event
+
+
+@app.post("/api/pubsub/push")
+async def pubsub_push(envelope: PubSubEnvelope) -> dict:
+    """Private Cloud Run worker target; Cloud Run IAM verifies Pub/Sub OIDC."""
+    try:
+        event_id = decode_event_id(envelope.message.data)
+    except ValueError as error:
+        raise HTTPException(status_code=400, detail=str(error)) from error
+    event = get_event(event_id, repository=repository)
+    if event is None:
+        raise HTTPException(status_code=404, detail="unknown event_id")
+    if event["status"] in {"completed", "human_required"}:
+        replay = process_event(
+            event_id,
+            repository=repository,
+            orchestration="pubsub_replay",
+        )
+        return {"event_id": event_id, "status": replay["status"], "replay": True}
+    agent_result = await _execute_event_agent(event_id)
+    final = get_event(event_id, repository=repository)
+    if final is None or final["status"] not in {"completed", "human_required"}:
+        raise HTTPException(
+            status_code=500,
+            detail="ADK run ended without a terminal workflow state; Pub/Sub should retry",
+        )
+    return {
+        "event_id": event_id,
+        "status": final["status"],
+        "agent_events": agent_result["event_count"],
+    }
+
+
+@app.post(
+    "/api/events/person-unavailable",
+    status_code=status.HTTP_202_ACCEPTED,
+    deprecated=True,
+)
+def receive_person_unavailable_event(
+    request: RecoveryEventRequest, background_tasks: BackgroundTasks
+) -> dict:
+    """Compatibility alias for the generic event endpoint."""
+    if request.reset_demo:
+        reset_demo(request.scenario_id)
+    incident = IncidentRequest(
+        scenario_id=request.scenario_id,
+        disruption=request.disruption,
+        source="demo",
+    )
+    return create_event(incident, background_tasks)

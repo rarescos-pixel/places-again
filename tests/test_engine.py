@@ -21,13 +21,13 @@ def disruption():
 def test_recovery_is_safe_and_minimal():
     plan = build_recovery_plan(seed(), disruption())
     assert plan["safe_to_commit"] is True
-    assert plan["metrics"] == {
-        "affected_sessions": 3,
-        "changed_sessions": 3,
-        "shifted_minutes": 270,
-        "unaffected_sessions_moved": 0,
-        "unresolved": 0,
-    }
+    assert plan["metrics"]["affected_activities"] == 3
+    assert plan["metrics"]["activities_recovered"] == 3
+    assert plan["metrics"]["shifted_minutes"] == 270
+    assert plan["metrics"]["unaffected_activities_moved"] == 0
+    assert plan["metrics"]["unresolved_activities"] == 0
+    assert plan["metrics"]["person_hours_at_risk"] == 12.0
+    assert plan["metrics"]["person_hours_restored"] == 12.0
     assert plan["verification"]["passed"] is True
     assert {action["new_person_id"] for action in plan["actions"]} == {"soprano_cover"}
 
@@ -62,7 +62,9 @@ def test_call_sheets_are_prepared_not_sent():
     messages = create_call_sheets(updated, plan, "ro")
     assert messages
     assert all(message["status"] == "prepared_not_sent" for message in messages)
-    assert any("Ana Pop" == message["recipient"] for message in messages)
+    assert any(
+        "Synthetic Cover Soprano B" == message["recipient"] for message in messages
+    )
 
 
 def test_validation_detects_person_conflicts():
@@ -72,3 +74,27 @@ def test_validation_detects_person_conflicts():
     result = validate_schedule(state)
     assert result["passed"] is False
     assert any(item["type"] == "person_conflict" for item in result["violations"])
+
+
+def test_same_engine_recovers_commercial_shoot():
+    state = json.loads(
+        Path("data/scenarios/commercial_shoot.json").read_text(encoding="utf-8")
+    )
+    plan = build_recovery_plan(
+        state,
+        {
+            "kind": "person_unavailable",
+            "person_id": "dp_principal",
+            "start": "07:00",
+            "end": "16:00",
+            "reason": "same-day illness",
+        },
+    )
+    assert plan["safe_to_commit"] is True
+    assert plan["metrics"]["affected_activities"] == 4
+    assert plan["metrics"]["activities_recovered"] == 4
+    assert plan["metrics"]["person_hours_restored"] == 26.0
+    assert plan["metrics"]["unaffected_activities_moved"] == 0
+    assert {action["new_person_id"] for action in plan["actions"]} == {
+        "dp_cover_early"
+    }
