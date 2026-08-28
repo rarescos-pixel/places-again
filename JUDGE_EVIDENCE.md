@@ -37,7 +37,7 @@ the submitted build after the real cloud E2E and recording.
 | No irreversible send authority | no send tool; deterministic `prepared_not_sent` outbox | prepared count, sent = 0 | 1:45–2:20 |
 | Least privilege without keys | separate builder/API/worker/push identities | Deployment report | 3:10–3:30 |
 | Threat and failure analysis | `SECURITY.md`; `FAILURE_MODES.md` | Repository | judge review |
-| Secret hygiene | `scripts/secret_scan.py --history`; `reports/secret-scan.json` | 0 findings | judge review |
+| Secret hygiene | `scripts/secret_scan.py --history`; `reports/secret-scan.json`; public Quality Gate | 0 findings on green submitted-commit CI | judge review |
 
 ## 3. Demo & Production Readiness — 30%
 
@@ -46,6 +46,7 @@ the submitted build after the real cloud E2E and recording.
 | Memorable visible transformation | cascade UI in `static/index.html` | AT RISK → RECOVERED | 0:00–2:00 |
 | Decision evidence is inspectable | `candidate_summaries`, selected ID, reasons, proof in event ledger | candidate strip + decision panel | 1:00–1:40 |
 | Responsive finalist control room | `static/index.html`; integration test | Live public Cloud Run UI | entire demo |
+| Public reproducible quality gate | `.github/workflows/quality-gate.yml` | GitHub Actions: tests, evaluation, core verification, secret/history scan, syntax/parse checks; JSON evidence artifact | repository review |
 | Robust guided deploy | `enable_google_apis.sh`; deploy/prebuild integration; retry tests | API report including bounded 429 backoff | deployment evidence |
 | Real cloud E2E, replay, and failure | `scripts/cloud_e2e_test.py` | generated cloud evidence JSON | 0:40–3:30 |
 | Reproducible local evaluation | 52 labeled deterministic/fake-selection cases across both domains; not a Gemini invocation | `reports/evaluation-report.json` | 3:10–3:30 |
@@ -62,6 +63,16 @@ the submitted build after the real cloud E2E and recording.
 | Is Gemini only calling an algorithm? | No. The engine returns a bounded, heuristically generated non-dominated candidate set. Gemini selects one actual candidate using domain soft priorities and returns auditable reason codes. |
 | Can Gemini bypass safety? | No. It cannot edit plans, and its ID is checked for set membership before current-state deterministic re-verification. |
 | Is the choice fake? | No. Opera trades critical-call preservation against total shifted minutes; film trades single-cover continuity against balanced cover workload. Tests assert both. |
+
+## Public quality gate
+
+The repository has a GitHub Actions `Quality Gate` on every push to `main` and on
+pull requests. The submitted commit must show this workflow green. It independently
+runs the automated tests, the labeled evaluation, `verify_core.py`, full-history
+secret scanning, Python and shell syntax checks, and JSON/SVG parse checks. A
+successful run publishes the generated JSON reports as a downloadable Actions
+artifact. This is local/repository evidence, not a substitute for the Google Cloud
+E2E hard gate below.
 
 ## Cloud hard gate
 
@@ -88,6 +99,7 @@ blocked until `runtime/cloud-e2e-evidence-*.json` passes.
 
 ## Final sceptical-judge gate
 
+- Is the submitted commit's public Quality Gate green and are its generated reports downloadable?
 - Can the problem be repeated after ten seconds?
 - Is the cascade visible before architecture is discussed?
 - Does the live trace show more than one real safe candidate?
@@ -96,6 +108,5 @@ blocked until `runtime/cloud-e2e-evidence-*.json` passes.
 - Does replay preserve the same version and outbox IDs?
 - Does the impossible/adversarial case stop without side effects?
 - Does the film scenario use the same code path rather than renamed slides?
-- Are the Cloud Run URL, Pub/Sub delivery, ADK/Gemini trace, and Firestore state
-  impossible to mistake for a mock?
+- Are the Cloud Run URL, Pub/Sub delivery, ADK/Gemini trace, and Firestore state impossible to mistake for a mock?
 - Does every spoken number match the submitted commit's generated evidence?
