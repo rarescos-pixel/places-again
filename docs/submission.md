@@ -196,7 +196,7 @@ persistence, replay without a second business effect, and an impossible
 adversarial event without an unsafe commit.
 
 Independent public-internet verification also passed on 2026-08-29. GitHub
-Actions `Live Cloud E2E Proof` run `33254443473` reached the current Cloud Run
+Actions `Live Cloud E2E Proof` run `33255155489` reached the current Cloud Run
 service anonymously, verified `/api/capabilities`, executed the full production
 E2E, and ended with `passed: true`.
 
@@ -213,8 +213,8 @@ and sent zero messages. Replay preserved version/outbox, and the adversarial
 unknown-person event ended in `human_required`.
 
 Raw GitHub Actions evidence artifact:
-`live-cloud-e2e-7e5cb3d29a11ef9affa3d3c44fe73d94df84cbfd` (artifact ID
-`9715370372`).
+`live-cloud-e2e-374798636b7b907c7fb20ad4ced806b27a07eb55` (artifact ID
+`9715582052`).
 
 A committed evidence checkpoint is available in
 `reports/cloud-e2e-verified-20260829.md`.
@@ -293,7 +293,7 @@ Python, FastAPI, Pydantic, JavaScript, HTML/CSS, Pytest, Docker
 - Public repository: `https://github.com/rarescos-pixel/places-again`
 - Judge testing instructions: `docs/judge-testing-instructions.md`
 - Public video: `[ADD PUBLIC YOUTUBE OR VIMEO URL]`
-- Public build article: `[ADD AFTER PUBLICATION]`
+- Public build article: `https://github.com/rarescos-pixel/places-again/issues/3`
 - Social post: `[ADD AFTER PUBLICATION]`
 
 ## Submission stop rule
