@@ -53,6 +53,27 @@ class IncidentRequest(StrictModel):
     event_id: UUID | None = None
     source: Literal["ui", "api", "demo", "evaluation"] = "api"
 
+    @model_validator(mode="before")
+    @classmethod
+    def strip_demo_presentation_metadata(cls, value):
+        """Keep the public demo compatible without relaxing normal API strictness.
+
+        The browser demo config carries a human-readable ``copy`` string beside
+        the actual disruption fields. Treat that one presentation-only key as
+        client metadata when the request explicitly comes from the demo UI.
+        All other sources keep StrictModel's extra-field rejection unchanged.
+        """
+        if not isinstance(value, dict) or value.get("source") != "demo":
+            return value
+        disruption = value.get("disruption")
+        if not isinstance(disruption, dict) or "copy" not in disruption:
+            return value
+        cleaned = dict(value)
+        cleaned_disruption = dict(disruption)
+        cleaned_disruption.pop("copy", None)
+        cleaned["disruption"] = cleaned_disruption
+        return cleaned
+
 
 class RecoveryEventRequest(StrictModel):
     scenario_id: Literal["opera", "commercial_shoot"] = "opera"
