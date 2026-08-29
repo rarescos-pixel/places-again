@@ -2,12 +2,13 @@ One person disappears. The schedule is not the problem anymore—the operation i
 
 I built Places, Again because I know that failure firsthand from live production. It maps the cascade, generates only hard-safe recovery candidates, then uses Gemini 3.5 + Google ADK to choose the strategy that makes the most operational sense.
 
-Gemini selects. Deterministic code re-verifies. Firestore commits once. If safety cannot be proved, the agent stops for a human. Messages are prepared; it has no ability to send them.
+Gemini selects. Deterministic code re-verifies. Firestore commits one business effect. If safety cannot be proved, the agent stops for a human. Messages are prepared; it has no ability to send them.
 
-The same engine recovers both an opera production and a synthetic commercial film/broadcast day. Current reproducible evaluation: 52/52 cases, 0 unsafe commits, 0 duplicate business effects, 0 model-invented plan commits, and 100% of committed candidates reverified.
+The same engine recovers both an opera production and a synthetic commercial film/broadcast day. Current reproducible evaluation: 52/52 cases, 59/59 automated tests, 0 unsafe commits, 0 duplicate business effects, 0 model-invented plan commits, and 100% of committed candidates reverified.
 
-The owner-authenticated Google Cloud E2E is green: Cloud Run → Pub/Sub/OIDC → private worker → Vertex AI / Google ADK / Gemini 3.5 → Firestore, including replay and fail-closed proof.
+The Google Cloud path is independently green: Cloud Run → Pub/Sub/OIDC → private worker → Vertex AI / Google ADK / Gemini 3.5 → Firestore. An anonymous GitHub-hosted runner reached the live app and completed the full E2E, including replay and fail-closed proof.
 
+Live: https://places-again-674409858210.europe-west1.run.app
 Repo: https://github.com/rarescos-pixel/places-again
 
 The plan breaks. The operation recovers.

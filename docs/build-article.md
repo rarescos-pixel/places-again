@@ -3,6 +3,7 @@
 > This piece of content was created for the purposes of entering the Google All Things
 > Agentic Hackathon.
 
+**Live app:** https://places-again-674409858210.europe-west1.run.app  
 **Repository:** https://github.com/rarescos-pixel/places-again
 
 Most operational software is designed for the moment when the plan works. I
@@ -139,7 +140,7 @@ the event ID, candidate set, selected ID, validated reasons, ADK tool actions,
 deterministic proof, versions, retries, outbox status, and available model
 usage/latency metadata.
 
-## The Google Cloud path — backend/agent E2E verified
+## The Google Cloud path — verified twice
 
 On 2026-08-29 the owner-authenticated deployment completed with
 `FINAL_STATUS=SUCCESS` on Google Cloud. The audited E2E run proved the real
@@ -147,14 +148,21 @@ backend/agent path:
 
 `Cloud Run API → Pub/Sub/OIDC → private Cloud Run worker → Google ADK + Gemini 3.5 on Vertex AI → deterministic re-verification → Firestore`
 
-The same run proved `v1 → v2` exactly once, replay without duplicate business
-effects, an impossible/adversarial incident stopping at `human_required`, and
-messages prepared with messages sent remaining zero.
+The same run proved `v1 → v2` as one business effect, replay without duplicate
+business effects, an impossible/adversarial incident stopping at
+`human_required`, and messages prepared with messages sent remaining zero.
 
-Independent anonymous public-internet reachability of the `run.app` front door
-is being hardened separately. That deployment detail is not used to overclaim
-the backend E2E proof above, and the official hackathon FAQ does not require the
-application to remain publicly live during judging.
+Then the same production path was verified independently from an anonymous
+GitHub-hosted runner. `Live Cloud E2E Proof` run `33254443473` reached the live
+Cloud Run URL, confirmed `/api/capabilities`, executed the end-to-end workflow,
+and finished with `passed: true`.
+
+That independent run observed two hard-safe candidates, a real Gemini selection
+of an existing candidate ID, validated reason codes, deterministic
+re-verification PASS, Firestore `v1 → v2`, 3/3 recovered activities, 12
+person-hours restored, zero unaffected activities moved, 12 prepared outbox
+items and zero messages sent. Replay preserved version/outbox, while an
+adversarial unknown-person incident ended at `human_required`.
 
 The production architecture uses:
 
