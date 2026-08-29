@@ -79,18 +79,18 @@ External proof captured on 2026-08-29:
 
 Internal target: 5/5.
 
-An automated 1920×1080 H.264 demo candidate has been generated and inspected at **117.33 seconds**. It records a visible, unedited terminal Proof of Action against the public Cloud Run endpoint, then the hosted app, capabilities, independent E2E, architecture, Quality Gate, and close. The mandatory public YouTube/Vimeo URL is still outstanding.
+An automated 1920×1080 H.264 demo candidate has been generated and inspected at **114.20 seconds**. It records a visible, unedited terminal Proof of Action against the public Cloud Run endpoint, then the hosted app, capabilities, independent E2E, architecture, Quality Gate, and close. GitHub Actions `Build Submission Demo Video` run `33263391970` completed successfully and published artifact `9717944612`. The mandatory public YouTube/Vimeo URL is still outstanding.
 
 The generated video evidence currently proves:
 
-- [ ] 08:05 incident + immediate 3 activities / 6 people / 3 resources / 12 person-hours at risk.
+- [x] 08:05 incident + immediate 3 activities / 6 people / 3 resources / 12 person-hours at risk.
 - [x] One action starts the main workflow; no step-by-step guidance until terminal state.
 - [x] The main proof-of-action segment is one continuous unedited take from trigger to terminal state.
 - [x] Multiple safe candidates are visible.
 - [x] Actual Gemini-selected candidate ID and validated reason codes are visible.
 - [x] Deterministic re-verification = PASS is visible.
 - [x] `v1 → v2` exactly once is visible.
-- [ ] 3/3 recovered, 12 person-hours restored, 0 unaffected moved, 0 unsafe actions.
+- [x] 3/3 recovered, 12 person-hours restored, 0 unaffected moved, 0 unsafe actions.
 - [x] Outbox prepared and messages sent = 0.
 - [x] Replay leaves version/outbox unchanged.
 - [x] Impossible/adversarial event becomes `human_required` with no unsafe effect.
@@ -113,7 +113,7 @@ This is an empirical benchmark, not a secret judging rule.
 - [x] Technical depth exists underneath the product story.
 - [x] Human gate is presented as responsible authority, not failure of autonomy.
 - [x] Same core behavior shown in a second domain.
-- [x] Generated/inspected MP4 proves the core workflow in 117.33 seconds; public YouTube/Vimeo hosting still remains.
+- [x] Generated/inspected MP4 proves the core workflow in 114.20 seconds; public YouTube/Vimeo hosting still remains.
 
 ## 6. Bonus score — Stage Three
 
@@ -162,7 +162,7 @@ Before pressing Submit — mandatory / evidence critical:
 - [ ] Public video URL inserted and video <=4:00.
 - [ ] Hosted application URL still opens successfully from a logged-out/anonymous browser.
 - [ ] Devpost text contains no unresolved placeholders for claims actually submitted.
-- [x] `JUDGE_EVIDENCE.md` has the reconciled 117.33-second automated-video evidence map.
+- [x] `JUDGE_EVIDENCE.md` has the reconciled 114.20-second automated-video evidence map.
 - [ ] Entrant eligibility review completed.
 - [ ] Exact submitted commit tagged/frozen.
 
