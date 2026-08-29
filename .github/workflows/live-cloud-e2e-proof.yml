@@ -32,16 +32,40 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: Diagnose public front door
+        run: |
+          set +e
+          for path in / /health /api/capabilities; do
+            echo "===== ${path} ====="
+            curl --silent --show-error --location \
+              --connect-timeout 15 --max-time 30 \
+              --dump-header - \
+              --output /tmp/places-again-body \
+              --write-out '\nHTTP_CODE=%{http_code}\nREMOTE_IP=%{remote_ip}\nCONTENT_TYPE=%{content_type}\n' \
+              "${PLACES_AGAIN_LIVE_URL}${path}"
+            echo "--- body ---"
+            head -c 1200 /tmp/places-again-body || true
+            echo
+          done
+          set -e
+
       - name: Confirm public capabilities endpoint
         run: |
           python - <<'PY'
           import json
+          from urllib.error import HTTPError
           from urllib.request import urlopen
           import os
 
           url = os.environ['PLACES_AGAIN_LIVE_URL'].rstrip('/') + '/api/capabilities'
-          with urlopen(url, timeout=30) as response:
-              payload = json.loads(response.read())
+          try:
+              with urlopen(url, timeout=30) as response:
+                  payload = json.loads(response.read())
+          except HTTPError as error:
+              body = error.read().decode('utf-8', errors='replace')
+              raise AssertionError(
+                  f'Public capabilities endpoint returned HTTP {error.code}: {body[:1000]}'
+              ) from error
           assert payload['runtime'] == 'Google Cloud Run', payload
           assert payload['repository'] == 'firestore', payload
           assert payload['event_transport'] == 'Google Pub/Sub', payload
