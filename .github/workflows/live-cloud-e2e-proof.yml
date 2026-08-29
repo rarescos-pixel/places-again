@@ -21,7 +21,8 @@ jobs:
     timeout-minutes: 10
 
     env:
-      PLACES_AGAIN_LIVE_URL: https://places-again-inb6leu4ca-ew.a.run.app
+      HASH_URL: https://places-again-inb6leu4ca-ew.a.run.app
+      DETERMINISTIC_URL: https://places-again-618104708054.europe-west1.run.app
 
     steps:
       - name: Checkout submitted repository
@@ -32,40 +33,58 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Diagnose public front door
+      - name: Resolve externally reachable Cloud Run URL
         run: |
-          set +e
-          for path in / /health /api/capabilities; do
-            echo "===== ${path} ====="
-            curl --silent --show-error --location \
-              --connect-timeout 15 --max-time 30 \
-              --dump-header - \
-              --output /tmp/places-again-body \
-              --write-out '\nHTTP_CODE=%{http_code}\nREMOTE_IP=%{remote_ip}\nCONTENT_TYPE=%{content_type}\n' \
-              "${PLACES_AGAIN_LIVE_URL}${path}"
-            echo "--- body ---"
-            head -c 1200 /tmp/places-again-body || true
-            echo
-          done
-          set -e
+          python - <<'PY'
+          import json
+          import os
+          from urllib.error import HTTPError, URLError
+          from urllib.request import urlopen
+
+          candidates = [os.environ['HASH_URL'], os.environ['DETERMINISTIC_URL']]
+          failures = []
+          selected = None
+          for base in candidates:
+              url = base.rstrip('/') + '/api/capabilities'
+              try:
+                  with urlopen(url, timeout=30) as response:
+                      body = response.read()
+                      code = response.status
+                  payload = json.loads(body)
+                  if (
+                      code == 200
+                      and payload.get('runtime') == 'Google Cloud Run'
+                      and payload.get('repository') == 'firestore'
+                      and payload.get('event_transport') == 'Google Pub/Sub'
+                  ):
+                      selected = base.rstrip('/')
+                      print(f'PUBLIC_ENDPOINT_OK={selected}')
+                      print(json.dumps(payload, indent=2))
+                      break
+                  failures.append(f'{base}: unexpected payload/status {code} {payload!r}')
+              except HTTPError as error:
+                  body = error.read().decode('utf-8', errors='replace')
+                  failures.append(f'{base}: HTTP {error.code}: {body[:500]}')
+              except (URLError, TimeoutError, json.JSONDecodeError) as error:
+                  failures.append(f'{base}: {type(error).__name__}: {error}')
+
+          if not selected:
+              raise AssertionError('No public Cloud Run URL was reachable:\n' + '\n'.join(failures))
+
+          with open(os.environ['GITHUB_ENV'], 'a', encoding='utf-8') as handle:
+              handle.write(f'PLACES_AGAIN_LIVE_URL={selected}\n')
+          PY
 
       - name: Confirm public capabilities endpoint
         run: |
           python - <<'PY'
           import json
-          from urllib.error import HTTPError
           from urllib.request import urlopen
           import os
 
           url = os.environ['PLACES_AGAIN_LIVE_URL'].rstrip('/') + '/api/capabilities'
-          try:
-              with urlopen(url, timeout=30) as response:
-                  payload = json.loads(response.read())
-          except HTTPError as error:
-              body = error.read().decode('utf-8', errors='replace')
-              raise AssertionError(
-                  f'Public capabilities endpoint returned HTTP {error.code}: {body[:1000]}'
-              ) from error
+          with urlopen(url, timeout=30) as response:
+              payload = json.loads(response.read())
           assert payload['runtime'] == 'Google Cloud Run', payload
           assert payload['repository'] == 'firestore', payload
           assert payload['event_transport'] == 'Google Pub/Sub', payload
