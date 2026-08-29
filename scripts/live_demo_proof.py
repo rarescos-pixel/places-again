@@ -8,6 +8,7 @@ from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
 BASE_URL = "https://places-again-674409858210.europe-west1.run.app"
+EVIDENCE_REVISION = "final-2026-08-29"
 
 
 def request(path: str, payload: dict | None = None):
@@ -93,6 +94,7 @@ def run_safe(scenario: str, person: str, start: str, end: str):
 def main():
     print("PLACES, AGAIN — LIVE PUBLIC GOOGLE CLOUD PROOF", flush=True)
     print("=" * 72, flush=True)
+    line("evidence revision", EVIDENCE_REVISION)
     line("public endpoint", BASE_URL)
     code, cap = request("/api/capabilities")
     assert code == 200, cap
