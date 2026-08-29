@@ -3,10 +3,7 @@
 > This piece of content was created for the purposes of entering the Google All Things
 > Agentic Hackathon.
 
-**Live app:** [INSERT ONLY AFTER INDEPENDENT PUBLIC-INTERNET REACHABILITY IS GREEN]
-
-> Publication gate: do not publish this article until the live-app placeholder above
-> has been replaced by an independently verified public URL.
+**Repository:** https://github.com/rarescos-pixel/places-again
 
 Most operational software is designed for the moment when the plan works. I
 built Places, Again for the moment when one absence makes that plan false.
@@ -154,9 +151,10 @@ The same run proved `v1 → v2` exactly once, replay without duplicate business
 effects, an impossible/adversarial incident stopping at `human_required`, and
 messages prepared with messages sent remaining zero.
 
-Independent anonymous public-internet reachability of the final `run.app`
-front door is treated as a separate final publication/submission gate and must
-be green before this article is published.
+Independent anonymous public-internet reachability of the `run.app` front door
+is being hardened separately. That deployment detail is not used to overclaim
+the backend E2E proof above, and the official hackathon FAQ does not require the
+application to remain publicly live during judging.
 
 The production architecture uses:
 
@@ -176,5 +174,3 @@ implemented. It is one tested pattern for time-critical operations: understand
 the cascade, construct the safe action space, let Gemini apply operational
 judgment inside that boundary, prove the selected state, and keep the operation
 moving.
-
-**Repository:** https://github.com/rarescos-pixel/places-again
