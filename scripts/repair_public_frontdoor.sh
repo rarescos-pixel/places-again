@@ -1,0 +1,92 @@
+#!/usr/bin/env bash
+
+# Repair only the public Cloud Run service front door.
+# This does not rebuild the image, redeploy application code, touch the private
+# worker, mutate Firestore, or change the Gemini/ADK workflow.
+
+set -Eeuo pipefail
+
+readonly DEFAULT_PROJECT_ID="project-2ee12060-728f-434f-9ad"
+readonly REGION="europe-west1"
+readonly SERVICE="places-again"
+PROJECT_ID="${1:-${GOOGLE_CLOUD_PROJECT:-${DEFAULT_PROJECT_ID}}}"
+
+note() { printf '[Places, Again][public-frontdoor] %s\n' "$*"; }
+die() { note "STOP: $1"; exit "${2:-1}"; }
+
+command -v gcloud >/dev/null 2>&1 || die "gcloud is required." 2
+command -v curl >/dev/null 2>&1 || die "curl is required." 2
+
+ACTIVE_ACCOUNT="$(gcloud auth list --filter='status:ACTIVE' --limit=1 --format='value(account)')"
+[[ -n "${ACTIVE_ACCOUNT}" ]] || die "No active Google account is available." 2
+
+gcloud projects describe "${PROJECT_ID}" --format='value(projectId)' >/dev/null \
+  || die "The active account cannot access ${PROJECT_ID}." 2
+
+gcloud run services describe "${SERVICE}" \
+  --project="${PROJECT_ID}" --region="${REGION}" >/dev/null \
+  || die "Cloud Run service ${SERVICE} was not found in ${PROJECT_ID}/${REGION}." 2
+
+note "project=${PROJECT_ID} account=${ACTIVE_ACCOUNT} service=${SERVICE} region=${REGION}"
+
+BEFORE_DEFAULT_DISABLED="$(gcloud run services describe "${SERVICE}" \
+  --project="${PROJECT_ID}" --region="${REGION}" \
+  --format='value(metadata.annotations."run.googleapis.com/default-url-disabled")' 2>/dev/null || true)"
+BEFORE_INGRESS="$(gcloud run services describe "${SERVICE}" \
+  --project="${PROJECT_ID}" --region="${REGION}" \
+  --format='value(metadata.annotations."run.googleapis.com/ingress")' 2>/dev/null || true)"
+note "before ingress=${BEFORE_INGRESS:-unset} default_url_disabled=${BEFORE_DEFAULT_DISABLED:-unset}"
+
+# Google Cloud documents HTTP 404 before the container as expected when the
+# default run.app URL is disabled or ingress blocks the caller. Explicitly
+# restore the public endpoint without deploying a new image/revision.
+gcloud run services update "${SERVICE}" \
+  --project="${PROJECT_ID}" \
+  --region="${REGION}" \
+  --ingress=all \
+  --default-url \
+  --quiet >/dev/null
+
+# Re-assert unauthenticated public invocation at IAM level. This is deliberately
+# scoped only to the public API service; the worker remains private/internal.
+gcloud run services add-iam-policy-binding "${SERVICE}" \
+  --project="${PROJECT_ID}" \
+  --region="${REGION}" \
+  --member='allUsers' \
+  --role='roles/run.invoker' \
+  --quiet >/dev/null
+
+API_URL="$(gcloud run services describe "${SERVICE}" \
+  --project="${PROJECT_ID}" --region="${REGION}" --format='value(status.url)')"
+INGRESS="$(gcloud run services describe "${SERVICE}" \
+  --project="${PROJECT_ID}" --region="${REGION}" \
+  --format='value(metadata.annotations."run.googleapis.com/ingress")')"
+DEFAULT_DISABLED="$(gcloud run services describe "${SERVICE}" \
+  --project="${PROJECT_ID}" --region="${REGION}" \
+  --format='value(metadata.annotations."run.googleapis.com/default-url-disabled")' 2>/dev/null || true)"
+PUBLIC_POLICY="$(gcloud run services get-iam-policy "${SERVICE}" \
+  --project="${PROJECT_ID}" --region="${REGION}" --format=json)"
+
+[[ "${INGRESS}" == "all" ]] || die "Ingress is not all: ${INGRESS}" 9
+if [[ "${DEFAULT_DISABLED,,}" == "true" ]]; then
+  die "Default run.app URL is still disabled." 9
+fi
+[[ "${PUBLIC_POLICY}" == *'allUsers'* ]] || die "allUsers Cloud Run invoker binding is missing." 9
+[[ "${API_URL}" == https://* ]] || die "Cloud Run did not return a default URL." 9
+
+note "after ingress=${INGRESS} default_url_disabled=${DEFAULT_DISABLED:-false} public_invoker=allUsers"
+note "API_URL=${API_URL}"
+
+# This request confirms the container route inside the authenticated owner
+# environment. The independent GitHub Actions probe is the authoritative test
+# that the same endpoint is reachable from the public internet.
+HTTP_CODE="$(curl --silent --show-error --location --output /tmp/places-again-capabilities.json \
+  --write-out '%{http_code}' --max-time 30 "${API_URL}/api/capabilities" || true)"
+note "owner_environment_capabilities_http=${HTTP_CODE}"
+if [[ "${HTTP_CODE}" == "200" ]]; then
+  python3 -m json.tool /tmp/places-again-capabilities.json >/dev/null \
+    || die "Capabilities endpoint did not return valid JSON." 9
+fi
+
+note "FINAL_STATUS=PUBLIC_FRONTDOOR_REPAIRED"
+note "Next proof: rerun the independent GitHub Live Cloud E2E workflow."
