@@ -20,7 +20,7 @@ Category: Taskmaster. Opera is the firsthand BYOF origin; Commercial Film/Broadc
 
 ### Core quality — PASSED
 
-Current `main` is protected by the public Quality Gate: automated tests, 52 labeled evaluation cases, core invariants, full-history secret scan, Python/shell syntax, JSON/SVG parse checks, and generated evidence artifacts.
+The public Quality Gate passes automated tests, 52 labeled evaluation cases, core invariants, full-history secret scan, Python/shell syntax, JSON/SVG parse checks, and generated evidence artifacts.
 
 Acceptance invariants remain:
 
@@ -36,14 +36,14 @@ Acceptance invariants remain:
 
 ### Owner-authenticated Google Cloud E2E — PASSED
 
-The authoritative Cloud Shell deployment completed with `FINAL_STATUS=SUCCESS` and proved the real production path:
+The authoritative Google Cloud deployment completed with `FINAL_STATUS=SUCCESS` and proved the real production path:
 
 - Cloud Run API -> Pub/Sub;
 - authenticated Pub/Sub OIDC -> private Cloud Run worker;
 - Google ADK + Gemini 3.5 on Vertex AI;
 - bounded Gemini candidate selection;
 - deterministic current-state re-verification;
-- Firestore `v1 -> v2` exactly once;
+- Firestore `v1 -> v2` exactly once as a business effect;
 - replay without duplicate state/outbox effects;
 - adversarial/impossible event -> `human_required` with no unsafe mutation/send;
 - prepared outbox, messages sent = 0.
@@ -51,58 +51,68 @@ The authoritative Cloud Shell deployment completed with `FINAL_STATUS=SUCCESS` a
 Verified project: `project-2ee12060-728f-434f-9ad`.
 Evidence checkpoint: `reports/cloud-e2e-verified-20260829.md`.
 
-## CURRENT PRIORITY — PUBLIC EXTERNAL REACHABILITY
+### Anonymous public reachability + independent live Cloud E2E — PASSED
 
-Anonymous public reachability is **not** an official Stage-One pass/fail requirement. The official FAQ says the application does not have to remain publicly accessible/deployed during judging, and the hosted-project URL is highly encouraged rather than mandatory.
+Current judge-accessible hosted application:
 
-However, public judge access remains a high-value winner-readiness target because it reduces testing friction and strengthens Demo & Production Readiness.
+`https://places-again-674409858210.europe-west1.run.app`
 
-Current state:
+The prior 404 diagnosis was a false lead caused by two stale Cloud Run URLs hardcoded in the GitHub workflow. After the workflow was pointed at the current Cloud Run service URL, GitHub Actions `Live Cloud E2E Proof` run `33254443473` completed successfully from an anonymous GitHub-hosted runner.
 
-- ingress = `all`;
-- default `run.app` URL enabled;
-- Cloud Run invoker IAM check disabled with `--no-invoker-iam-check`;
-- compatibility `allUsers -> roles/run.invoker` attempted where permitted;
-- owner Cloud Shell environment returned HTTP 200 from `/api/capabilities` and printed `FINAL_STATUS=PUBLIC_FRONTDOOR_PUBLIC_MODE_SET`;
-- independent GitHub runners still received HTTP 404 from both the hash-form and deterministic-form Cloud Run URLs.
+The external proof verified `/api/capabilities` and observed:
 
-Therefore:
+- Google Cloud Run;
+- Google Agent Development Kit;
+- `gemini-3.5-flash`;
+- Vertex AI;
+- Firestore;
+- Google Pub/Sub;
+- private worker configured;
+- outbound delivery disabled / `prepared_not_sent` only.
 
-- backend/agent/Firestore viability = VERIFIED;
-- anonymous public reachability = NOT YET VERIFIED;
-- preferred path = diagnose and fix before recording/submission;
-- deadline fallback = do not miss submission solely because this anonymous front door remains unavailable. Use the verified video/repo/Cloud evidence and do not advertise a broken hosted URL as judge-accessible.
+It then executed the full production E2E and ended with `passed: true`.
 
-A read-only diagnostic is committed and Quality-Gate verified:
+The captured live run showed:
 
-- `scripts/diagnose_public_404.sh`
-- `docs/public-404-diagnostic.md`
+- two hard-safe candidates;
+- Gemini selected an existing candidate ID (`candidate-a` in that run);
+- validated reasons: `preserve_highest_priority_activity` and `minimize_people_schedule_changes`;
+- deterministic re-verification PASS;
+- Firestore `v1 -> v2`;
+- 3/3 opera activities recovered;
+- 12.0 person-hours restored;
+- 0 unaffected activities moved;
+- 12 outbox items prepared;
+- 0 messages sent;
+- replay preserved version 2 and outbox count 12;
+- adversarial unknown-person incident -> `human_required`.
 
-It prints `DIAGNOSIS=...` and `FINAL_STATUS=PUBLIC_404_DIAGNOSTIC_COMPLETE` without mutating Cloud Run, IAM, Firestore, Pub/Sub, Vertex AI, or organization policies.
+Raw evidence artifact:
+`live-cloud-e2e-7e5cb3d29a11ef9affa3d3c44fe73d94df84cbfd`, artifact ID `9715370372`.
 
-The owner account is temporarily rate-limited from Cloud Shell. Do not purchase Cloud Workstations or improvise around that quota. Resume the one-click diagnostic when Cloud Shell access returns.
+**The public-front-door blocker is closed. Do not spend more time on Cloud Shell diagnostics or front-door repair unless the verified URL later stops responding.**
 
 ## Immediate execution order
 
-1. While Cloud Shell is unavailable: finish submission/video/test materials and low-risk bonuses in repo.
-2. Publish the prepared build article + social post when the owner is ready; these bonuses do not require a live-app URL.
-3. When owner Cloud Shell access returns, run the one-click read-only public-404 diagnostic.
-4. Capture the exact `DIAGNOSIS=...` result and apply only the diagnosis-specific repair.
-5. Re-run independent GitHub `Live Cloud E2E Proof`.
-6. Preferred: close public reachability, then freeze runtime and record the final video from the externally reachable build.
-7. If public reachability remains unresolved near the deadline, follow the official FAQ fallback: record compelling real Cloud execution evidence through the owner-accessible deployed system/Cloud Console, omit a broken hosted-project link, and submit on time.
-8. Validate optional Gemma PR #2 only if the core/video/deadline are safe.
-9. Reconcile Devpost + Judge Evidence + final video/bonus URLs/timestamps, complete eligibility review, submit, tag/freeze.
+1. Synchronize README, Devpost, Judge Evidence, checkpoint, and final checklist with the verified public URL/evidence.
+2. Keep the runtime frozen unless a concrete defect appears.
+3. Record the final <=4 minute video from the exact externally reachable build, with the main trigger-to-terminal proof segment continuous and unedited.
+4. Publish the prepared build article + social post for the low-risk +0.4 bonus when the owner approves publication.
+5. Validate optional Gemma PR #2 only if a real managed call can be evidenced without threatening video/submission timing.
+6. Reconcile final video URL/timestamps and any bonus URLs into Devpost + Judge Evidence.
+7. Complete the entrant eligibility review honestly.
+8. Submit early, tag/freeze the exact judged commit/build/video.
 
 ## Final assets already prepared
 
 - `docs/final-submission-gate.md` — canonical official + winner-pattern + bonus + freeze checklist.
+- `docs/final-upload-copy.md` — YouTube/Vimeo + Devpost copy-paste packet with verified hosted URL.
 - `docs/submission.md` — Devpost copy including explicit data sources, pre-existing-work disclosure, findings/learnings.
 - `docs/demo-script.md` — target 3:50 English video; no pre-scripted Gemini candidate ID/reasons.
 - `docs/recording-runbook.md` — recording flow + direct Cloud Console tabs.
 - `docs/judge-testing-instructions.md` — hosted judge flow plus reproducible local fallback.
-- `docs/build-article.md` — public bonus article, ready without a live-app dependency.
-- `docs/social-post.md` — social bonus copy with required hashtag, ready without a live-app dependency.
+- `docs/build-article.md` — public bonus article.
+- `docs/social-post.md` — social bonus copy with required hashtag.
 - `JUDGE_EVIDENCE.md` — rubric-to-evidence map.
 - architecture and workflow diagrams are committed.
 
@@ -116,11 +126,10 @@ PR #2 CI is green. It remains intentionally isolated and must not be merged unle
 2. README and final demo can show the additional model clearly, as Devpost requires for model-bonus evidence;
 3. it does not threaten video/submission timing or the verified Taskmaster core.
 
-Public front-door repair is preferred before Gemma work, but if the core submission is already safely recordable under the official FAQ fallback, deadline protection still takes precedence over optional bonus points.
+Do not pursue extra models merely for score stuffing.
 
 ## Owner-only actions that cannot be delegated
 
-- one-click Cloud Shell diagnostic/repair when Google account authorization is required;
 - public YouTube/Vimeo publication;
 - public article/social publication;
 - entrant eligibility declarations;

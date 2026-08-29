@@ -79,7 +79,7 @@ The autonomous result is:
 - 12.0 person-hours restored;
 - 0 unaffected activities moved;
 - 0 unresolved activities;
-- schedule state `v1 → v2` exactly once;
+- schedule state `v1 → v2` exactly once as a business effect;
 - 12 bilingual messages prepared;
 - 0 messages sent;
 - 0 unsafe actions.
@@ -161,11 +161,6 @@ input, unknown entities, prompt injection, multiple safe candidates, invalid or
 invented candidate IDs, Gemini-timeout state, selection-policy evidence, and
 re-verification failure.
 
-The real owner-authenticated Google Cloud E2E passed on 2026-08-29 and verified
-the production backend/agent path with real Google ADK + Gemini 3.5, Pub/Sub
-OIDC delivery, Firestore state mutation, replay protection, and adversarial
-fail-closed behavior.
-
 Current reproducible result:
 
 - 52/52 labeled cases pass across both domains;
@@ -200,27 +195,29 @@ real ADK/Gemini workflow, checked `v1 → v2`, outbox creation, Firestore
 persistence, replay without a second business effect, and an impossible
 adversarial event without an unsafe commit.
 
-Cloud Run reported this deployed service URL:
+Independent public-internet verification also passed on 2026-08-29. GitHub
+Actions `Live Cloud E2E Proof` run `33254443473` reached the current Cloud Run
+service anonymously, verified `/api/capabilities`, executed the full production
+E2E, and ended with `passed: true`.
 
-`https://places-again-inb6leu4ca-ew.a.run.app`
+Current hosted application:
 
-Anonymous external access to that front door is still being hardened: the owner
-Cloud environment sees the service while an independent GitHub runner has
-received HTTP 404. This is deliberately separated from the passed backend/agent
-E2E proof rather than overclaimed.
+`https://places-again-674409858210.europe-west1.run.app`
 
-The official FAQ says the application does not have to remain publicly live or
-deployed during judging and the rules describe a hosted URL as highly
-encouraged. For maximum Production Readiness we still prefer to close the
-anonymous front-door issue before final submission. If it remains unresolved
-near the deadline, the entry should not advertise a broken hosted URL as
-judge-accessible; the public video, repository, architecture, testing
-instructions, and real Google Cloud execution evidence remain the submission
-proof.
+The external runner observed Google Cloud Run, Google ADK, `gemini-3.5-flash`,
+Vertex AI, Firestore, and Pub/Sub. Its captured live workflow produced two
+hard-safe candidates, selected an existing candidate ID, passed deterministic
+re-verification, committed `v1 → v2`, recovered 3/3 activities and 12.0
+person-hours with zero unaffected activities moved, prepared 12 outbox items
+and sent zero messages. Replay preserved version/outbox, and the adversarial
+unknown-person event ended in `human_required`.
+
+Raw GitHub Actions evidence artifact:
+`live-cloud-e2e-7e5cb3d29a11ef9affa3d3c44fe73d94df84cbfd` (artifact ID
+`9715370372`).
 
 A committed evidence checkpoint is available in
-`reports/cloud-e2e-verified-20260829.md`; the deployment also generated the raw
-JSON cloud E2E report in the owner-authenticated Cloud Shell runtime.
+`reports/cloud-e2e-verified-20260829.md`.
 
 ## Data sources, third-party inputs, and pre-existing work
 
@@ -257,10 +254,10 @@ JSON cloud E2E report in the owner-authenticated Cloud Shell runtime.
 4. **Portability is more credible when it is executable.** Building the second
    commercial-production fixture with the same engine surfaced domain coupling
    that a slide claiming “this works everywhere” would have hidden.
-5. **Deployment proof and public reachability are different gates.** A real
-   backend E2E can pass while an anonymous front door is still blocked by cloud
-   routing/policy. The submission therefore treats each as separate evidence
-   rather than using one to overclaim the other.
+5. **Deployment proof and public reachability are different gates.** We tested
+   both separately. The owner-authenticated production E2E passed, then an
+   independent anonymous GitHub runner also reached the current URL and completed
+   the same live verification path.
 
 ## What is real and what is synthetic
 
@@ -270,10 +267,8 @@ JSON cloud E2E report in the owner-authenticated Cloud Shell runtime.
   controls, tests, evaluation, and E2E verifier.
 - **Synthetic data:** every person, production, schedule, resource, incident,
   and measured scenario value.
-- **Cloud proof:** passed owner-authenticated E2E on 2026-08-29; code presence is
-  not used as a substitute for execution evidence.
-- **Anonymous public reachability:** preferred final production-readiness proof,
-  not claimed until independently verified.
+- **Cloud proof:** passed owner-authenticated and independent public E2E on
+  2026-08-29; code presence is not used as a substitute for execution evidence.
 - **Future work:** customer connectors, tenancy, RBAC, retention, governed
   delivery, and organization-specific policies.
 
@@ -294,7 +289,7 @@ Python, FastAPI, Pydantic, JavaScript, HTML/CSS, Pytest, Docker
 
 ## Final links
 
-- Hosted application: `[ADD ONLY IF ANONYMOUS JUDGE ACCESS IS VERIFIED; OTHERWISE OMIT IF THE FORM ALLOWS]`
+- Hosted application: `https://places-again-674409858210.europe-west1.run.app`
 - Public repository: `https://github.com/rarescos-pixel/places-again`
 - Judge testing instructions: `docs/judge-testing-instructions.md`
 - Public video: `[ADD PUBLIC YOUTUBE OR VIMEO URL]`
@@ -303,10 +298,9 @@ Python, FastAPI, Pydantic, JavaScript, HTML/CSS, Pytest, Docker
 
 ## Submission stop rule
 
-Do not miss the deadline for the anonymous front-door issue alone. Before
-submission, the exact submitted commit must have a green Quality Gate, the
-public <=4 minute video and required links must be present, the text must match
-the demonstrated build, claimed bonuses must have evidence, and entrant
-eligibility must be reviewed honestly. After submission, freeze the exact
-repository, video, and any submitted live app through the judging period as
-required by the official FAQ.
+Before submission, the exact submitted commit must have a green Quality Gate,
+the hosted URL must still open anonymously, the public <=4 minute video and
+required links must be present, the text must match the demonstrated build,
+claimed bonuses must have evidence, and entrant eligibility must be reviewed
+honestly. After submission, freeze the exact repository, video, and submitted
+live app through the judging period as required by the official FAQ.

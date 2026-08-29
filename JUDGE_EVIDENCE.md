@@ -2,12 +2,17 @@
 
 Every scored claim below maps to inspectable code, a visible product state, and
 a planned video moment. The real Google Cloud E2E backend/agent hard gate passed
-on 2026-08-29 in the owner-authenticated deployment. Independent public-internet
-reachability is tracked separately and is not claimed as passed until the
-GitHub-hosted live proof reaches the service successfully. The official FAQ does
-not require a project to remain publicly live during judging, but anonymous
-judge access remains a high-value Production Readiness signal. Final video URLs
-and exact video timestamps still need reconciliation with the submitted build.
+on 2026-08-29 in the owner-authenticated deployment, and independent anonymous
+public-internet reachability plus full live E2E also passed from a GitHub-hosted
+runner on 2026-08-29. Final video URLs and exact video timestamps still need
+reconciliation with the submitted build.
+
+Current verified hosted application:
+
+`https://places-again-674409858210.europe-west1.run.app`
+
+Independent public proof: GitHub Actions `Live Cloud E2E Proof` run
+`33254443473`.
 
 ## 1. Innovation & Operational Utility — 40%
 
@@ -29,7 +34,7 @@ and exact video timestamps still need reconciliation with the submitted build.
 
 | Claim | Exact evidence | Visible/cloud proof | Video |
 |---|---|---|---|
-| Required Google stack is real | `google-adk`; model config; Cloud Run, Pub/Sub, Firestore code | Passed real owner-authenticated cloud E2E + Cloud services + trace | 3:10–3:30 |
+| Required Google stack is real | `google-adk`; model config; Cloud Run, Pub/Sub, Firestore code | Passed owner-authenticated + independent public cloud E2E | 3:10–3:30 |
 | Event-driven, not a synchronous chatbot | `places_again/pubsub.py`; API returns `202 + event_id`; private push endpoint | Event ID and background timeline | 0:40–1:45 |
 | Authenticated private delivery | OIDC push SA and private internal-ingress worker in `deploy.sh` | Passed Pub/Sub OIDC cloud E2E | 3:10–3:30 |
 | Hard constraints define the safe space | `build_recovery_candidates`, `validate_schedule` | Every candidate marked hard-safe | 1:00–1:20 |
@@ -50,16 +55,16 @@ and exact video timestamps still need reconciliation with the submitted build.
 |---|---|---|---|
 | Memorable visible transformation | cascade UI in `static/index.html` | AT RISK → RECOVERED | 0:00–2:00 |
 | Decision evidence is inspectable | `candidate_summaries`, selected ID, reasons, proof in event ledger | candidate strip + decision panel | 1:00–1:40 |
-| Responsive finalist control room | `static/index.html`; integration test | Hosted Cloud Run UI preferred; if anonymous reachability remains unavailable, use verified owner-accessible build + video/repo testing evidence | entire demo |
+| Responsive finalist control room | `static/index.html`; integration test | Independently reachable hosted Cloud Run UI | entire demo |
 | Public reproducible quality gate | `.github/workflows/quality-gate.yml` | GitHub Actions: tests, evaluation, core verification, secret/history scan, syntax/parse checks; JSON evidence artifact | repository review |
 | Robust guided deploy | `enable_google_apis.sh`; `scripts/deploy_auto.sh`; retry tests | Owner-authenticated deployment succeeded after bypassing fragile hosted preflight | deployment evidence |
-| Real cloud E2E, replay, and failure | `scripts/cloud_e2e_test.py`; `reports/cloud-e2e-verified-20260829.md` | `FINAL_STATUS=SUCCESS`; generated cloud evidence JSON | 0:40–3:30 |
-| Independent external reachability | `.github/workflows/live-cloud-e2e-proof.yml`; `scripts/diagnose_public_404.sh` | PREFERRED WINNER PROOF: external runner currently receives 404; continue diagnosis but do not miss deadline solely for this | production-readiness gate |
+| Real cloud E2E, replay, and failure | `scripts/cloud_e2e_test.py`; `reports/cloud-e2e-verified-20260829.md` | Owner-authenticated `FINAL_STATUS=SUCCESS` + independent public E2E `passed: true` | 0:40–3:30 |
+| Independent external reachability | `.github/workflows/live-cloud-e2e-proof.yml` | PASSED: public `/api/capabilities` + full live E2E from GitHub-hosted runner | production-readiness gate |
 | Reproducible local evaluation | 52 labeled deterministic/fake-selection cases across both domains; not a Gemini invocation | `reports/evaluation-report.json` | 3:10–3:30 |
 | Acceptance invariants pass | 0 unsafe/unresolved/duplicate/invented/override; 100% reverified | evaluation summary | 3:10–3:30 |
-| Judge testing fallback | `docs/judge-testing-instructions.md` | Hosted path if available + local reproducible path | judge review |
+| Judge testing path | `docs/judge-testing-instructions.md` | Hosted Cloud Run path + local reproducible fallback | judge review |
 | Observable without hidden reasoning | event/model/tool/candidate/proof/version/retry/outbox fields | action trace and audit | 1:00–2:20 |
-| Honest evidence boundary | README and submission disclosure | synthetic-data label + explicit reachability distinction | judge review |
+| Honest evidence boundary | README and submission disclosure | synthetic-data label + exact cloud evidence | judge review |
 | Public video ≤ 4:00 | `docs/demo-script.md`, target 3:50 | public YouTube/Vimeo | final artifact |
 
 ## Fatal question: Why Gemini?
@@ -85,50 +90,57 @@ artifact.
 The owner-authenticated Google Cloud deployment completed with
 `FINAL_STATUS=SUCCESS`.
 
-Deployed service URL reported by Cloud Run:
+The current public service URL is:
 
-`https://places-again-inb6leu4ca-ew.a.run.app`
+`https://places-again-674409858210.europe-west1.run.app`
 
-The deployment reported successful proof for:
+The deployment proved:
 
 - Cloud Run API → Pub/Sub.
 - Authenticated Pub/Sub OIDC → private Cloud Run worker.
 - Vertex AI Gemini 3.5 running through Google ADK.
 - Bounded Gemini candidate selection followed by deterministic re-verification.
-- Firestore state commit `v1 → v2` exactly once.
+- Firestore state commit `v1 → v2` exactly once as a business effect.
 - Replay without duplicate business effects.
 - Impossible/adversarial incident → `human_required` with no unsafe mutation/send.
 - Prepared outbox with messages sent = 0.
 
-The deployment generated a raw `runtime/cloud-e2e-evidence-*.json` report in the
-owner's Cloud Shell environment. A concise committed checkpoint is available at
-`reports/cloud-e2e-verified-20260829.md`. The raw JSON should be preserved as the
-authoritative detailed artifact during final evidence reconciliation.
+A concise committed checkpoint is available at
+`reports/cloud-e2e-verified-20260829.md`.
 
-### Separate anonymous public-internet reachability — OPEN / PREFERRED
+## Anonymous public-internet reachability + live E2E — PASSED 2026-08-29
 
-Cloud Shell later confirmed `/api/capabilities` with HTTP 200 after setting the
-Cloud Run event API to ingress `all`, enabling the default `run.app` URL, and
-disabling the Cloud Run Invoker IAM check. Independent GitHub-hosted runners
-still received HTTP 404 from both the hash-form and deterministic-form Cloud Run
-URLs.
+GitHub Actions `Live Cloud E2E Proof` run `33254443473` independently reached the
+current public service from a GitHub-hosted runner.
 
-This does **not** invalidate the passed backend/agent E2E. The official FAQ says
-the application does not have to remain publicly accessible/deployed during
-judging. We still want anonymous reachability green because a judge-accessible
-hosted UI strengthens Production Readiness and reduces friction. Continue the
-read-only diagnosis when owner Cloud Shell access returns, but protect the
-submission deadline if the front-door policy issue persists.
+The external `/api/capabilities` response identified:
 
-A Quality-Gate-verified read-only diagnostic is committed at
-`scripts/diagnose_public_404.sh` with a one-click tutorial in
-`docs/public-404-diagnostic.md`.
+- `Google Cloud Run` runtime;
+- `Google Agent Development Kit`;
+- `gemini-3.5-flash`;
+- `Vertex AI`;
+- `firestore` repository;
+- `Google Pub/Sub` event transport;
+- private worker configured;
+- outbound delivery disabled / `prepared_not_sent` only.
+
+The runner then executed the production E2E and finished with `passed: true`.
+The captured run showed two hard-safe candidates, selected `candidate-a` with
+validated reason codes `preserve_highest_priority_activity` and
+`minimize_people_schedule_changes`, passed deterministic re-verification, moved
+Firestore state from v1 to v2, recovered 3/3 activities and 12 person-hours,
+moved zero unaffected activities, prepared 12 outbox items and sent zero
+messages. Replay preserved v2 and the 12-item outbox. The adversarial unknown
+person case ended in `human_required`.
+
+Raw evidence artifact:
+`live-cloud-e2e-7e5cb3d29a11ef9affa3d3c44fe73d94df84cbfd`, artifact ID `9715370372`.
 
 ## Bonus map
 
 | Bonus | Evidence asset | Status |
 |---|---|---|
-| +0.2 public build content | `docs/build-article.md` | Publish-ready; no live-app dependency; owner publication pending |
+| +0.2 public build content | `docs/build-article.md` | Publish-ready; owner publication pending |
 | +0.2 social post | `docs/social-post.md` | Publish-ready with required hashtag; owner publication pending |
 | +0.2 Gemma 4 additional-model bonus | draft PR #2 `bonus-gemma4-refresh` | CI green; real owner-authenticated Gemma call + README/demo evidence still required; do not merge yet |
 | Further additional models, max +0.6 total | none | Intentionally deferred; no decorative model stuffing |
@@ -146,4 +158,4 @@ A Quality-Gate-verified read-only diagnostic is committed at
 - Does the film scenario use the same code path rather than renamed slides?
 - Are the Google Cloud deployment, Pub/Sub delivery, ADK/Gemini trace, and Firestore state impossible to mistake for a mock?
 - Does every spoken number/model-selection claim match the submitted commit's generated evidence?
-- Preferred: can a judge open the hosted UI anonymously? If not, are video + repo + testing instructions strong enough that no unsupported live-access claim remains?
+- Can a judge open the hosted UI anonymously without auth/404 friction?

@@ -16,10 +16,15 @@ Final upload/copy-paste packet: `docs/final-upload-copy.md`.
 - [x] Clean architecture diagram.
 - [x] English product / submission materials.
 - [x] Real owner-authenticated Google Cloud backend/agent E2E passed.
+- [x] Independent anonymous GitHub-hosted E2E reached the current public Cloud Run URL and completed the live workflow.
 - [ ] Public YouTube/Vimeo demo is <= 4:00 and English / English-subtitled.
 - [ ] Final entrant eligibility attestation completed honestly.
 
-Official FAQ note: a project does **not** have to remain publicly live or deployed during judging, and a hosted URL is highly encouraged rather than a mandatory Stage-One pass/fail requirement. Independent anonymous public reachability remains a high-value **winner-readiness** target because it strengthens Demo & Production Readiness and makes judge testing frictionless.
+Current verified hosted application:
+
+`https://places-again-674409858210.europe-west1.run.app`
+
+Independent public proof: GitHub Actions `Live Cloud E2E Proof` run `33254443473`, completed successfully on 2026-08-29.
 
 ## 2. Innovation & Operational Utility — 40%
 
@@ -55,22 +60,32 @@ Internal target: 5/5.
 - [x] Deterministic re-verification occurs after Gemini selection and before commit.
 - [x] Replay, concurrency, crashes, malformed input, prompt injection, model failure, and impossible recovery are tested.
 - [x] Secret + git-history scanning is public in CI.
-- [x] Public GitHub Quality Gate is green on a current core/documentation commit.
+- [x] Public GitHub Quality Gate is green on the commit that established the verified public endpoint.
 - [x] Owner-authenticated real Google Cloud E2E passed with ADK/Gemini/PubSub/Firestore.
-- [ ] **Preferred winner-readiness proof:** independent anonymous external E2E reaches the public front door and completes the workflow.
+- [x] Independent anonymous external E2E reached the public front door and completed the workflow.
+
+External proof captured on 2026-08-29:
+
+- `/api/capabilities` returned Cloud Run + Google ADK + Gemini 3.5 + Vertex AI + Firestore + Pub/Sub;
+- two hard-safe candidates were observed;
+- Gemini selected an existing candidate ID with validated reason codes;
+- deterministic re-verification passed;
+- version changed `v1 → v2`;
+- replay preserved version/outbox;
+- adversarial unknown-person input ended at `human_required`;
+- raw JSON evidence was uploaded as a GitHub Actions artifact.
 
 ## 4. Demo & Production Readiness — 30%
 
 Internal target: 5/5.
 
-Preferred path: close anonymous public reachability first, then record from the exact externally reachable build.
-
-Deadline fallback allowed by the official FAQ: do **not** miss submission solely because an anonymous front door remains unavailable. The final video can still prove the actual product and Google Cloud execution using the owner-accessible deployed build plus Cloud Console/Cloud Run/Vertex/Firestore evidence. If the hosted URL is not reliably judge-accessible, omit the broken hosted-project link rather than presenting it as working.
+Preferred path is now available: record from the exact independently reachable Cloud Run build.
 
 The final <=4 minute video must visibly prove:
 
 - [ ] 08:05 incident + immediate 3 activities / 6 people / 3 resources / 12 person-hours at risk.
 - [ ] One action starts the main workflow; no step-by-step guidance until terminal state.
+- [ ] The main proof-of-action segment is one continuous unedited take from trigger to terminal state.
 - [ ] Multiple safe candidates are visible.
 - [ ] Actual Gemini-selected candidate ID and validated reason codes are visible.
 - [ ] Deterministic re-verification = PASS is visible.
@@ -83,7 +98,7 @@ The final <=4 minute video must visibly prove:
 - [ ] Google Cloud execution evidence is visible: `.run.app` deployment/Cloud Run, worker, Pub/Sub, Firestore, Vertex AI/ADK/Gemini.
 - [ ] Architecture diagram appears briefly.
 - [ ] Spoken claims match the captured run exactly; candidate ID/reasons are not pre-scripted.
-- [ ] **Preferred:** anonymous judge access to the hosted UI works with no 404/auth friction.
+- [x] Anonymous judge access to the hosted UI works with no 404/auth friction in independent verification.
 
 ## 5. Winner-pattern benchmark from prior Google/Devpost winners
 
@@ -102,7 +117,7 @@ This is an empirical benchmark, not a secret judging rule.
 
 ## 6. Bonus score — Stage Three
 
-Low-risk bonuses do **not** require a live-app URL. Do not delay them for Cloud Run front-door work.
+Low-risk bonuses do **not** require a live-app URL.
 
 - [x] Build article draft exists and contains the required hackathon-purpose disclosure.
 - [ ] Publish build article publicly on an accepted public platform. **+0.2**
@@ -124,7 +139,7 @@ Official maximum for additional-model bonus: +0.6 total.
 
 - [x] All people, schedules, resources, incidents, and scenario metrics are labeled synthetic.
 - [x] Cloud E2E claims are based on actual execution evidence.
-- [x] Anonymous public-internet access is not claimed until independently verified.
+- [x] Anonymous public-internet access is independently verified.
 - [x] Local evaluation is not described as a real Gemini invocation.
 - [x] No hidden chain-of-thought is requested or stored.
 - [x] No unimplemented industry support is claimed.
@@ -145,23 +160,22 @@ Before pressing Submit — mandatory / evidence critical:
 
 - [ ] Final Quality Gate green on exact submitted commit.
 - [ ] Public video URL inserted and video <=4:00.
+- [ ] Hosted application URL still opens successfully from a logged-out/anonymous browser.
 - [ ] Devpost text contains no unresolved placeholders for claims actually submitted.
 - [ ] `JUDGE_EVIDENCE.md` has final video timestamps.
 - [ ] Entrant eligibility review completed.
 - [ ] Exact submitted commit tagged/frozen.
 
-Strongly preferred before Submit, but **not a reason to miss the deadline**:
+Already closed winner-readiness gates:
 
-- [ ] Anonymous public front door green.
-- [ ] Independent external E2E green.
+- [x] Anonymous public front door green.
+- [x] Independent external E2E green.
 
 Bonus items if claimed:
 
 - [ ] Public article URL inserted.
 - [ ] Social URL inserted.
 - [ ] Additional-model evidence inserted only if actually validated/merged and shown in README/demo.
-
-If anonymous public access remains unresolved near the deadline, follow the FAQ: submit the strong video/repo/Cloud evidence and do not advertise a broken hosted-project link as judge-accessible.
 
 After Submit until winners are announced:
 

@@ -7,6 +7,8 @@
 
 [![Quality Gate](https://github.com/rarescos-pixel/places-again/actions/workflows/quality-gate.yml/badge.svg)](https://github.com/rarescos-pixel/places-again/actions/workflows/quality-gate.yml)
 
+**Live app:** https://places-again-674409858210.europe-west1.run.app
+
 ## The 10-second problem
 
 At **08:05**, one principal becomes unavailable. Within seconds, **3 activities,
@@ -159,22 +161,27 @@ proved:
 Committed checkpoint:
 [`reports/cloud-e2e-verified-20260829.md`](reports/cloud-e2e-verified-20260829.md).
 
-### Separate public-internet reachability gate — OPEN
+### Independent public-internet Cloud E2E — PASSED 2026-08-29
 
-Cloud Run reports the deployed service URL:
+Current public service URL:
 
-`https://places-again-inb6leu4ca-ew.a.run.app`
+`https://places-again-674409858210.europe-west1.run.app`
 
-The backend/agent proof above is real and passed. However, an independent
-anonymous GitHub-hosted probe has still received HTTP 404 from the `run.app`
-front door while the owner-authenticated Cloud environment sees the service.
-This is being treated as a **separate final gate**, not hidden behind the passed
-backend proof.
+GitHub Actions `Live Cloud E2E Proof` run `33254443473` independently reached
+that endpoint from an anonymous GitHub-hosted runner. `/api/capabilities`
+reported Google Cloud Run, Firestore, Pub/Sub, Google ADK, Gemini 3.5 Flash, and
+Vertex AI. The same runner then executed the full live E2E and finished with
+`passed: true`.
 
-Do not treat the URL above as the final public demo URL until
-`.github/workflows/live-cloud-e2e-proof.yml` reaches `/api/capabilities` and the
-workflow externally. The repository includes an isolated front-door repair and
-a read-only diagnostic for that final Cloud Run routing/policy issue.
+The captured run observed two hard-safe candidates, a real Gemini selection,
+deterministic re-verification PASS, Firestore `v1 → v2`, 3/3 activities and 12
+person-hours recovered, zero unaffected activities moved, 12 prepared outbox
+items, zero messages sent, replay without a second business effect, and an
+adversarial unknown-person event ending in `human_required`.
+
+Raw GitHub Actions evidence was uploaded as artifact
+`live-cloud-e2e-7e5cb3d29a11ef9affa3d3c44fe73d94df84cbfd` (artifact ID
+`9715370372`).
 
 ## Reliability and security
 
@@ -308,6 +315,7 @@ Demonstrated:
   escalation, audit, and prepared outbox;
 - real Google Cloud backend/agent E2E using Cloud Run, Pub/Sub/OIDC, Vertex
   AI/ADK, Gemini 3.5, and Firestore;
+- independently verified anonymous public access to the hosted Cloud Run build;
 - synthetic scenario data only.
 
 Not claimed:
@@ -316,8 +324,7 @@ Not claimed:
 - financial savings without customer data;
 - support for healthcare, manufacturing, logistics, or every disruption type;
 - proprietary third-party data;
-- external message delivery;
-- independent public-internet reachability until the final gate above is green.
+- external message delivery.
 
 ## Contest positioning
 
