@@ -7,56 +7,58 @@ click; after that, do not guide the workflow.
 Do not fake waiting states or replace a failed cloud run with a claim. If the
 run fails, repair and record again.
 
-## 0:00–0:20 — The human problem and cascade
+## 0:00–0:20 — The human problem, immediately quantified
 
-Visual: Cloud Run UI, Opera Production selected. Show the single disruption and
-let the blast-radius strip expand to activities, people, resources, and hours.
+Visual: Cloud Run UI, Opera Production selected. Show **08:05 — principal
+unavailable** and let the blast-radius strip expand immediately to **3
+activities · 6 people · 3 resources · 12 person-hours at risk**.
 
-> I built this because I know this failure firsthand. In live production, one
-> absence is never one absence. It instantly becomes a problem of people,
-> skills, rooms, resources, and time—and somebody has to rebuild the day while
-> everyone waits.
+> At 08:05, one principal calls in sick. Within seconds, three activities, six
+> people, three resources, and twelve person-hours are at risk. I built this
+> because I know this failure firsthand: in live production, one absence is
+> never one absence, and somebody has to rebuild the day while everyone waits.
 
 ## 0:20–0:40 — What Places, Again does
 
 Visual: hero and autonomy/safety statement.
 
 > Places, Again is autonomous operational disruption recovery. When the plan
-> breaks, it maps the cascade, finds several safe recovery strategies, chooses
-> the one that makes operational sense, proves it again, and commits the change.
-> If safety cannot be proved, it stops for a human.
+> breaks, it maps the cascade, finds several safe recovery strategies, lets
+> Gemini choose what makes operational sense, proves that exact choice again,
+> and commits the change. If safety cannot be proved, it stops for a human.
 
 ## 0:40–1:45 — One live disruption, no further guidance
 
 Visual: click **Inject disruption event** once. Keep the event ID and workflow
 timeline visible. Do not click anything else until terminal state.
 
-> A principal performer is unavailable. One click submits the incident. From
-> here, the user does not guide the workflow.
+> One click submits the incident. From here, the user does not guide the
+> workflow. The API persists the event, and authenticated Pub/Sub invokes a
+> private Cloud Run worker.
 >
-> The API persists the event, and authenticated Pub/Sub invokes a private Cloud
-> Run worker. Before recovery, three activities, six people, three resources,
-> and twelve person-hours are at risk.
->
-> Deterministic code now creates only plans that satisfy qualification,
+> Deterministic code creates only plans that satisfy qualification,
 > availability, person, resource, duration, and current-state constraints.
-> Two safe strategies are considered.
+> Multiple safe strategies survive, with real operational trade-offs.
 
-Visual: pause on the two candidate cards and the Gemini decision.
+Visual: pause on the safe candidate cards and the Gemini decision. The selected
+candidate ID and validated reason codes must be readable.
 
-> Gemini 3.5, through Google ADK, selects Candidate A because it preserves the
-> highest-priority call and changes fewer people's schedules.
+> Gemini 3.5, through Google ADK, compares only those already-safe strategies
+> against the operation's ranked priorities and selects the highlighted
+> candidate. The ID and the validated reasons you see here are the actual result
+> of this run.
 >
-> Gemini cannot invent a plan or relax a constraint. It returns one candidate
-> ID and bounded reason codes. Deterministic code re-verifies that exact
-> candidate against the current state: pass. Firestore commits the result.
+> Gemini cannot invent a plan or relax a constraint. Deterministic code rebuilds
+> and re-verifies that exact candidate against the current state: pass. Only
+> then does Firestore commit the result.
 
 Visual timeline:
 
 `received → analyzing → candidates ready → candidate selected → reverified → committed → completed`
 
-Never read a reason that the actual run rejected. Point only to reason codes
-shown as validated in the UI.
+Never pre-script a candidate ID or reason. Narrate only the selected ID/reasons
+that the captured run actually displays. If the UI rejects a reason, do not say
+it.
 
 ## 1:45–2:20 — The visible result and authority boundary
 
@@ -125,6 +127,8 @@ Visual: return to the recovered cascade and hero.
 
 ## Recording gate
 
+- Do not record the final submission video until independent public-internet
+  reachability of the submitted Cloud Run service is green.
 - Public video, not unlisted; final duration no longer than 4:00.
 - English audio or English subtitles.
 - Exact submitted Cloud Run build and commit.
