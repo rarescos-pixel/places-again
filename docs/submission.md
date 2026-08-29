@@ -49,9 +49,8 @@ The system then:
 
 1. measures the operational blast radius;
 2. deterministically enumerates up to five bounded, heuristically generated
-   non-dominated recovery candidates that already
-   pass qualification, availability, person, resource, duration, and freshness
-   constraints;
+   non-dominated recovery candidates that already pass qualification,
+   availability, person, resource, duration, and freshness constraints;
 3. asks Gemini to select one candidate ID using visible soft operational
    priorities;
 4. independently re-verifies the selected plan against current state;
@@ -157,7 +156,12 @@ contracts; it does not invoke Gemini. It covers duplicate delivery, concurrent
 incidents, crashes around commit, stale plans, impossible recovery, malformed
 input, unknown entities, prompt injection, multiple safe candidates, invalid or
 invented candidate IDs, Gemini-timeout state, selection-policy evidence, and
-re-verification failure. Real Gemini proof requires the cloud E2E gate.
+re-verification failure.
+
+The real owner-authenticated Google Cloud E2E passed on 2026-08-29 and verified
+the production path with real Google ADK + Gemini 3.5, Pub/Sub OIDC delivery,
+Firestore state mutation, replay protection, and adversarial fail-closed
+behavior.
 
 Current reproducible result:
 
@@ -183,24 +187,34 @@ latency/token metadata.
 The deployment creates separate least-privilege builder, API, worker, and OIDC
 push service accounts without service-account keys. Cloud Run and Firestore use
 `europe-west1`; the Vertex AI Gemini endpoint uses its supported `global`
-location. The guided deploy checks APIs individually, skips enabled services,
+location. API activation checks services individually, skips enabled services,
 and retries transient Service Usage `429` failures with bounded exponential
 backoff and jitter.
 
-The cloud E2E proof publishes a real event, observes the real ADK/Gemini trace,
-checks `v1 → v2`, outbox creation, Firestore persistence, replay without a
-second effect, and an impossible adversarial event without an unsafe commit.
+On 2026-08-29, the owner-authenticated deployment finished with
+`FINAL_STATUS=SUCCESS`. The E2E verifier published a real event, observed the
+real ADK/Gemini workflow, checked `v1 → v2`, outbox creation, Firestore
+persistence, replay without a second business effect, and an impossible
+adversarial event without an unsafe commit.
+
+Public application:
+
+`https://places-again-inb6leu4ca-ew.a.run.app`
+
+A committed evidence checkpoint is available in
+`reports/cloud-e2e-verified-20260829.md`; the deployment also generated the raw
+JSON cloud E2E report in the owner-authenticated Cloud Shell runtime.
 
 ## What is real and what is synthetic
 
-- **Real code:** ADK agent, Gemini structured-selection path, deterministic
-  candidate engine, API, Pub/Sub integration, Firestore transactions, Cloud Run
-  deployment, UI, security controls, tests, evaluation, and E2E verifier.
+- **Real code and deployed path:** ADK agent, Gemini structured-selection path,
+  deterministic candidate engine, API, Pub/Sub integration, Firestore
+  transactions, Cloud Run deployment, UI, security controls, tests, evaluation,
+  and E2E verifier.
 - **Synthetic data:** every person, production, schedule, resource, incident,
   and measured scenario value.
-- **Cloud proof required before final submission:** the public Cloud Run URL and
-  generated E2E evidence report must be inserted below. Code presence alone is
-  not described as execution evidence.
+- **Cloud proof:** passed owner-authenticated E2E on 2026-08-29; code presence is
+  not used as a substitute for execution evidence.
 - **Future work:** customer connectors, tenancy, RBAC, retention, governed
   delivery, and organization-specific policies.
 
@@ -221,7 +235,7 @@ Python, FastAPI, Pydantic, JavaScript, HTML/CSS, Pytest, Docker
 
 ## Final links
 
-- Public application: `[ADD VERIFIED CLOUD RUN URL]`
+- Public application: `https://places-again-inb6leu4ca-ew.a.run.app`
 - Public repository: `https://github.com/rarescos-pixel/places-again`
 - Public video: `[ADD PUBLIC YOUTUBE OR VIMEO URL]`
 - Public build article: `[ADD AFTER PUBLICATION]`
