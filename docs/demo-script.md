@@ -15,6 +15,11 @@ those numbers as evidence, not as a guaranteed future duration. Give the live
 run a ~35-second slot, but if it takes longer, keep recording continuously until
 terminal state and shorten later sections instead. Never cut the live execution.
 
+Before recording, pre-stage a completed **Commercial Film / Broadcast
+Production** result in a second browser tab. Changing the scenario dropdown
+resets the selected scenario, so the second-domain proof should be shown by
+switching tabs later, not by changing the Opera dropdown during the take.
+
 The main recovery must be one real incident trigger; after that, do not guide
 the workflow. Do not fake waiting states or replace a failed cloud run with a
 claim. If the demonstrated run fails, repair and record again.
@@ -103,8 +108,9 @@ The final independent proof recorded:
 
 ## 2:00–2:25 — Same engine, second domain
 
-Visual: switch to **Commercial Film / Broadcast Production** and show its
-completed state/candidate proof.
+Visual: switch browser tabs to the **pre-staged completed Commercial Film /
+Broadcast Production** result. Do not change the scenario dropdown in the Opera
+tab during the take.
 
 > The same engine also runs a commercial film and broadcast production:
 > different people, resources and priorities, but the same candidate generation,
@@ -137,7 +143,7 @@ Visual: repository / Quality Gate / evidence summary.
 
 ## 3:15–3:32 — Close
 
-Visual: return to the recovered app and hero.
+Visual: return to the recovered Opera tab and hero.
 
 > Gemini decides what makes operational sense. Deterministic code proves what
 > is safe.
@@ -163,7 +169,7 @@ Mandatory:
 - recovered metrics match the captured run;
 - messages sent = 0;
 - replay and `human_required` proof are visible;
-- second domain is visibly the same mechanism;
+- second domain is visibly the same mechanism via the pre-staged completed tab;
 - Google Cloud deployment evidence is readable;
 - no credentials, personal data, notifications or unrelated tabs appear;
 - discard the take if any spoken number/model-selection claim contradicts the screen.
