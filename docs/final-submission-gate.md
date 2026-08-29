@@ -79,10 +79,11 @@ External proof captured on 2026-08-29:
 
 Internal target: 5/5.
 
-The final automated demo candidate is a **120.40-second (2:00.4), 1920×1080 H.264** recording. It begins with one continuous, unedited terminal Proof of Action against the public Cloud Run endpoint. Immediately after that proof, the exact captured Opera event is fetched from the public backend and rendered through the hosted product UI, visibly showing the recovered cascade, multiple safe candidates, Gemini's actual selection/reasons, deterministic PASS, and `v1 → v2`. The video then shows `/api/capabilities`, independent external E2E, architecture, the public Quality Gate, and the product close. GitHub Actions `Build Submission Demo Video` run `33264120194` completed successfully and published artifact `9718156142`. The mandatory public YouTube/Vimeo URL is still outstanding.
+The promoted automated demo candidate is a **145.67-second (2:25.7), 1920×1080 H.264** recording. It opens on the real hosted product with the operational failure stated in judge-readable form: `08:05 — ONE ABSENCE BREAKS THE DAY`, 3 activities, 6 people, 3 resources, 12 person-hours at risk, and one incident starting autonomous recovery. It then enters one continuous, unedited terminal Proof of Action against the public Cloud Run endpoint and stays uncut from trigger through terminal state. Immediately after that proof, the exact captured Opera event is fetched from the public backend and rendered through the hosted product UI, visibly showing the recovered cascade, multiple safe candidates, Gemini's actual selection/reasons, deterministic PASS, and `v1 → v2`. The video then shows `/api/capabilities`, independent external E2E, architecture, the public Quality Gate, and the product close. GitHub Actions `Build Submission Demo Video` run `33267710383` completed successfully and published artifact `9719197325`. The mandatory public YouTube/Vimeo URL is still outstanding.
 
 The generated video evidence currently proves:
 
+- [x] Product/problem is visible before architecture or terminal evidence.
 - [x] 08:05 incident + immediate 3 activities / 6 people / 3 resources / 12 person-hours at risk.
 - [x] One action starts the main workflow; no step-by-step guidance until terminal state.
 - [x] The main proof-of-action segment is one continuous unedited take from trigger to terminal state.
@@ -101,6 +102,17 @@ The generated video evidence currently proves:
 - [x] English on-screen claims match the captured run; candidate ID/reasons come from the actual run and are not pre-scripted.
 - [x] Anonymous judge access to the hosted UI works with no 404/auth friction in independent verification.
 
+Authoritative final-video map is in `JUDGE_EVIDENCE.md`:
+
+- `0:00–0:10` problem/product cold open;
+- `0:10–1:18` continuous Proof of Action;
+- `1:18–1:30` recovered product state;
+- `1:30–1:43` Google Cloud capabilities;
+- `1:43–1:53` independent external E2E;
+- `1:53–2:03` architecture;
+- `2:03–2:14` Quality Gate;
+- `2:14–2:25` product close.
+
 ## 5. Winner-pattern benchmark from prior Google/Devpost winners
 
 This is an empirical benchmark, not a secret judging rule.
@@ -114,7 +126,7 @@ This is an empirical benchmark, not a secret judging rule.
 - [x] Technical depth exists underneath the product story.
 - [x] Human gate is presented as responsible authority, not failure of autonomy.
 - [x] Same core behavior shown in a second domain.
-- [x] Generated/inspected MP4 proves the core workflow and recovered product state in 120.40 seconds; public YouTube/Vimeo hosting still remains.
+- [x] Generated/inspected product-first MP4 proves problem, core workflow and recovered product state in 145.67 seconds; public YouTube/Vimeo hosting still remains.
 
 ## 6. Bonus score — Stage Three
 
@@ -163,7 +175,7 @@ Before pressing Submit — mandatory / evidence critical:
 - [ ] Public video URL inserted and video <=4:00.
 - [ ] Hosted application URL still opens successfully from a logged-out/anonymous browser.
 - [ ] Devpost text contains no unresolved placeholders for claims actually submitted.
-- [ ] `JUDGE_EVIDENCE.md` has the reconciled 120.40-second final-video evidence map.
+- [x] `JUDGE_EVIDENCE.md` has the reconciled 145.67-second final-video evidence map.
 - [ ] Entrant eligibility review completed.
 - [ ] Exact submitted commit tagged/frozen.
 
