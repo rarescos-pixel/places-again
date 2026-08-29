@@ -200,14 +200,23 @@ real ADK/Gemini workflow, checked `v1 → v2`, outbox creation, Firestore
 persistence, replay without a second business effect, and an impossible
 adversarial event without an unsafe commit.
 
-Deployed Cloud Run service URL:
+Cloud Run reported this deployed service URL:
 
 `https://places-again-inb6leu4ca-ew.a.run.app`
 
-**Final submission gate:** independent anonymous public-internet reachability of
-that URL must be green before the entry is submitted or the final demo is
-recorded. The backend/agent Cloud E2E proof is already passed; this separate
-front-door gate is not overclaimed.
+Anonymous external access to that front door is still being hardened: the owner
+Cloud environment sees the service while an independent GitHub runner has
+received HTTP 404. This is deliberately separated from the passed backend/agent
+E2E proof rather than overclaimed.
+
+The official FAQ says the application does not have to remain publicly live or
+deployed during judging and the rules describe a hosted URL as highly
+encouraged. For maximum Production Readiness we still prefer to close the
+anonymous front-door issue before final submission. If it remains unresolved
+near the deadline, the entry should not advertise a broken hosted URL as
+judge-accessible; the public video, repository, architecture, testing
+instructions, and real Google Cloud execution evidence remain the submission
+proof.
 
 A committed evidence checkpoint is available in
 `reports/cloud-e2e-verified-20260829.md`; the deployment also generated the raw
@@ -263,8 +272,8 @@ JSON cloud E2E report in the owner-authenticated Cloud Shell runtime.
   and measured scenario value.
 - **Cloud proof:** passed owner-authenticated E2E on 2026-08-29; code presence is
   not used as a substitute for execution evidence.
-- **Public reachability:** final independent anonymous check required before
-  submission.
+- **Anonymous public reachability:** preferred final production-readiness proof,
+  not claimed until independently verified.
 - **Future work:** customer connectors, tenancy, RBAC, retention, governed
   delivery, and organization-specific policies.
 
@@ -285,15 +294,19 @@ Python, FastAPI, Pydantic, JavaScript, HTML/CSS, Pytest, Docker
 
 ## Final links
 
-- Public application: `[REPLACE WITH VERIFIED LIVE URL AFTER EXTERNAL GATE]`
+- Hosted application: `[ADD ONLY IF ANONYMOUS JUDGE ACCESS IS VERIFIED; OTHERWISE OMIT IF THE FORM ALLOWS]`
 - Public repository: `https://github.com/rarescos-pixel/places-again`
+- Judge testing instructions: `docs/judge-testing-instructions.md`
 - Public video: `[ADD PUBLIC YOUTUBE OR VIMEO URL]`
 - Public build article: `[ADD AFTER PUBLICATION]`
 - Social post: `[ADD AFTER PUBLICATION]`
 
 ## Submission stop rule
 
-Do not submit while any of these remain unresolved: external public reachability,
-public demo URL, article/social bonus URLs if claimed, or entrant eligibility
-attestation. After submission, freeze the exact repository, video, and live app
-through the judging period as required by the official FAQ.
+Do not miss the deadline for the anonymous front-door issue alone. Before
+submission, the exact submitted commit must have a green Quality Gate, the
+public <=4 minute video and required links must be present, the text must match
+the demonstrated build, claimed bonuses must have evidence, and entrant
+eligibility must be reviewed honestly. After submission, freeze the exact
+repository, video, and any submitted live app through the judging period as
+required by the official FAQ.
