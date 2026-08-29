@@ -1,0 +1,51 @@
+name: Probe Live UI Payload
+
+on:
+  push:
+    branches: [submission-video-automation]
+    paths:
+      - '.github/workflows/probe-live-ui-payload.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send exact browser demo payload to public Cloud Run
+        env:
+          BASE_URL: https://places-again-674409858210.europe-west1.run.app
+        run: |
+          set -euo pipefail
+          curl -fsS -X POST "$BASE_URL/api/demo/reset?scenario_id=opera" -H 'content-type: application/json' -d '{}' >/tmp/reset.json
+          EVENT_ID="$(python - <<'PY'
+          import uuid
+          print(uuid.uuid4())
+          PY
+          )"
+          cat >/tmp/payload.json <<JSON
+          {
+            "scenario_id":"opera",
+            "event_id":"$EVENT_ID",
+            "source":"demo",
+            "disruption":{
+              "person_id":"soprano_principal",
+              "start":"08:00",
+              "end":"14:00",
+              "reason":"same-day illness",
+              "copy":"08:05 · Violetta principal unavailable · 3 calls at risk before 14:00"
+            }
+          }
+          JSON
+          HTTP="$(curl -sS -o /tmp/response.json -w '%{http_code}' -X POST "$BASE_URL/api/events" -H 'content-type: application/json' --data-binary @/tmp/payload.json)"
+          echo "HTTP=$HTTP"
+          cat /tmp/response.json
+          test "$HTTP" = "202"
+          python - <<'PY'
+          import json
+          d=json.load(open('/tmp/response.json'))
+          assert d['transport']=='google_pubsub', d
+          print('FINAL_STATUS=LIVE_UI_PAYLOAD_ACCEPTED')
+          PY
