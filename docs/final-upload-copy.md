@@ -10,9 +10,11 @@ Use this only after the exact submitted build and video have been captured. Do n
 
 ### Description
 
-Places, Again is an autonomous operational disruption-recovery agent for complex, time-critical operations.
+At 08:05, one principal becomes unavailable. Within seconds, 3 activities, 6 people, 3 resources, and 12 person-hours are at risk.
 
-One incident starts a Google Cloud workflow: Cloud Run API → authenticated Pub/Sub → private Cloud Run worker → Google ADK + Gemini 3.5 on Vertex AI → deterministic re-verification → Firestore atomic commit.
+Places, Again takes that single incident and recovers the operation without waiting for step-by-step human guidance. It maps the cascade, constructs several deterministically safe recovery strategies, lets Gemini choose the strategy that best fits the operation's ranked priorities, proves that choice again against current state, and commits the bounded recovery.
+
+The production path is: Cloud Run API → authenticated Pub/Sub → private Cloud Run worker → Google ADK + Gemini 3.5 on Vertex AI → deterministic re-verification → Firestore atomic commit.
 
 Gemini chooses among several already-safe recovery strategies using ranked operational priorities. Deterministic code owns every hard constraint and proves the selected plan again before any state change. When safety cannot be proved, the workflow ends in `human_required` with no unsafe commit and no outbound send.
 
@@ -33,11 +35,11 @@ Built with Gemini 3.5, Vertex AI, Google ADK, Cloud Run, Pub/Sub, Firestore, Fas
 
 #AllThingsAgenticHackathon
 
-### Generated demo candidate — VERIFIED LOCALLY
+### Generated demo candidate — VERIFIED
 
-The automated submission-video workflow has already produced and inspected a 1920×1080 H.264 MP4:
+The automated submission-video workflow has produced and inspected a 1920×1080 H.264 MP4:
 
-- duration: **117.33 seconds**;
+- duration: **120.40 seconds**;
 - English on-screen captions;
 - visible unedited terminal proof against the public `.run.app` endpoint;
 - Opera safe recovery;
@@ -68,7 +70,7 @@ This MP4 is a generated artifact, **not yet the mandatory public-video URL**. Do
 
 ### One-line summary
 
-When one person disappears from a live operation, Places, Again maps the cascade, compares several deterministically safe recovery strategies with Gemini, proves the selected plan again, and commits the bounded safe recovery that best fits the operation's ranked priorities—without waiting for step-by-step human guidance.
+At 08:05, one principal disappears and 3 activities, 6 people, 3 resources, and 12 person-hours become at risk. Places, Again autonomously maps the cascade, lets Gemini choose among deterministically safe recovery strategies, re-verifies that choice against current state, and commits the bounded recovery without step-by-step human guidance.
 
 ### Primary category
 
