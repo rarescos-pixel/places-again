@@ -13,7 +13,7 @@ from playwright.sync_api import sync_playwright
 LIVE_URL = "https://places-again-674409858210.europe-west1.run.app"
 E2E_RUN_URL = "https://github.com/rarescos-pixel/places-again/actions/runs/33255155489"
 QUALITY_RUN_URL = "https://github.com/rarescos-pixel/places-again/actions/runs/33255724383"
-ARCH_URL = "https://raw.githubusercontent.com/rarescos-pixel/places-again/main/docs/architecture.svg"
+ARCH_URL = "https://github.com/rarescos-pixel/places-again/blob/main/docs/architecture.svg"
 OUT_DIR = pathlib.Path("runtime")
 RAW_VIDEO = OUT_DIR / "places-again-submission-demo-raw.mp4"
 FINAL_VIDEO = OUT_DIR / "places-again-submission-demo.mp4"
@@ -99,7 +99,7 @@ def set_overlay(page, kicker: str, text: str) -> None:
             box = document.createElement('div');
             box.id = 'places-again-auto-caption';
             box.style.cssText = `position:fixed;left:72px;right:72px;bottom:26px;z-index:2147483647;background:rgba(8,10,13,.94);border:1px solid rgba(255,255,255,.22);border-radius:14px;padding:17px 22px 18px;color:#f7f3ec;font-family:Inter,Arial,sans-serif;box-shadow:0 14px 50px rgba(0,0,0,.5);pointer-events:none;`;
-            document.documentElement.appendChild(box);
+            (document.body || document.documentElement).appendChild(box);
           }
           box.innerHTML = `<div style="font-size:15px;text-transform:uppercase;letter-spacing:.13em;color:#ff8a5b;font-weight:800;margin-bottom:5px">${kicker}</div><div style="font-size:29px;line-height:1.25;font-weight:650">${text}</div>`;
         }
@@ -143,7 +143,7 @@ def browser_evidence() -> None:
         time.sleep(9)
 
         arch = context.new_page()
-        arch.goto(ARCH_URL, wait_until="load", timeout=60000)
+        arch.goto(ARCH_URL, wait_until="domcontentloaded", timeout=60000)
         arch.bring_to_front()
         set_overlay(arch, "ARCHITECTURE", "Public Cloud Run API → Pub/Sub/OIDC → private worker → ADK + Gemini → deterministic re-verification → Firestore transaction.")
         time.sleep(10)
