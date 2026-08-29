@@ -1,8 +1,9 @@
 # Judge evidence map
 
 Every scored claim below maps to inspectable code, a visible product state, and
-a planned video moment. Final links and exact timestamps must be reconciled with
-the submitted build after the real cloud E2E and recording.
+a planned video moment. The real Google Cloud E2E hard gate passed on
+2026-08-29 in the owner-authenticated deployment. Final video URLs and exact
+video timestamps still need reconciliation with the submitted build.
 
 ## 1. Innovation & Operational Utility — 40%
 
@@ -24,14 +25,14 @@ the submitted build after the real cloud E2E and recording.
 
 | Claim | Exact evidence | Visible/cloud proof | Video |
 |---|---|---|---|
-| Required Google stack is real | `google-adk`; model config; Cloud Run, Pub/Sub, Firestore code | Cloud services + trace | 3:10–3:30 |
+| Required Google stack is real | `google-adk`; model config; Cloud Run, Pub/Sub, Firestore code | Passed real cloud E2E + Cloud services + trace | 3:10–3:30 |
 | Event-driven, not a synchronous chatbot | `places_again/pubsub.py`; API returns `202 + event_id`; private push endpoint | Event ID and background timeline | 0:40–1:45 |
-| Authenticated private delivery | OIDC push SA and private internal-ingress worker in `deploy.sh` | Cloud Run + subscription settings | 3:10–3:30 |
+| Authenticated private delivery | OIDC push SA and private internal-ingress worker in `deploy.sh` | Passed Pub/Sub OIDC cloud E2E | 3:10–3:30 |
 | Hard constraints define the safe space | `build_recovery_candidates`, `validate_schedule` | Every candidate marked hard-safe | 1:00–1:20 |
 | Soft priorities belong to Gemini | scenario `soft_priorities`; structured selection tools | Candidate ID and validated operational reasons | 1:15–1:30 |
 | Gemini cannot invent or edit a plan | `commit_event_candidate`; invalid-ID evaluation | Invented ID produces `human_required` | 2:20–2:45 |
 | Every committed candidate is reverified | `reverify_recovery_plan`; transaction path | “Deterministic re-verification: PASS” | 1:25–1:40 |
-| Firestore-cloud exactly-once business effect over at-least-once delivery | event ledger + Firestore transaction; replay assertions | version and outbox unchanged on replay | 2:20–2:35 |
+| Firestore-cloud exactly-once business effect over at-least-once delivery | event ledger + Firestore transaction; replay assertions | Passed real replay proof: version/outbox unchanged | 2:20–2:35 |
 | Crash and concurrency recovery | fault injection and concurrent tests | Evaluation report | 2:20–2:45 |
 | Prompt injection cannot change authority | strict schema, opaque ID, tool allowlist, adversarial fixture | `human_required`/normal policy, zero sent | 2:35–2:45 |
 | No irreversible send authority | no send tool; deterministic `prepared_not_sent` outbox | prepared count, sent = 0 | 1:45–2:20 |
@@ -47,8 +48,8 @@ the submitted build after the real cloud E2E and recording.
 | Decision evidence is inspectable | `candidate_summaries`, selected ID, reasons, proof in event ledger | candidate strip + decision panel | 1:00–1:40 |
 | Responsive finalist control room | `static/index.html`; integration test | Live public Cloud Run UI | entire demo |
 | Public reproducible quality gate | `.github/workflows/quality-gate.yml` | GitHub Actions: tests, evaluation, core verification, secret/history scan, syntax/parse checks; JSON evidence artifact | repository review |
-| Robust guided deploy | `enable_google_apis.sh`; deploy/prebuild integration; retry tests | API report including bounded 429 backoff | deployment evidence |
-| Real cloud E2E, replay, and failure | `scripts/cloud_e2e_test.py` | generated cloud evidence JSON | 0:40–3:30 |
+| Robust guided deploy | `enable_google_apis.sh`; `scripts/deploy_auto.sh`; retry tests | Owner-authenticated deployment succeeded after bypassing fragile hosted preflight | deployment evidence |
+| Real cloud E2E, replay, and failure | `scripts/cloud_e2e_test.py`; `reports/cloud-e2e-verified-20260829.md` | `FINAL_STATUS=SUCCESS`; generated cloud evidence JSON | 0:40–3:30 |
 | Reproducible local evaluation | 52 labeled deterministic/fake-selection cases across both domains; not a Gemini invocation | `reports/evaluation-report.json` | 3:10–3:30 |
 | Acceptance invariants pass | 0 unsafe/unresolved/duplicate/invented/override; 100% reverified | evaluation summary | 3:10–3:30 |
 | Observable without hidden reasoning | event/model/tool/candidate/proof/version/retry/outbox fields | action trace and audit | 1:00–2:20 |
@@ -71,23 +72,32 @@ pull requests. The submitted commit must show this workflow green. It independen
 runs the automated tests, the labeled evaluation, `verify_core.py`, full-history
 secret scanning, Python and shell syntax checks, and JSON/SVG parse checks. A
 successful run publishes the generated JSON reports as a downloadable Actions
-artifact. This is local/repository evidence, not a substitute for the Google Cloud
-E2E hard gate below.
+artifact.
 
-## Cloud hard gate
+## Cloud hard gate — PASSED 2026-08-29
 
-The following remain unverified until a real generated cloud evidence report
-exists:
+The owner-authenticated Google Cloud deployment completed with
+`FINAL_STATUS=SUCCESS`.
 
-- Public Cloud Run API publishes the incident to Pub/Sub.
-- Authenticated Pub/Sub reaches the private Cloud Run worker.
-- Vertex AI Gemini 3.5 runs the four-tool Google ADK workflow.
-- Gemini's selected candidate ID and reasons are persisted.
-- Firestore commits `v1 → v2` once and preserves replay semantics.
-- The impossible/adversarial incident reaches `human_required` without effects.
+Public application:
 
-Code presence is not execution evidence. Finalist-ready and final submission are
-blocked until `runtime/cloud-e2e-evidence-*.json` passes.
+`https://places-again-inb6leu4ca-ew.a.run.app`
+
+The deployment reported successful proof for:
+
+- Public Cloud Run API → Pub/Sub.
+- Authenticated Pub/Sub OIDC → private Cloud Run worker.
+- Vertex AI Gemini 3.5 running through Google ADK.
+- Bounded Gemini candidate selection followed by deterministic re-verification.
+- Firestore state commit `v1 → v2` exactly once.
+- Replay without duplicate business effects.
+- Impossible/adversarial incident → `human_required` with no unsafe mutation/send.
+- Prepared outbox with messages sent = 0.
+
+The deployment generated a raw `runtime/cloud-e2e-evidence-*.json` report in the
+owner's Cloud Shell environment. A concise committed checkpoint is available at
+`reports/cloud-e2e-verified-20260829.md`. The raw JSON should be preserved as the
+authoritative detailed artifact during final evidence reconciliation.
 
 ## Bonus map — after the core cloud proof
 
