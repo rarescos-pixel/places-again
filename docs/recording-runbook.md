@@ -149,7 +149,7 @@ Then show the committed architecture diagram briefly.
 Show the public repo / Quality Gate and state:
 
 - 52/52 labeled evaluation cases;
-- 59/59 automated tests;
+- 65/65 automated tests;
 - independent public hosted-UI + live Cloud E2E proof.
 
 ### 3:15–3:32 — close

@@ -86,7 +86,7 @@ operation rebuilds itself safely**.
 - Firestore transaction, event ledger, idempotency, replay, crash, concurrency,
   prepared-not-sent outbox, security boundary, and observability remain intact.
 - 52/52 labeled evaluation cases pass locally.
-- 59/59 automated tests pass after the candidate-set and worker-route gates.
+- 65/65 automated tests pass after the candidate-set and worker-route gates.
 - Worktree and Git-history secret scan passes with no findings.
 
 ## Why Gemini audit

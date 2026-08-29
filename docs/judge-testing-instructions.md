@@ -58,7 +58,7 @@ The local product uses the persisted deterministic fallback in a background task
 Expected repository baseline:
 
 - 52/52 labeled evaluation cases;
-- 59/59 automated tests in the verified core baseline;
+- 65/65 automated tests in the verified core baseline;
 - 0 unsafe commits;
 - 0 duplicate business effects;
 - 0 Gemini-invented candidate commits;
