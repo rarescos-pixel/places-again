@@ -15,8 +15,8 @@ exact video timestamps still need reconciliation with the submitted build.
 | Personal BYOF friction | Firsthand opera origin; all actual identities/data synthetic | Origin line + Opera scenario | 0:00–0:20 |
 | Human and operational stakes are measured | `_plan_metrics` in `places_again/engine.py` | 3 activities, 6 people, 3 resources, 12 hours at risk | 0:00–1:05 |
 | One event completes without step-by-step guidance | `POST /api/events` → Pub/Sub → private worker | One click, event ID, autonomous timeline | 0:40–1:45 |
-| More than one safe recovery genuinely exists | `build_recovery_candidates`; `test_multiple_safe_candidates_expose_a_real_operational_tradeoff` | Candidate A vs B cards | 1:00–1:20 |
-| Gemini makes a consequential bounded choice | Four-tool ADK agent; `candidate_id` + reason-code contract | “Gemini selected Candidate A” + validated reasons | 1:15–1:30 |
+| More than one safe recovery genuinely exists | `build_recovery_candidates`; `test_multiple_safe_candidates_expose_a_real_operational_tradeoff` | Multiple safe candidate cards | 1:00–1:20 |
+| Gemini makes a consequential bounded choice | Four-tool ADK agent; `candidate_id` + reason-code contract | Actual selected candidate ID + validated reasons from the captured run | 1:15–1:30 |
 | The operation actually changes | `commit_event_candidate`; Firestore transaction; cloud E2E assertions | State `v1 → v2` | 1:30–2:00 |
 | Opera baseline result | `op_baseline`; report metrics | 3/3, 12 hours restored, 0 unaffected moved | 1:45–2:20 |
 | Portability is proved, not promised | `commercial_shoot.json`; same candidate generator and workflow tests | Same UI/mechanism, different domain | 2:45–3:10 |
@@ -48,7 +48,7 @@ exact video timestamps still need reconciliation with the submitted build.
 |---|---|---|---|
 | Memorable visible transformation | cascade UI in `static/index.html` | AT RISK → RECOVERED | 0:00–2:00 |
 | Decision evidence is inspectable | `candidate_summaries`, selected ID, reasons, proof in event ledger | candidate strip + decision panel | 1:00–1:40 |
-| Responsive finalist control room | `static/index.html`; integration test | Public Cloud Run UI — final external reachability gate must pass before video/submission | entire demo |
+| Responsive finalist control room | `static/index.html`; integration test | Cloud Run UI — final anonymous external reachability gate must pass before video/submission | entire demo |
 | Public reproducible quality gate | `.github/workflows/quality-gate.yml` | GitHub Actions: tests, evaluation, core verification, secret/history scan, syntax/parse checks; JSON evidence artifact | repository review |
 | Robust guided deploy | `enable_google_apis.sh`; `scripts/deploy_auto.sh`; retry tests | Owner-authenticated deployment succeeded after bypassing fragile hosted preflight | deployment evidence |
 | Real cloud E2E, replay, and failure | `scripts/cloud_e2e_test.py`; `reports/cloud-e2e-verified-20260829.md` | `FINAL_STATUS=SUCCESS`; generated cloud evidence JSON | 0:40–3:30 |
@@ -105,8 +105,8 @@ authoritative detailed artifact during final evidence reconciliation.
 ### Separate public-internet reachability gate — OPEN
 
 Cloud Shell later confirmed `/api/capabilities` with HTTP 200 after setting the
-public Cloud Run service to ingress `all`, enabling the default `run.app` URL,
-and disabling the Cloud Run Invoker IAM check. However, independent GitHub-hosted
+Cloud Run event API to ingress `all`, enabling the default `run.app` URL, and
+disabling the Cloud Run Invoker IAM check. However, independent GitHub-hosted
 runners still received HTTP 404 from both the hash-form and deterministic-form
 Cloud Run URLs.
 
@@ -125,9 +125,10 @@ service.
 
 | Bonus | Evidence asset | Status |
 |---|---|---|
-| +0.2 public build content | `docs/build-article.md` | Draft; owner publication pending |
-| +0.2 social post | `docs/social-post.md` | Draft; owner publication pending |
-| +0.2 per additional eligible Google AI model, max +0.6 | isolated draft PR only | Correctly deferred; no decorative integration in `main` |
+| +0.2 public build content | `docs/build-article.md` | Draft gated on externally verified live URL; owner publication pending |
+| +0.2 social post | `docs/social-post.md` | Draft gated on externally verified live URL; owner publication pending |
+| +0.2 Gemma 4 additional-model bonus | draft PR #2 `bonus-gemma4-refresh` | CI green; real owner-authenticated Gemma call + README/demo evidence still required; do not merge yet |
+| Further additional models, max +0.6 total | none | Intentionally deferred; no decorative model stuffing |
 
 ## Final sceptical-judge gate
 
@@ -142,4 +143,4 @@ service.
 - Does the impossible/adversarial case stop without side effects?
 - Does the film scenario use the same code path rather than renamed slides?
 - Are the Cloud Run URL, Pub/Sub delivery, ADK/Gemini trace, and Firestore state impossible to mistake for a mock?
-- Does every spoken number match the submitted commit's generated evidence?
+- Does every spoken number/model-selection claim match the submitted commit's generated evidence?
