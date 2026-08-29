@@ -25,13 +25,21 @@ the run takes longer, keep it continuous and shorten later sections.
 
 ## Before recording
 
-1. Open the hosted URL in a clean desktop browser tab.
+1. Open the hosted URL in a clean desktop browser tab. This is the **Opera live
+   tab** used for the unedited Proof of Action.
 2. Confirm it loads without auth/404 and the badges identify Google ADK, Gemini
    3.5, Cloud Run, Pub/Sub and Firestore.
-3. Close personal tabs, notifications and any account-sensitive UI.
-4. Confirm **Opera Production** is selected.
-5. Press **Reset scenario** once if the page is not in the clean baseline.
-6. Confirm the status says the scenario is ready and the event ID is blank.
+3. Confirm **Opera Production** is selected. Press **Reset scenario** once if the
+   page is not in the clean baseline. Confirm the status says the scenario is
+   ready and the event ID is blank.
+4. Open the same hosted URL in a **second browser tab**. In that second tab,
+   select **Commercial Film / Broadcast Production**, press **Inject disruption
+   event** once, wait until it completes, and leave that completed film result
+   open. Do this **before** recording. Changing the scenario dropdown resets that
+   scenario, so the completed film proof must be pre-staged in its own tab.
+5. Return to the Opera live tab and do not touch **Inject disruption event**
+   until recording is underway.
+6. Close personal tabs, notifications and any account-sensitive UI.
 7. Open all Google Cloud evidence tabs listed below before recording.
 8. Open the architecture diagram and repository/Quality Gate in separate tabs.
 9. Keep the browser address bar with the public `.run.app` URL visible at least
@@ -55,7 +63,7 @@ deterministic code proves the exact selected candidate again before commit.
 recording continuous and uncut.** No pause, splice, speed-up, jump-forward or
 second take inserted inside this live sequence.
 
-Click **Inject disruption event** exactly once.
+Click **Inject disruption event** exactly once in the Opera live tab.
 
 Then do not interact until the workflow reaches `completed` or
 `human_required`.
@@ -102,9 +110,13 @@ Final independent proof run `33255155489` recorded:
 
 ### 2:00–2:25 — second domain
 
-Switch to **Commercial Film / Broadcast Production** and show a completed result
-using the same candidate-selection/re-verification mechanism. Keep this fast:
-show the domain switch, candidate/decision proof and the recovered metrics.
+Switch browser tabs to the **pre-staged completed Commercial Film / Broadcast
+Production tab**. Do not change the scenario dropdown in the Opera tab during
+the recording, because doing so resets the selected scenario.
+
+Show the film candidate/decision proof and recovered metrics. This keeps the
+second-domain proof instant while preserving the Opera run as the single live
+Proof-of-Action trigger.
 
 ### 2:25–2:52 — Google Cloud proof
 
@@ -142,7 +154,7 @@ Show the public repo / Quality Gate and state:
 
 ### 3:15–3:32 — close
 
-Return to the recovered app.
+Return to the recovered Opera tab.
 
 > Gemini decides what makes operational sense. Deterministic code proves what is safe.
 >
@@ -165,7 +177,7 @@ Do not publish the take unless all are true:
 - recovered metrics match the captured run;
 - messages sent = 0;
 - replay/fail-closed evidence is visible;
-- second-domain proof is visible;
+- second-domain proof is visible from the pre-staged completed film tab;
 - Google Cloud deployment proof is readable;
 - no credentials, personal data, notifications or unrelated tabs appear.
 
