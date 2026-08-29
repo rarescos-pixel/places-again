@@ -1,5 +1,7 @@
 name: Live Cloud E2E Proof
 
+# Final submission evidence refresh: product-first video and canonical submission docs reconciled.
+
 on:
   workflow_dispatch:
   push:
