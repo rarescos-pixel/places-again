@@ -33,10 +33,25 @@ Built with Gemini 3.5, Vertex AI, Google ADK, Cloud Run, Pub/Sub, Firestore, Fas
 
 #AllThingsAgenticHackathon
 
+### Generated demo candidate — VERIFIED LOCALLY
+
+The automated submission-video workflow has already produced and inspected a 1920×1080 H.264 MP4:
+
+- duration: **117.33 seconds**;
+- English on-screen captions;
+- visible unedited terminal proof against the public `.run.app` endpoint;
+- Opera safe recovery;
+- replay exactly-once business-effect proof;
+- adversarial/impossible `human_required` proof;
+- commercial film/broadcast second-domain proof;
+- public app, capabilities, independent E2E, architecture, and Quality Gate evidence.
+
+This MP4 is a generated artifact, **not yet the mandatory public-video URL**. Do not put a GitHub artifact/release URL in the Devpost video field: the official submission requires public YouTube or Vimeo.
+
 ### Visibility / compliance
 
-- Public video, not unlisted.
-- English narration or English subtitles.
+- Public YouTube/Vimeo video, not unlisted.
+- English narration or English subtitles/on-screen captions.
 - <= 4:00 final duration.
 - Do not replace the final video after submission.
 - Hosted application is independently verified from GitHub Actions on 2026-08-29.
@@ -78,28 +93,38 @@ Independent GitHub-hosted verification on 2026-08-29 reached `/api/capabilities`
 Insert the final public YouTube/Vimeo URL only after verifying:
 - <= 4:00;
 - public visibility;
-- exact submitted build;
-- actual candidate/reason codes match the spoken narration;
+- exact submitted build/evidence path;
+- actual candidate/reason codes match what is shown;
 - Google Cloud evidence is readable.
 
-## Bonus publication order
+## Bonus publication status
 
-1. Publish the build article from `docs/build-article.md` on an accepted public platform.
-2. Save its permanent public URL.
-3. Publish the social post from `docs/social-post.md` with `#AllThingsAgenticHackathon`.
-4. Save its permanent public URL.
-5. Insert both URLs into the Devpost submission before final submit.
-6. Claim any additional-model bonus only if the model is actually validated, merged, documented in README, and visible in the final demo.
+### Build article — PUBLISHED
+
+Permanent public URL:
+
+https://github.com/rarescos-pixel/places-again/issues/3
+
+The article explicitly states that it was created for entering the Google All Things Agentic Hackathon and links the live app and repository. Current evidence text has been synchronized to **65/65 automated tests** and **52/52 labeled evaluation cases**.
+
+### Social bonus — NOT YET CLAIMED
+
+The canonical copy remains `docs/social-post.md`. Claim +0.2 only after it is actually public on an eligible social platform with `#AllThingsAgenticHackathon` and its permanent URL is inserted into the submission.
+
+### Additional-model bonus — NOT YET CLAIMED
+
+Do not claim the optional Gemma/additional-model bonus unless the real managed-model call is validated, the integration is merged and documented, and the final demo visibly includes it.
 
 ## Final upload stop rule
 
 Before pressing Submit:
 
 - exact submitted commit has a green Quality Gate;
-- final public video is <= 4:00;
+- final public YouTube/Vimeo video is <= 4:00;
 - all submitted URLs open successfully;
 - no placeholders remain in the Devpost form;
 - `JUDGE_EVIDENCE.md` contains final video timestamps;
-- article/social URLs are included if claiming +0.4;
+- published article URL is included if claiming its +0.2;
+- social URL is included only if actually published and claiming its +0.2;
 - entrant eligibility has been reviewed honestly;
 - repository, video, and submitted live app are frozen for judging.
