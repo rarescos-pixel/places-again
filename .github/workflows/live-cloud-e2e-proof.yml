@@ -80,6 +80,22 @@ jobs:
               handle.write(f'PLACES_AGAIN_LIVE_URL={selected}\n')
           PY
 
+      - name: Confirm public hosted UI root
+        run: |
+          python - <<'PY'
+          import os
+          from urllib.request import urlopen
+
+          url = os.environ['PLACES_AGAIN_LIVE_URL'].rstrip('/') + '/'
+          with urlopen(url, timeout=30) as response:
+              body = response.read().decode('utf-8', errors='replace')
+              code = response.status
+          assert code == 200, code
+          assert '<title>Places, Again' in body, 'expected Places, Again HTML title not found'
+          assert 'The plan breaks.' in body, 'expected product hero text not found'
+          print(f'PUBLIC_UI_OK={url}')
+          PY
+
       - name: Confirm public capabilities endpoint
         run: |
           python - <<'PY'
