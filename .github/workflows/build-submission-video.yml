@@ -1,0 +1,61 @@
+name: Build Submission Demo Video
+
+on:
+  push:
+    branches: [submission-video-automation]
+    paths:
+      - 'scripts/record_submission_video.py'
+      - '.github/workflows/build-submission-video.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-video:
+    name: Record real public Cloud demo
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout automation branch
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install desktop recording dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg xvfb openbox
+          python -m pip install --upgrade pip
+          python -m pip install playwright
+          python -m playwright install --with-deps chromium
+
+      - name: Start virtual desktop and record live submission demo
+        env:
+          DISPLAY: ':99'
+        run: |
+          Xvfb :99 -screen 0 1920x1080x24 -ac > /tmp/xvfb.log 2>&1 &
+          sleep 2
+          openbox > /tmp/openbox.log 2>&1 &
+          sleep 2
+          python scripts/record_submission_video.py
+
+      - name: Inspect generated video
+        run: |
+          ls -lh runtime/places-again-submission-demo.mp4 runtime/demo-metadata.json
+          ffprobe -v error -show_entries format=duration,size -of json runtime/places-again-submission-demo.mp4
+          cat runtime/demo-metadata.json
+
+      - name: Publish submission video artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: places-again-submission-demo-${{ github.sha }}
+          path: |
+            runtime/places-again-submission-demo.mp4
+            runtime/demo-metadata.json
+          if-no-files-found: error
+          retention-days: 30
