@@ -53,6 +53,11 @@ Show the hero/autonomy statement.
 
 ### 0:40–1:45 — one real cloud event, one action
 
+**Record this entire segment continuously and without edits.** From the moment
+**Inject disruption event** is triggered until the workflow reaches terminal
+state, do not pause the recording, splice takes, jump forward, or hide waiting
+time. This is the rubric's live Proof of Action.
+
 Trigger **Inject disruption event** once in the exact submitted cloud build.
 
 After that, do not guide the workflow. Let the real Cloud Run → Pub/Sub → private worker → ADK/Gemini → Firestore path finish.
@@ -144,6 +149,7 @@ Do not publish the take unless all are true:
 - duration <= 4:00;
 - English audio or English subtitles;
 - the exact submitted build is demonstrated, not a mock substituted for cloud execution;
+- the 0:40–1:45 trigger-to-terminal Proof-of-Action segment is continuous and uncut;
 - main workflow begins with one action and then proceeds autonomously;
 - actual candidate count/ID/reasons match narration;
 - deterministic re-verification is visible before commit;
