@@ -1,0 +1,51 @@
+name: Sync Final Video Recorder
+
+on:
+  push:
+    branches: [submission-video-automation]
+    paths:
+      - '.github/workflows/sync-final-video-recorder.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: submission-video-automation
+      - name: Patch final evidence references
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('scripts/record_submission_video.py')
+          s=p.read_text(encoding='utf-8')
+          s=s.replace('QUALITY_RUN_URL = "https://github.com/rarescos-pixel/places-again/actions/runs/33255724383"',
+                      'QUALITY_RUN_URL = "https://github.com/rarescos-pixel/places-again/actions/runs/33263263630"')
+          s=s.replace('"59 automated tests and 52 labeled evaluation cases cover replay, stale state, concurrency, model failure, prompt injection and fail-closed behavior."',
+                      '"65 automated tests and 52 labeled evaluation cases cover replay, stale state, concurrency, model failure, prompt injection and fail-closed behavior."')
+          needle='        "runtime_source_commit": "5d6b5662cb63f8af1d414f01570c9991278b3e8e",\n'
+          repl=needle + '        "repository_evidence_head": "d8074322fa39cd6eb6a7fa7eb038e39d4fffd4d3",\n        "quality_gate_run": "33263263630",\n'
+          if '"repository_evidence_head"' not in s:
+              s=s.replace(needle, repl)
+          p.write_text(s, encoding='utf-8')
+          PY
+          git diff --check
+          git diff -- scripts/record_submission_video.py
+      - name: Commit branch-only recorder sync
+        run: |
+          set -euo pipefail
+          git config user.name 'rarescos-pixel'
+          git config user.email 'rarescos@gmail.com'
+          git add scripts/record_submission_video.py
+          if git diff --cached --quiet; then
+            echo FINAL_STATUS=NO_CHANGES
+            exit 0
+          fi
+          git commit -m 'Sync final video evidence references'
+          git push origin HEAD:submission-video-automation
+          echo FINAL_STATUS=VIDEO_RECORDER_SYNCED
