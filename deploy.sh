@@ -135,6 +135,42 @@ grant_act_as() {
     --member="${ACTIVE_MEMBER}" --role='roles/iam.serviceAccountUser' --quiet >/dev/null
 }
 
+run_source_deploy_with_builder_iam_retry() {
+  local attempt=1
+  local max_attempts=5
+  local delay_seconds=20
+  local exit_code=0
+  local attempt_log=""
+
+  while (( attempt <= max_attempts )); do
+    attempt_log="${REPORT_DIR}/source-deploy-${TIMESTAMP}-attempt-${attempt}.log"
+    note "SOURCE_DEPLOY_ATTEMPT=${attempt}/${max_attempts}"
+
+    set +e
+    "$@" 2>&1 | tee "${attempt_log}"
+    exit_code=${PIPESTATUS[0]}
+    set -e
+
+    if (( exit_code == 0 )); then
+      if (( attempt > 1 )); then
+        note "BUILD_IAM_PROPAGATION=ready attempt=${attempt}"
+      fi
+      return 0
+    fi
+
+    if (( attempt >= max_attempts )) || \
+      ! grep -Eiq "storage\.objects\.get|build service account.*source (bucket )?object" "${attempt_log}"; then
+      return "${exit_code}"
+    fi
+
+    note "BUILD_IAM_PROPAGATION_RETRY=${attempt} delay_seconds=${delay_seconds} reason=storage.objects.get"
+    sleep "${delay_seconds}"
+    attempt=$((attempt + 1))
+    delay_seconds=$((delay_seconds * 2))
+    (( delay_seconds > 60 )) && delay_seconds=60
+  done
+}
+
 assert_config_equals() {
   local label="$1" expected="$2" actual="$3"
   if [[ "${actual}" != "${expected}" ]]; then
@@ -192,7 +228,7 @@ if [[ -n "${PREBUILT_IMAGE}" ]]; then
 else
   API_ARTIFACT_ARGS=(--source="${SCRIPT_DIR}" --build-service-account="${BUILD_SA_RESOURCE}")
 fi
-gcloud run deploy "${API_SERVICE}" \
+run_source_deploy_with_builder_iam_retry gcloud run deploy "${API_SERVICE}" \
   "${API_ARTIFACT_ARGS[@]}" \
   --project="${PROJECT_ID}" \
   --region="${REGION}" \
