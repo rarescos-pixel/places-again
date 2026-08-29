@@ -79,7 +79,7 @@ External proof captured on 2026-08-29:
 
 Internal target: 5/5.
 
-An automated 1920×1080 H.264 demo candidate has been generated and inspected at **114.20 seconds**. It records a visible, unedited terminal Proof of Action against the public Cloud Run endpoint, then the hosted app, capabilities, independent E2E, architecture, Quality Gate, and close. GitHub Actions `Build Submission Demo Video` run `33263391970` completed successfully and published artifact `9717944612`. The mandatory public YouTube/Vimeo URL is still outstanding.
+The final automated demo candidate is a **120.40-second (2:00.4), 1920×1080 H.264** recording. It begins with one continuous, unedited terminal Proof of Action against the public Cloud Run endpoint. Immediately after that proof, the exact captured Opera event is fetched from the public backend and rendered through the hosted product UI, visibly showing the recovered cascade, multiple safe candidates, Gemini's actual selection/reasons, deterministic PASS, and `v1 → v2`. The video then shows `/api/capabilities`, independent external E2E, architecture, the public Quality Gate, and the product close. GitHub Actions `Build Submission Demo Video` run `33264120194` completed successfully and published artifact `9718156142`. The mandatory public YouTube/Vimeo URL is still outstanding.
 
 The generated video evidence currently proves:
 
@@ -95,6 +95,7 @@ The generated video evidence currently proves:
 - [x] Replay leaves version/outbox unchanged.
 - [x] Impossible/adversarial event becomes `human_required` with no unsafe effect.
 - [x] Commercial film/broadcast fixture visibly uses the same mechanism.
+- [x] The recovered product UI visibly shows `AT RISK → RECOVERED`, two safe strategies, Gemini selection, deterministic PASS, before/after metrics, state `1 → 2`, and zero messages sent.
 - [x] Google Cloud execution evidence is visible: `.run.app` URL, Cloud Run, Pub/Sub, private worker, Firestore, Vertex AI/ADK/Gemini capabilities, plus independent E2E evidence.
 - [x] Architecture diagram appears briefly.
 - [x] English on-screen claims match the captured run; candidate ID/reasons come from the actual run and are not pre-scripted.
@@ -113,7 +114,7 @@ This is an empirical benchmark, not a secret judging rule.
 - [x] Technical depth exists underneath the product story.
 - [x] Human gate is presented as responsible authority, not failure of autonomy.
 - [x] Same core behavior shown in a second domain.
-- [x] Generated/inspected MP4 proves the core workflow in 114.20 seconds; public YouTube/Vimeo hosting still remains.
+- [x] Generated/inspected MP4 proves the core workflow and recovered product state in 120.40 seconds; public YouTube/Vimeo hosting still remains.
 
 ## 6. Bonus score — Stage Three
 
@@ -162,7 +163,7 @@ Before pressing Submit — mandatory / evidence critical:
 - [ ] Public video URL inserted and video <=4:00.
 - [ ] Hosted application URL still opens successfully from a logged-out/anonymous browser.
 - [ ] Devpost text contains no unresolved placeholders for claims actually submitted.
-- [x] `JUDGE_EVIDENCE.md` has the reconciled 114.20-second automated-video evidence map.
+- [ ] `JUDGE_EVIDENCE.md` has the reconciled 120.40-second final-video evidence map.
 - [ ] Entrant eligibility review completed.
 - [ ] Exact submitted commit tagged/frozen.
 
