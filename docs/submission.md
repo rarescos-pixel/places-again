@@ -213,6 +213,46 @@ A committed evidence checkpoint is available in
 `reports/cloud-e2e-verified-20260829.md`; the deployment also generated the raw
 JSON cloud E2E report in the owner-authenticated Cloud Shell runtime.
 
+## Data sources, third-party inputs, and pre-existing work
+
+- **Scenario data:** all people, schedules, resources, incidents, skills,
+  priorities, and measured scenario values are synthetic fixtures created for
+  this project. No proprietary operational dataset is used.
+- **External data sources:** none are required for the demonstrated recovery
+  workflow. Google Cloud/Vertex AI services provide execution infrastructure and
+  model inference, not a third-party business dataset.
+- **Third-party software:** standard open-source frameworks and libraries listed
+  in the repository requirements are used under their applicable licenses.
+- **Pre-existing project code:** the Places, Again repository and project-specific
+  implementation were created during the official submission period. No
+  project-specific pre-existing codebase is incorporated; standard frameworks,
+  libraries, development tools, and AI coding assistance were used as permitted
+  by the rules.
+
+## Findings and learnings
+
+1. **Useful agency and safety need different authorities.** Letting Gemini own
+   hard constraints would be fragile; making Gemini merely call one fixed
+   deterministic function would make the model ornamental. The useful boundary
+   was to let deterministic code construct the safe action space, Gemini choose
+   among genuine operational trade-offs, and deterministic code prove the
+   selected state again.
+2. **At-least-once delivery does not require pretending delivery is exactly
+   once.** Pub/Sub can retry. The right product invariant is exactly-once
+   business effect, enforced by a stable event ledger and one Firestore
+   transaction for version, plan, audit, and outbox.
+3. **An autonomous workflow must expose evidence, not hidden reasoning.** Event
+   IDs, state transitions, candidate summaries, selected IDs, validated reason
+   codes, re-verification, versions, retries, and outbox state make the agent
+   inspectable without storing chain-of-thought.
+4. **Portability is more credible when it is executable.** Building the second
+   commercial-production fixture with the same engine surfaced domain coupling
+   that a slide claiming “this works everywhere” would have hidden.
+5. **Deployment proof and public reachability are different gates.** A real
+   backend E2E can pass while an anonymous front door is still blocked by cloud
+   routing/policy. The submission therefore treats each as separate evidence
+   rather than using one to overclaim the other.
+
 ## What is real and what is synthetic
 
 - **Real code and deployed backend/agent path:** ADK agent, Gemini
