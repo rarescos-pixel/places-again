@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import json
-import os
 import pathlib
+import signal
 import subprocess
 import time
 from datetime import datetime, timezone
@@ -12,7 +12,6 @@ LIVE_URL = "https://places-again-674409858210.europe-west1.run.app"
 E2E_RUN_URL = "https://github.com/rarescos-pixel/places-again/actions/runs/33255155489"
 QUALITY_RUN_URL = "https://github.com/rarescos-pixel/places-again/actions/runs/33255724383"
 ARCH_URL = "https://raw.githubusercontent.com/rarescos-pixel/places-again/main/docs/architecture.svg"
-REPO_URL = "https://github.com/rarescos-pixel/places-again"
 OUT_DIR = pathlib.Path("runtime")
 RAW_VIDEO = OUT_DIR / "places-again-submission-demo-raw.mp4"
 FINAL_VIDEO = OUT_DIR / "places-again-submission-demo.mp4"
@@ -117,7 +116,7 @@ def start_capture() -> subprocess.Popen:
 
 def stop_capture(proc: subprocess.Popen) -> None:
     log("Stopping desktop capture")
-    proc.send_signal(subprocess.signal.SIGINT)
+    proc.send_signal(signal.SIGINT)
     try:
         proc.wait(timeout=20)
     except subprocess.TimeoutExpired:
@@ -147,114 +146,118 @@ def duration_seconds(path: pathlib.Path) -> float:
 
 def main() -> None:
     started = datetime.now(timezone.utc)
+    live_elapsed = None
     capture = None
-    with sync_playwright() as p:
-        browser = p.chromium.launch(
-            headless=False,
-            args=[
-                "--no-sandbox",
-                "--disable-dev-shm-usage",
-                "--window-position=0,0",
-                "--window-size=1920,1080",
-                "--start-maximized",
-            ],
-        )
-        context = browser.new_context(
-            viewport={"width": 1880, "height": 930},
-            device_scale_factor=1,
-        )
+    try:
+        with sync_playwright() as p:
+            browser = p.chromium.launch(
+                headless=False,
+                args=[
+                    "--no-sandbox",
+                    "--disable-dev-shm-usage",
+                    "--window-position=0,0",
+                    "--window-size=1920,1080",
+                    "--start-maximized",
+                ],
+            )
+            context = browser.new_context(
+                viewport={"width": 1880, "height": 930},
+                device_scale_factor=1,
+            )
 
-        film = context.new_page()
-        log("Pre-staging completed film/broadcast recovery")
-        film.goto(LIVE_URL, wait_until="networkidle", timeout=60000)
-        zoom_app(film)
-        run_scenario(film, "commercial_shoot")
-        film.locator("#selectedCandidate").scroll_into_view_if_needed()
+            film = context.new_page()
+            log("Pre-staging completed film/broadcast recovery")
+            film.goto(LIVE_URL, wait_until="networkidle", timeout=60000)
+            zoom_app(film)
+            run_scenario(film, "commercial_shoot")
+            film.locator("#selectedCandidate").scroll_into_view_if_needed()
 
-        opera = context.new_page()
-        log("Preparing clean Opera baseline")
-        opera.goto(LIVE_URL, wait_until="networkidle", timeout=60000)
-        zoom_app(opera)
-        reset_scenario(opera, "opera")
-        opera.locator("#run").scroll_into_view_if_needed()
-        opera.evaluate("window.scrollBy(0, -90)")
-        opera.bring_to_front()
+            opera = context.new_page()
+            log("Preparing clean Opera baseline")
+            opera.goto(LIVE_URL, wait_until="networkidle", timeout=60000)
+            zoom_app(opera)
+            reset_scenario(opera, "opera")
+            opera.locator("#run").scroll_into_view_if_needed()
+            opera.evaluate("window.scrollBy(0, -90)")
+            opera.bring_to_front()
 
-        capture = start_capture()
-        time.sleep(2)
+            capture = start_capture()
+            time.sleep(2)
 
-        set_overlay(opera, "LIVE GOOGLE CLOUD BUILD", "Places, Again — The plan breaks. The operation recovers.")
-        time.sleep(5)
-        show_address_bar(opera, 4)
+            set_overlay(opera, "LIVE GOOGLE CLOUD BUILD", "Places, Again — The plan breaks. The operation recovers.")
+            time.sleep(5)
+            show_address_bar(opera, 4)
 
-        set_overlay(opera, "THE FAILURE MOMENT", "At 08:05 one principal becomes unavailable. One absence cascades across people, resources and time.")
-        time.sleep(9)
+            set_overlay(opera, "THE FAILURE MOMENT", "At 08:05 one principal becomes unavailable. One absence cascades across people, resources and time.")
+            time.sleep(9)
 
-        set_overlay(opera, "SAFE AUTONOMY", "Gemini chooses among already-safe strategies. Deterministic code proves the exact choice again before commit.")
-        time.sleep(8)
+            set_overlay(opera, "SAFE AUTONOMY", "Gemini chooses among already-safe strategies. Deterministic code proves the exact choice again before commit.")
+            time.sleep(8)
 
-        # Proof of Action: no automation or DOM changes from click until terminal state.
-        set_overlay(opera, "UNEDITED PROOF OF ACTION", "One click starts the real Cloud Run → Pub/Sub/OIDC → private ADK + Gemini worker → Firestore workflow. No step-by-step guidance follows.")
-        live_start = time.monotonic()
-        opera.click("#run")
-        wait_good(opera, timeout_ms=90000)
-        live_elapsed = time.monotonic() - live_start
-        log(f"Live Opera run completed in {live_elapsed:.2f}s")
-        time.sleep(4)
+            # Proof of Action: no automation or DOM changes from click until terminal state.
+            set_overlay(opera, "UNEDITED PROOF OF ACTION", "One click starts the real Cloud Run → Pub/Sub/OIDC → private ADK + Gemini worker → Firestore workflow. No step-by-step guidance follows.")
+            live_start = time.monotonic()
+            opera.click("#run")
+            wait_good(opera, timeout_ms=90000)
+            live_elapsed = time.monotonic() - live_start
+            log(f"Live Opera run completed in {live_elapsed:.2f}s")
+            time.sleep(4)
 
-        opera.locator("#selectedCandidate").scroll_into_view_if_needed()
-        set_overlay(opera, "VISIBLE DECISION CONTRACT", "Multiple hard-safe candidates survive. The highlighted ID and validated reason codes are the actual Gemini result of this run.")
-        time.sleep(10)
+            opera.locator("#selectedCandidate").scroll_into_view_if_needed()
+            set_overlay(opera, "VISIBLE DECISION CONTRACT", "Multiple hard-safe candidates survive. The highlighted ID and validated reason codes are the actual Gemini result of this run.")
+            time.sleep(10)
 
-        opera.locator("#reverifyResult").scroll_into_view_if_needed()
-        set_overlay(opera, "DETERMINISTIC SAFETY GATE", "Deterministic re-verification: PASS. Only then can Firestore commit the state transition from v1 to v2.")
-        time.sleep(10)
+            opera.locator("#reverifyResult").scroll_into_view_if_needed()
+            set_overlay(opera, "DETERMINISTIC SAFETY GATE", "Deterministic re-verification: PASS. Only then can Firestore commit the state transition from v1 to v2.")
+            time.sleep(10)
 
-        opera.locator("#outbox").scroll_into_view_if_needed()
-        set_overlay(opera, "BOUNDED AUTHORITY", "3/3 activities recovered, 12 person-hours restored, zero unaffected activities moved. Messages are prepared, not sent.")
-        time.sleep(10)
+            opera.locator("#outbox").scroll_into_view_if_needed()
+            set_overlay(opera, "BOUNDED AUTHORITY", "3/3 activities recovered, 12 person-hours restored, zero unaffected activities moved. Messages are prepared, not sent.")
+            time.sleep(10)
 
-        # Public capabilities endpoint gives explicit Google Cloud backend identity.
-        capabilities = context.new_page()
-        capabilities.goto(LIVE_URL + "/api/capabilities", wait_until="networkidle", timeout=60000)
-        capabilities.bring_to_front()
-        set_overlay(capabilities, "GOOGLE CLOUD BACKEND PROOF", "The public .run.app endpoint identifies Cloud Run, Google ADK, Gemini 3.5 on Vertex AI, Pub/Sub and Firestore.")
-        show_address_bar(capabilities, 4)
-        time.sleep(9)
+            capabilities = context.new_page()
+            capabilities.goto(LIVE_URL + "/api/capabilities", wait_until="networkidle", timeout=60000)
+            capabilities.bring_to_front()
+            set_overlay(capabilities, "GOOGLE CLOUD BACKEND PROOF", "The public .run.app endpoint identifies Cloud Run, Google ADK, Gemini 3.5 on Vertex AI, Pub/Sub and Firestore.")
+            show_address_bar(capabilities, 4)
+            time.sleep(9)
 
-        evidence = context.new_page()
-        evidence.goto(E2E_RUN_URL, wait_until="domcontentloaded", timeout=60000)
-        evidence.bring_to_front()
-        set_overlay(evidence, "INDEPENDENT EXTERNAL E2E", "A GitHub-hosted runner opened the public UI and completed the real cloud workflow, replay proof and fail-closed adversarial case.")
-        time.sleep(12)
+            evidence = context.new_page()
+            evidence.goto(E2E_RUN_URL, wait_until="domcontentloaded", timeout=60000)
+            evidence.bring_to_front()
+            set_overlay(evidence, "INDEPENDENT EXTERNAL E2E", "A GitHub-hosted runner opened the public UI and completed the real cloud workflow, replay proof and fail-closed adversarial case.")
+            time.sleep(12)
 
-        film.bring_to_front()
-        film.locator("#selectedCandidate").scroll_into_view_if_needed()
-        set_overlay(film, "SAME ENGINE — SECOND DOMAIN", "Commercial film / broadcast: different people, resources and priorities; same candidate generation, Gemini decision contract and deterministic proof.")
-        time.sleep(13)
+            film.bring_to_front()
+            film.locator("#selectedCandidate").scroll_into_view_if_needed()
+            set_overlay(film, "SAME ENGINE — SECOND DOMAIN", "Commercial film / broadcast: different people, resources and priorities; same candidate generation, Gemini decision contract and deterministic proof.")
+            time.sleep(13)
 
-        architecture = context.new_page()
-        architecture.goto(ARCH_URL, wait_until="load", timeout=60000)
-        architecture.bring_to_front()
-        set_overlay(architecture, "ARCHITECTURE", "Public Cloud Run API → Pub/Sub/OIDC → private worker → Google ADK + Gemini → deterministic re-verification → Firestore transaction.")
-        time.sleep(13)
+            architecture = context.new_page()
+            architecture.goto(ARCH_URL, wait_until="load", timeout=60000)
+            architecture.bring_to_front()
+            set_overlay(architecture, "ARCHITECTURE", "Public Cloud Run API → Pub/Sub/OIDC → private worker → Google ADK + Gemini → deterministic re-verification → Firestore transaction.")
+            time.sleep(13)
 
-        quality = context.new_page()
-        quality.goto(QUALITY_RUN_URL, wait_until="domcontentloaded", timeout=60000)
-        quality.bring_to_front()
-        set_overlay(quality, "REPRODUCIBLE EVIDENCE", "59/59 automated tests and 52/52 labeled evaluation cases protect replay, crashes, stale state, model failure, prompt injection and safety boundaries.")
-        time.sleep(12)
+            quality = context.new_page()
+            quality.goto(QUALITY_RUN_URL, wait_until="domcontentloaded", timeout=60000)
+            quality.bring_to_front()
+            set_overlay(quality, "REPRODUCIBLE EVIDENCE", "59/59 automated tests and 52/52 labeled evaluation cases protect replay, crashes, stale state, model failure, prompt injection and safety boundaries.")
+            time.sleep(12)
 
-        opera.bring_to_front()
-        opera.evaluate("window.scrollTo(0, 0)")
-        set_overlay(opera, "PLACES, AGAIN", "Gemini decides what makes operational sense. Deterministic code proves what is safe. The plan breaks. The operation recovers.")
-        time.sleep(11)
+            opera.bring_to_front()
+            opera.evaluate("window.scrollTo(0, 0)")
+            set_overlay(opera, "PLACES, AGAIN", "Gemini decides what makes operational sense. Deterministic code proves what is safe. The plan breaks. The operation recovers.")
+            time.sleep(11)
 
-        clear_overlay(opera)
-        time.sleep(2)
-        stop_capture(capture)
-        capture = None
-        browser.close()
+            clear_overlay(opera)
+            time.sleep(2)
+            stop_capture(capture)
+            capture = None
+            browser.close()
+    finally:
+        if capture is not None and capture.poll() is None:
+            capture.kill()
 
     normalize_video()
     duration = duration_seconds(FINAL_VIDEO)
@@ -263,20 +266,16 @@ def main() -> None:
     META.write_text(json.dumps({
         "generated_at": started.isoformat(),
         "live_url": LIVE_URL,
-        "live_opera_elapsed_seconds": round(live_elapsed, 3),
+        "live_opera_elapsed_seconds": round(live_elapsed or 0.0, 3),
         "duration_seconds": round(duration, 3),
         "e2e_run": E2E_RUN_URL,
         "quality_run": QUALITY_RUN_URL,
         "runtime_source_commit": "5d6b5662cb63f8af1d414f01570c9991278b3e8e",
         "proof_of_action_note": "No page/DOM automation occurs between the single Inject disruption event click and terminal completion.",
-        "audio": "none; English on-screen captions are burned into the captured browser view",
+        "audio": "none; English on-screen captions are part of the captured browser view",
     }, indent=2) + "\n", encoding="utf-8")
     log(f"FINAL_STATUS=SUBMISSION_VIDEO_BUILT duration={duration:.2f}s")
 
 
 if __name__ == "__main__":
-    try:
-        main()
-    except Exception:
-        # Try to terminate capture if an exception occurs after ffmpeg starts.
-        raise
+    main()
