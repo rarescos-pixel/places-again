@@ -1,0 +1,28 @@
+name: Probe GCP Auth
+
+on:
+  push:
+    branches: [submission-video-automation]
+    paths:
+      - '.github/workflows/probe-gcp-auth.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Inspect non-secret Google authentication state
+        run: |
+          set -euo pipefail
+          command -v gcloud || true
+          gcloud auth list --filter='status:ACTIVE' --format='value(account)' || true
+          gcloud config get-value project 2>/dev/null || true
+          if gcloud auth print-access-token >/dev/null 2>&1; then
+            echo 'FINAL_STATUS=GOOGLE_AUTH_AVAILABLE'
+          else
+            echo 'FINAL_STATUS=NO_GOOGLE_AUTH'
+          fi
