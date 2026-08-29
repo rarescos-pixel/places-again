@@ -1,9 +1,11 @@
 # Judge evidence map
 
 Every scored claim below maps to inspectable code, a visible product state, and
-a planned video moment. The real Google Cloud E2E hard gate passed on
-2026-08-29 in the owner-authenticated deployment. Final video URLs and exact
-video timestamps still need reconciliation with the submitted build.
+a planned video moment. The real Google Cloud E2E backend/agent hard gate passed
+on 2026-08-29 in the owner-authenticated deployment. Independent public-internet
+reachability is a separate final gate and is not claimed as passed until the
+GitHub-hosted live proof reaches the service successfully. Final video URLs and
+exact video timestamps still need reconciliation with the submitted build.
 
 ## 1. Innovation & Operational Utility — 40%
 
@@ -25,7 +27,7 @@ video timestamps still need reconciliation with the submitted build.
 
 | Claim | Exact evidence | Visible/cloud proof | Video |
 |---|---|---|---|
-| Required Google stack is real | `google-adk`; model config; Cloud Run, Pub/Sub, Firestore code | Passed real cloud E2E + Cloud services + trace | 3:10–3:30 |
+| Required Google stack is real | `google-adk`; model config; Cloud Run, Pub/Sub, Firestore code | Passed real owner-authenticated cloud E2E + Cloud services + trace | 3:10–3:30 |
 | Event-driven, not a synchronous chatbot | `places_again/pubsub.py`; API returns `202 + event_id`; private push endpoint | Event ID and background timeline | 0:40–1:45 |
 | Authenticated private delivery | OIDC push SA and private internal-ingress worker in `deploy.sh` | Passed Pub/Sub OIDC cloud E2E | 3:10–3:30 |
 | Hard constraints define the safe space | `build_recovery_candidates`, `validate_schedule` | Every candidate marked hard-safe | 1:00–1:20 |
@@ -46,14 +48,15 @@ video timestamps still need reconciliation with the submitted build.
 |---|---|---|---|
 | Memorable visible transformation | cascade UI in `static/index.html` | AT RISK → RECOVERED | 0:00–2:00 |
 | Decision evidence is inspectable | `candidate_summaries`, selected ID, reasons, proof in event ledger | candidate strip + decision panel | 1:00–1:40 |
-| Responsive finalist control room | `static/index.html`; integration test | Live public Cloud Run UI | entire demo |
+| Responsive finalist control room | `static/index.html`; integration test | Public Cloud Run UI — final external reachability gate must pass before video/submission | entire demo |
 | Public reproducible quality gate | `.github/workflows/quality-gate.yml` | GitHub Actions: tests, evaluation, core verification, secret/history scan, syntax/parse checks; JSON evidence artifact | repository review |
 | Robust guided deploy | `enable_google_apis.sh`; `scripts/deploy_auto.sh`; retry tests | Owner-authenticated deployment succeeded after bypassing fragile hosted preflight | deployment evidence |
 | Real cloud E2E, replay, and failure | `scripts/cloud_e2e_test.py`; `reports/cloud-e2e-verified-20260829.md` | `FINAL_STATUS=SUCCESS`; generated cloud evidence JSON | 0:40–3:30 |
+| Independent external reachability | `.github/workflows/live-cloud-e2e-proof.yml`; `scripts/diagnose_public_404.sh` | PENDING: external runner currently receives 404; must be green before final submission | final gate |
 | Reproducible local evaluation | 52 labeled deterministic/fake-selection cases across both domains; not a Gemini invocation | `reports/evaluation-report.json` | 3:10–3:30 |
 | Acceptance invariants pass | 0 unsafe/unresolved/duplicate/invented/override; 100% reverified | evaluation summary | 3:10–3:30 |
 | Observable without hidden reasoning | event/model/tool/candidate/proof/version/retry/outbox fields | action trace and audit | 1:00–2:20 |
-| Honest evidence boundary | README and submission disclosure | synthetic-data label | judge review |
+| Honest evidence boundary | README and submission disclosure | synthetic-data label + explicit reachability gate | judge review |
 | Public video ≤ 4:00 | `docs/demo-script.md`, target 3:50 | public YouTube/Vimeo | final artifact |
 
 ## Fatal question: Why Gemini?
@@ -74,18 +77,18 @@ secret scanning, Python and shell syntax checks, and JSON/SVG parse checks. A
 successful run publishes the generated JSON reports as a downloadable Actions
 artifact.
 
-## Cloud hard gate — PASSED 2026-08-29
+## Google Cloud backend/agent hard gate — PASSED 2026-08-29
 
 The owner-authenticated Google Cloud deployment completed with
 `FINAL_STATUS=SUCCESS`.
 
-Public application:
+Deployed service URL reported by Cloud Run:
 
 `https://places-again-inb6leu4ca-ew.a.run.app`
 
 The deployment reported successful proof for:
 
-- Public Cloud Run API → Pub/Sub.
+- Cloud Run API → Pub/Sub.
 - Authenticated Pub/Sub OIDC → private Cloud Run worker.
 - Vertex AI Gemini 3.5 running through Google ADK.
 - Bounded Gemini candidate selection followed by deterministic re-verification.
@@ -99,17 +102,37 @@ owner's Cloud Shell environment. A concise committed checkpoint is available at
 `reports/cloud-e2e-verified-20260829.md`. The raw JSON should be preserved as the
 authoritative detailed artifact during final evidence reconciliation.
 
-## Bonus map — after the core cloud proof
+### Separate public-internet reachability gate — OPEN
+
+Cloud Shell later confirmed `/api/capabilities` with HTTP 200 after setting the
+public Cloud Run service to ingress `all`, enabling the default `run.app` URL,
+and disabling the Cloud Run Invoker IAM check. However, independent GitHub-hosted
+runners still received HTTP 404 from both the hash-form and deterministic-form
+Cloud Run URLs.
+
+This means the backend/agent proof above remains valid, but the project is **not
+submission-ready as a public live application yet**. Do not record the final
+video or claim public internet accessibility until `.github/workflows/live-cloud-e2e-proof.yml`
+can reach `/api/capabilities` and complete the real workflow externally.
+
+A Quality-Gate-verified read-only diagnostic is committed at
+`scripts/diagnose_public_404.sh` with a one-click tutorial in
+`docs/public-404-diagnostic.md`. It reads effective Cloud Run configuration and
+recent `run.googleapis.com/HttpIngress` audit evidence without mutating the
+service.
+
+## Bonus map — only after the public gate closes
 
 | Bonus | Evidence asset | Status |
 |---|---|---|
 | +0.2 public build content | `docs/build-article.md` | Draft; owner publication pending |
 | +0.2 social post | `docs/social-post.md` | Draft; owner publication pending |
-| +0.2 per additional eligible Google AI model, max +0.6 | none | Correctly deferred; no decorative integration |
+| +0.2 per additional eligible Google AI model, max +0.6 | isolated draft PR only | Correctly deferred; no decorative integration in `main` |
 
 ## Final sceptical-judge gate
 
 - Is the submitted commit's public Quality Gate green and are its generated reports downloadable?
+- Does an independent external runner reach the live Cloud Run UI/API without authentication or 404?
 - Can the problem be repeated after ten seconds?
 - Is the cascade visible before architecture is discussed?
 - Does the live trace show more than one real safe candidate?
