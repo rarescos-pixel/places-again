@@ -25,21 +25,27 @@ Google managed model API on Vertex AI / Gemini Enterprise Agent Platform:
 
 Region: `global`.
 
-## Real validation command
+## Real validation — one command
 
-After this branch passes CI, validate it against one completed event in the existing Google Cloud project:
+The existing Cloud E2E JSON already contains the real safe terminal event under
+`checks.safe_autonomous_recovery`, so no event ID lookup is necessary.
+
+From the owner-authenticated Cloud Shell clone of this branch:
 
 ```bash
+EVIDENCE="$(ls -t runtime/cloud-e2e-evidence-*.json | head -1)" && \
 python scripts/gemma4_recovery_briefing.py \
-  --api-url https://places-again-inb6leu4ca-ew.a.run.app \
-  --event-id YOUR_COMPLETED_EVENT_ID \
+  --cloud-e2e-evidence "$EVIDENCE" \
   --project-id project-2ee12060-728f-434f-9ad \
   --output runtime/gemma4-briefing-evidence.json
 ```
 
+Alternative validation against any known completed live event remains available with
+`--api-url` + `--event-id`.
+
 A qualifying evidence run must show:
 
-- a real terminal event fetched from the live Places, Again deployment;
+- a real terminal event from the passed Places, Again Cloud E2E;
 - the managed model ID `gemma-4-26b-a4b-it-maas`;
 - a non-empty manager briefing;
 - authority recorded as `advisory_post_recovery_only`;
