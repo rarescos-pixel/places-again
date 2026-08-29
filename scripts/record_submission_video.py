@@ -66,7 +66,7 @@ def duration_seconds(path: pathlib.Path) -> float:
     return float(result.stdout.strip())
 
 
-def run_visible_live_proof() -> float:
+def start_visible_live_proof() -> tuple[subprocess.Popen, float]:
     command = (
         "set -o pipefail; "
         "printf '\\033[1;38;5;208mPLACES, AGAIN — UNEDITED LIVE PROOF OF ACTION\\033[0m\\n'; "
@@ -75,7 +75,7 @@ def run_visible_live_proof() -> float:
         "python scripts/live_demo_proof.py 2>&1 | tee runtime/live-demo-proof.txt; "
         "rc=$?; printf '\\nExit code: %s\\n' \"$rc\"; "
         "if [ \"$rc\" -ne 0 ]; then printf '\\033[1;31mLIVE PROOF FAILED\\033[0m\\n'; sleep 8; exit \"$rc\"; fi; "
-        "printf '\\033[1;32mLIVE PROOF PASSED — keeping final evidence on screen\\033[0m\\n'; sleep 10"
+        "printf '\\033[1;32mLIVE PROOF PASSED — handing off directly to hosted build\\033[0m\\n'; sleep 3"
     )
     started = time.monotonic()
     proc = subprocess.Popen([
@@ -84,6 +84,10 @@ def run_visible_live_proof() -> float:
         "-geometry", "150x43+0+0", "-bg", "#080a0d", "-fg", "#f5f0e7",
         "-e", "bash", "-lc", command,
     ])
+    return proc, started
+
+
+def finish_visible_live_proof(proc: subprocess.Popen, started: float) -> float:
     rc = proc.wait(timeout=300)
     elapsed = time.monotonic() - started
     if rc != 0:
@@ -128,64 +132,78 @@ def show_address_bar(page, seconds: float = 3.0) -> None:
     page.keyboard.press("Escape")
 
 
-def browser_evidence() -> None:
+def browser_evidence(context, app, browser) -> None:
+    # app is deliberately preloaded behind xterm before capture starts. When
+    # xterm closes, this page is already rendered, eliminating blank desktop
+    # and browser startup frames between the unedited proof and hosted UI.
+    app.bring_to_front()
+    set_overlay(app, "PUBLIC HOSTED BUILD", "This is the judge-accessible Cloud Run application. The live proof just executed against this exact .run.app backend.")
+    show_address_bar(app, 4)
+    time.sleep(7)
+
+    cap = context.new_page()
+    cap.goto(LIVE_URL + "/api/capabilities", wait_until="networkidle", timeout=60000)
+    cap.bring_to_front()
+    set_overlay(cap, "GOOGLE CLOUD BACKEND", "Cloud Run · Google Pub/Sub · private worker · Google ADK · Gemini 3.5 on Vertex AI · Firestore.")
+    show_address_bar(cap, 3)
+    time.sleep(8)
+
+    e2e = context.new_page()
+    e2e.goto(E2E_RUN_URL, wait_until="domcontentloaded", timeout=60000)
+    e2e.bring_to_front()
+    set_overlay(e2e, "INDEPENDENT EXTERNAL EVIDENCE", "A GitHub-hosted runner independently opened the public UI and executed the real cloud path end to end.")
+    time.sleep(9)
+
+    arch = context.new_page()
+    arch.goto(ARCH_URL, wait_until="domcontentloaded", timeout=60000)
+    arch.bring_to_front()
+    set_overlay(arch, "ARCHITECTURE", "Public Cloud Run API → Pub/Sub/OIDC → private worker → ADK + Gemini → deterministic re-verification → Firestore transaction.")
+    time.sleep(10)
+
+    quality = context.new_page()
+    quality.goto(QUALITY_RUN_URL, wait_until="domcontentloaded", timeout=60000)
+    quality.bring_to_front()
+    set_overlay(quality, "REPRODUCIBLE SAFETY EVIDENCE", "59 automated tests and 52 labeled evaluation cases cover replay, stale state, concurrency, model failure, prompt injection and fail-closed behavior.")
+    time.sleep(10)
+
+    app.bring_to_front()
+    app.evaluate("window.scrollTo(0,0)")
+    set_overlay(app, "PLACES, AGAIN", "Gemini decides what makes operational sense. Deterministic code proves what is safe. The plan breaks. The operation recovers.")
+    time.sleep(10)
+    browser.close()
+
+
+def main() -> None:
+    started = datetime.now(timezone.utc)
+    capture = None
+    proof_elapsed = 0.0
     with sync_playwright() as p:
+        # Preload the exact public build before recording. It remains behind
+        # the terminal during Proof of Action and is ready for an immediate
+        # visual handoff when xterm exits.
         browser = p.chromium.launch(
             headless=False,
             args=["--no-sandbox", "--disable-dev-shm-usage", "--window-position=0,0", "--window-size=1920,1080", "--start-maximized"],
         )
         context = browser.new_context(viewport={"width": 1880, "height": 930})
-
         app = context.new_page()
         app.goto(LIVE_URL, wait_until="networkidle", timeout=60000)
-        app.bring_to_front()
-        set_overlay(app, "PUBLIC HOSTED BUILD", "This is the judge-accessible Cloud Run application. The live proof just executed against this exact .run.app backend.")
-        show_address_bar(app, 4)
-        time.sleep(7)
 
-        cap = context.new_page()
-        cap.goto(LIVE_URL + "/api/capabilities", wait_until="networkidle", timeout=60000)
-        cap.bring_to_front()
-        set_overlay(cap, "GOOGLE CLOUD BACKEND", "Cloud Run · Google Pub/Sub · private worker · Google ADK · Gemini 3.5 on Vertex AI · Firestore.")
-        show_address_bar(cap, 3)
-        time.sleep(8)
-
-        e2e = context.new_page()
-        e2e.goto(E2E_RUN_URL, wait_until="domcontentloaded", timeout=60000)
-        e2e.bring_to_front()
-        set_overlay(e2e, "INDEPENDENT EXTERNAL EVIDENCE", "A GitHub-hosted runner independently opened the public UI and executed the real cloud path end to end.")
-        time.sleep(9)
-
-        arch = context.new_page()
-        arch.goto(ARCH_URL, wait_until="domcontentloaded", timeout=60000)
-        arch.bring_to_front()
-        set_overlay(arch, "ARCHITECTURE", "Public Cloud Run API → Pub/Sub/OIDC → private worker → ADK + Gemini → deterministic re-verification → Firestore transaction.")
-        time.sleep(10)
-
-        quality = context.new_page()
-        quality.goto(QUALITY_RUN_URL, wait_until="domcontentloaded", timeout=60000)
-        quality.bring_to_front()
-        set_overlay(quality, "REPRODUCIBLE SAFETY EVIDENCE", "59 automated tests and 52 labeled evaluation cases cover replay, stale state, concurrency, model failure, prompt injection and fail-closed behavior.")
-        time.sleep(10)
-
-        app.bring_to_front()
-        app.evaluate("window.scrollTo(0,0)")
-        set_overlay(app, "PLACES, AGAIN", "Gemini decides what makes operational sense. Deterministic code proves what is safe. The plan breaks. The operation recovers.")
-        time.sleep(10)
-        browser.close()
-
-
-def main() -> None:
-    started = datetime.now(timezone.utc)
-    capture = start_capture()
-    try:
-        time.sleep(2)
-        proof_elapsed = run_visible_live_proof()
-        log(f"Live proof elapsed: {proof_elapsed:.2f}s")
-        browser_evidence()
-        time.sleep(2)
-    finally:
-        stop_capture(capture)
+        proof_proc, proof_started = start_visible_live_proof()
+        # Give the window manager time to put xterm above the preloaded browser.
+        time.sleep(1.2)
+        capture = start_capture()
+        try:
+            time.sleep(1)
+            proof_elapsed = finish_visible_live_proof(proof_proc, proof_started)
+            log(f"Live proof elapsed: {proof_elapsed:.2f}s")
+            # xterm has closed. The already-rendered Cloud Run page is directly
+            # underneath, so no black/white startup gap can be recorded.
+            browser_evidence(context, app, browser)
+            time.sleep(1)
+        finally:
+            if capture is not None:
+                stop_capture(capture)
 
     normalize_video()
     duration = duration_seconds(FINAL_VIDEO)
@@ -201,8 +219,14 @@ def main() -> None:
         "live_url": LIVE_URL,
         "runtime_source_commit": "5d6b5662cb63f8af1d414f01570c9991278b3e8e",
         "proof_mode": "unedited visible terminal execution against public Cloud Run endpoint",
-        "proof_cases": ["opera autonomous safe recovery", "replay exactly-once business effect", "adversarial human_required", "commercial film/broadcast autonomous recovery"],
+        "proof_cases": [
+            "opera autonomous safe recovery",
+            "replay exactly-once business effect",
+            "adversarial human_required",
+            "commercial film/broadcast autonomous recovery",
+        ],
         "proof_process_exit_code": 0,
+        "transition": "preloaded hosted build behind proof terminal; direct visual handoff",
         "audio": "none; English on-screen text/captions",
     }, indent=2) + "\n", encoding="utf-8")
     log(f"FINAL_STATUS=SUBMISSION_VIDEO_BUILT duration={duration:.2f}s")
