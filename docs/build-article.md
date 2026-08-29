@@ -3,7 +3,10 @@
 > This piece of content was created for the purposes of entering the Google All Things
 > Agentic Hackathon.
 
-**Live app:** https://places-again-inb6leu4ca-ew.a.run.app
+**Live app:** [INSERT ONLY AFTER INDEPENDENT PUBLIC-INTERNET REACHABILITY IS GREEN]
+
+> Publication gate: do not publish this article until the live-app placeholder above
+> has been replaced by an independently verified public URL.
 
 Most operational software is designed for the moment when the plan works. I
 built Places, Again for the moment when one absence makes that plan false.
@@ -76,10 +79,10 @@ on every operational metric.
 
 ## Why Pub/Sub and an event ledger matter
 
-The public Cloud Run API validates and persists the incident first, returns an
-event ID, and publishes only that opaque ID. Authenticated Google Pub/Sub
-delivery invokes a private Cloud Run worker running Gemini 3.5 through Google
-ADK on Vertex AI.
+The Cloud Run API validates and persists the incident first, returns an event
+ID, and publishes only that opaque ID. Authenticated Google Pub/Sub delivery
+invokes a private Cloud Run worker running Gemini 3.5 through Google ADK on
+Vertex AI.
 
 Pub/Sub is at-least-once. A worker may receive the same event more than once or
 finish work before losing an acknowledgement. Places, Again therefore promises
@@ -139,20 +142,25 @@ the event ID, candidate set, selected ID, validated reasons, ADK tool actions,
 deterministic proof, versions, retries, outbox status, and available model
 usage/latency metadata.
 
-## The Google Cloud path — verified live
+## The Google Cloud path — backend/agent E2E verified
 
-On 2026-08-29 the full deployment completed with `FINAL_STATUS=SUCCESS` on
-Google Cloud. The audited E2E run proved the real path:
+On 2026-08-29 the owner-authenticated deployment completed with
+`FINAL_STATUS=SUCCESS` on Google Cloud. The audited E2E run proved the real
+backend/agent path:
 
-`public Cloud Run API → Pub/Sub/OIDC → private Cloud Run worker → Google ADK + Gemini 3.5 on Vertex AI → deterministic re-verification → Firestore`
+`Cloud Run API → Pub/Sub/OIDC → private Cloud Run worker → Google ADK + Gemini 3.5 on Vertex AI → deterministic re-verification → Firestore`
 
 The same run proved `v1 → v2` exactly once, replay without duplicate business
 effects, an impossible/adversarial incident stopping at `human_required`, and
 messages prepared with messages sent remaining zero.
 
+Independent anonymous public-internet reachability of the final `run.app`
+front door is treated as a separate final publication/submission gate and must
+be green before this article is published.
+
 The production architecture uses:
 
-- public and private services on Google Cloud Run;
+- public-facing and private services on Google Cloud Run;
 - authenticated background delivery through Google Pub/Sub;
 - Gemini 3.5 on Vertex AI through Google ADK;
 - atomic event and operational state in Firestore;
