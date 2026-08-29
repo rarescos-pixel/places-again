@@ -32,6 +32,11 @@ Visual: hero and autonomy/safety statement.
 
 ## 0:40–1:45 — One live disruption, no further guidance
 
+**Proof-of-Action recording rule:** this entire trigger-to-terminal segment must
+be one continuous, uncut screen recording. Do not pause, splice, jump forward,
+or replace waiting time with another take. Cuts are allowed elsewhere in the
+final video, but not inside this live agent execution.
+
 Visual: trigger **Inject disruption event** once in the exact deployed build.
 Keep the event ID and workflow timeline visible. Do not guide intermediate
 steps until terminal state.
@@ -137,6 +142,7 @@ Mandatory:
 - English audio or English subtitles;
 - exact submitted Google Cloud build, not a mock substituted for cloud execution;
 - Google Cloud backend evidence visible;
+- the main trigger-to-terminal Proof-of-Action segment is continuous and uncut;
 - one event trigger before the main workflow reaches a terminal state;
 - actual safe-candidate count, selected ID, validated reasons, and
   re-verification visible;
