@@ -4,6 +4,8 @@
 > software for when the plan works. Places, Again is for the moment when the
 > plan breaks.
 
+**Live Google Cloud deployment:** https://places-again-inb6leu4ca-ew.a.run.app
+
 Places, Again turns one operational incident into a completed background
 workflow. A deterministic engine maps the safe recovery space. Gemini compares
 the real operational trade-offs inside that space and selects one candidate ID.
@@ -27,8 +29,8 @@ and a commercial film/broadcast shoot.
 
 - **52/52 local labeled evaluation cases pass**: the original 47 two-domain
   cases plus 5 bounded-agent contract/failure simulations. The local evaluator
-  exercises the deterministic fallback and stubbed selection calls; real Gemini
-  proof remains the cloud E2E hard gate below.
+  exercises deterministic fallback and stubbed selection calls; it is separate
+  from the real Gemini cloud proof below.
 - **59/59 automated tests pass.**
 - **0 unsafe commits, 0 unresolved auto-commits, 0 duplicate side effects.**
 - **0 Gemini-invented-plan commits; 0 hard-constraint overrides.**
@@ -39,11 +41,27 @@ and a commercial film/broadcast shoot.
   and prompt injection are covered.
 - External communication remains `prepared_not_sent`; **messages sent = 0**.
 
-The full reproducible result is in
-[`reports/evaluation-report.json`](reports/evaluation-report.json). Cloud claims
-are deliberately a hard gate: a real deployment is not considered proven until
-[`scripts/cloud_e2e_test.py`](scripts/cloud_e2e_test.py) produces its evidence
-report against Google Cloud.
+The full reproducible local result is in
+[`reports/evaluation-report.json`](reports/evaluation-report.json).
+
+### Real Google Cloud proof — PASSED
+
+On 2026-08-29, the audited deployment completed with `FINAL_STATUS=SUCCESS` on
+Google Cloud. The real E2E gate proved:
+
+- public Cloud Run API -> Pub/Sub -> authenticated private Cloud Run worker;
+- Google ADK + Gemini 3.5 selection through Vertex AI;
+- multiple deterministic safe candidates and a valid selected candidate ID;
+- deterministic current-state re-verification before commit;
+- Firestore state transition `v1 -> v2` exactly once;
+- replay without duplicate business effects or duplicate outbox items;
+- impossible/adversarial incident -> `human_required` with no unsafe state
+  mutation or send;
+- messages prepared, messages sent = 0.
+
+Deployment checkpoint: [`reports/cloud-deployment-success-2026-08-29.md`](reports/cloud-deployment-success-2026-08-29.md).
+The deployment script also generated the raw Cloud E2E JSON under the Cloud
+Shell runtime directory.
 
 ## The Taskmaster workflow
 
@@ -144,7 +162,9 @@ Demonstrated now:
 - minimum-change recovery under the implemented policy;
 - safe automatic commit, stale-plan rejection, atomic replay protection, human
   escalation, audit, and prepared outbox;
-- synthetic data only.
+- a real Google Cloud E2E run using Cloud Run, Pub/Sub/OIDC, Vertex AI/ADK,
+  Gemini 3.5 and Firestore;
+- synthetic scenario data only.
 
 Not claimed:
 
@@ -171,9 +191,8 @@ python -m venv .venv
 
 Open `http://127.0.0.1:8000`. Choose **Opera Production** or **Commercial Film /
 Broadcast Production**, then click **Inject disruption event** once. Local mode
-runs the persisted deterministic fallback in a background task; it is not proof
-of Gemini selection. The production deployment replaces that transport with
-Pub/Sub and a private ADK worker, verified only by the cloud E2E gate.
+runs the persisted deterministic fallback in a background task; the submitted
+Cloud Run deployment uses Pub/Sub and a private ADK/Gemini worker.
 
 Additional checks:
 
@@ -182,20 +201,21 @@ Additional checks:
 .venv/bin/python scripts/verify_core.py
 ```
 
-## One-command Google Cloud deployment
+## Google Cloud deployment
 
 The deployment requires an authenticated Google Cloud CLI session and an
 already billing-enabled project. It never chooses a billing account and never
 creates or downloads a service-account key.
 
-### Guided deploy — no terminal commands
+### Guided deploy
 
 [![Run on Google Cloud](https://deploy.cloud.run/button.svg)](https://deploy.cloud.run?git_repo=https://github.com/rarescos-pixel/places-again&revision=main)
 
-The Google-hosted flow asks for the Google account, project, and region, then
-runs the same audited deployment and E2E gate automatically. The source
-repository must be public for this button, and billing must already be enabled
-on the selected project. No service-account key is created or requested.
+The Google-hosted flow can ask for the Google account, project, and region. For
+accounts where the hosted preflight encounters Service Usage quota limits, the
+repository also includes an audited Cloud Shell tutorial path using
+`scripts/deploy_auto.sh`, which discovers an accessible billing-enabled project
+and delegates to the same authoritative deployment script.
 
 Fresh-project Service Usage quotas are handled in code: required APIs are
 checked individually, only missing services are enabled, and transient 429/5xx
@@ -268,6 +288,7 @@ No public arbitrary-prompt endpoint exists.
 - `places_again/models.py` — strict bounded Pydantic input models
 - `evaluation/cases.json` — 52 labeled cases (47 original + 5 agentic-decision cases)
 - `reports/evaluation-report.json` — current reproducible local results
+- `reports/cloud-deployment-success-2026-08-29.md` — verified Cloud deployment checkpoint
 - `SECURITY.md` — threat model and authority boundaries
 - `FAILURE_MODES.md` — failure detection and designed behavior
 - `JUDGE_EVIDENCE.md` — rubric claim-to-proof map
