@@ -68,12 +68,13 @@ def duration_seconds(path: pathlib.Path) -> float:
 
 def run_visible_live_proof() -> float:
     command = (
+        "set -o pipefail; "
         "printf '\\033[1;38;5;208mPLACES, AGAIN — UNEDITED LIVE PROOF OF ACTION\\033[0m\\n'; "
         "printf 'Public Google Cloud endpoint: %s\\n\\n' '" + LIVE_URL + "'; "
         "printf '$ python scripts/live_demo_proof.py\\n\\n'; "
         "python scripts/live_demo_proof.py 2>&1 | tee runtime/live-demo-proof.txt; "
-        "rc=${PIPESTATUS[0]}; printf '\\nExit code: %s\\n' \"$rc\"; "
-        "if [ \"$rc\" -ne 0 ]; then printf '\\033[1;31mLIVE PROOF FAILED\\033[0m\\n'; sleep 12; exit \"$rc\"; fi; "
+        "rc=$?; printf '\\nExit code: %s\\n' \"$rc\"; "
+        "if [ \"$rc\" -ne 0 ]; then printf '\\033[1;31mLIVE PROOF FAILED\\033[0m\\n'; sleep 8; exit \"$rc\"; fi; "
         "printf '\\033[1;32mLIVE PROOF PASSED — keeping final evidence on screen\\033[0m\\n'; sleep 10"
     )
     started = time.monotonic()
@@ -87,11 +88,19 @@ def run_visible_live_proof() -> float:
     elapsed = time.monotonic() - started
     if rc != 0:
         raise RuntimeError(f"live proof terminal exited with {rc}")
-    # The terminal pipeline's Python exit status is the authoritative proof gate.
-    # Persist a parent-side marker only after that verified zero exit code, because
-    # xterm/tee can lose its final buffered line when the window closes.
+    proof_text = PROOF_LOG.read_text(encoding="utf-8") if PROOF_LOG.exists() else ""
+    required = [
+        "[1] OPERA",
+        "[2] REPLAY",
+        "[3] FAIL CLOSED",
+        "[4] COMMERCIAL FILM / BROADCAST",
+        "FINAL_STATUS=SUCCESS",
+    ]
+    missing = [marker for marker in required if marker not in proof_text]
+    if missing:
+        raise RuntimeError(f"live proof log missing required markers: {missing}")
     with PROOF_LOG.open("a", encoding="utf-8") as f:
-        f.write("\nPARENT_VERIFIED_LIVE_PROOF_EXIT_CODE=0\nFINAL_STATUS=SUCCESS\n")
+        f.write("\nPARENT_VERIFIED_LIVE_PROOF_EXIT_CODE=0\n")
     return elapsed
 
 
