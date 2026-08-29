@@ -75,4 +75,10 @@ else
 fi
 
 note "selected_project=${SELECTED} action=deploy"
-exec bash "${ROOT_DIR}/deploy.sh" "${SELECTED}"
+bash "${ROOT_DIR}/deploy.sh" "${SELECTED}"
+
+# The hosted/default URL state is a service-level property that can persist from
+# an older Cloud Run service. Re-assert the judge-facing public front door after
+# the authoritative deployment without rebuilding the verified application image.
+note "selected_project=${SELECTED} action=verify_public_frontdoor"
+bash "${ROOT_DIR}/scripts/repair_public_frontdoor.sh" "${SELECTED}"
