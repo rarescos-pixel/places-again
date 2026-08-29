@@ -26,6 +26,7 @@ The demo shows:
 - the same recovery engine in a commercial film/broadcast scenario;
 - real Google Cloud execution evidence.
 
+Hosted application: https://places-again-674409858210.europe-west1.run.app
 Repository: https://github.com/rarescos-pixel/places-again
 
 Built with Gemini 3.5, Vertex AI, Google ADK, Cloud Run, Pub/Sub, Firestore, FastAPI, Pydantic, Python, JavaScript, and Docker.
@@ -38,7 +39,7 @@ Built with Gemini 3.5, Vertex AI, Google ADK, Cloud Run, Pub/Sub, Firestore, Fas
 - English narration or English subtitles.
 - <= 4:00 final duration.
 - Do not replace the final video after submission.
-- Do not claim a hosted application URL unless anonymous judge access is actually verified.
+- Hosted application is independently verified from GitHub Actions on 2026-08-29.
 
 ## Devpost — fixed copy anchors
 
@@ -68,9 +69,9 @@ https://github.com/rarescos-pixel/places-again
 
 ### Hosted application
 
-Preferred: insert the verified anonymous `.run.app` URL only if external judge access is green.
+https://places-again-674409858210.europe-west1.run.app
 
-Deadline fallback: if the front door still returns 404 externally, omit the broken hosted URL if the form permits and rely on the public demo, repository, architecture, testing instructions, and real Google Cloud execution evidence.
+Independent GitHub-hosted verification on 2026-08-29 reached `/api/capabilities` and completed the full live Cloud E2E path successfully.
 
 ### Demo video
 
