@@ -3,6 +3,8 @@
 This file is the single final checklist. Do not replace it with a new planning document.
 A box becomes green only with inspectable evidence.
 
+Final upload/copy-paste packet: `docs/final-upload-copy.md`.
+
 ## 1. Stage One — mandatory eligibility / submission viability
 
 - [x] Project created during the official submission period.
