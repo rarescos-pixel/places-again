@@ -19,7 +19,8 @@ The production path is: Cloud Run API → authenticated Pub/Sub → private Clou
 Gemini chooses among several already-safe recovery strategies using ranked operational priorities. Deterministic code owns every hard constraint and proves the selected plan again before any state change. When safety cannot be proved, the workflow ends in `human_required` with no unsafe commit and no outbound send.
 
 The demo shows:
-- one absence expanding into 3 activities, 6 people, 3 resources, and 12 person-hours at risk;
+- the operational problem first: one absence expanding into 3 activities, 6 people, 3 resources, and 12 person-hours at risk;
+- one continuous, unedited public-Cloud Proof of Action from trigger through terminal state;
 - autonomous recovery of 3/3 activities and 12 person-hours;
 - multiple safe candidates and the real Gemini-selected candidate/reason codes;
 - deterministic re-verification before Firestore commit;
@@ -39,14 +40,17 @@ Built with Gemini 3.5, Vertex AI, Google ADK, Cloud Run, Pub/Sub, Firestore, Fas
 
 The automated submission-video workflow has produced and inspected a 1920×1080 H.264 MP4:
 
-- duration: **120.40 seconds**;
+- duration: **145.67 seconds (2:25.7)**;
 - English on-screen captions;
-- visible unedited terminal proof against the public `.run.app` endpoint;
+- 9-second product/problem cold open before the technical proof;
+- visible continuous unedited terminal proof against the public `.run.app` endpoint;
 - Opera safe recovery;
 - replay exactly-once business-effect proof;
 - adversarial/impossible `human_required` proof;
 - commercial film/broadcast second-domain proof;
 - public app, capabilities, independent E2E, architecture, and Quality Gate evidence.
+
+Final video-generation proof: GitHub Actions `Build Submission Demo Video` run `33267710383`, artifact `9719197325`.
 
 This MP4 is a generated artifact, **not yet the mandatory public-video URL**. Do not put a GitHub artifact/release URL in the Devpost video field: the official submission requires public YouTube or Vimeo.
 
