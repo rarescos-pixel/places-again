@@ -2,33 +2,30 @@
 
 ## Recording strategy
 
-**Preferred winner path:** record after independent anonymous public-internet reachability is green, using the exact externally reachable Cloud Run build.
+Record from the exact independently reachable Cloud Run build:
 
-**Deadline fallback permitted by the official FAQ:** the application does not have to remain publicly accessible/deployed during judging. If the anonymous front door still cannot be fixed in time, record only through an owner-accessible/authenticated path that demonstrates the same submitted Cloud build and real workflow, and show the Cloud Console/Cloud Run/Vertex/Firestore evidence explicitly. Do not fake a public URL or substitute a local deterministic run while narrating it as real Gemini cloud execution.
+https://places-again-674409858210.europe-west1.run.app
 
-Deployed Cloud Run service URL under external verification:
-
-https://places-again-inb6leu4ca-ew.a.run.app
+Independent anonymous public reachability and full live Cloud E2E passed on 2026-08-29 in GitHub Actions `Live Cloud E2E Proof` run `33254443473`.
 
 Verified Google Cloud project:
 
 `project-2ee12060-728f-434f-9ad`
 
-The owner-authenticated backend/agent Cloud E2E has already passed. The API deployment has `PLACES_AGAIN_SYNTHETIC_DEMO_MODE=true`, so the synthetic scenario can be reset for clean recording attempts without redeploying the infrastructure.
+The API deployment has `PLACES_AGAIN_SYNTHETIC_DEMO_MODE=true`, so the synthetic scenario can be reset for clean recording attempts without redeploying infrastructure.
+
+Do not rerun `deploy.sh` just to reset the demo. The backend deployment and public production path are already verified.
 
 ## Before recording
 
-1. Preferred: confirm the GitHub `Live Cloud E2E Proof` is green from an anonymous external runner.
-2. If anonymous access is not green and the deadline fallback is necessary, confirm you can visibly operate the exact deployed Cloud build through an authenticated owner-access path. If you cannot, do not misrepresent a local fallback as cloud execution.
-3. Open the app/demo view in a clean browser tab.
-4. Close personal tabs/notifications and hide any account-sensitive UI.
-5. Confirm **Opera Production** is selected.
-6. Reset the synthetic scenario from the demo UI if the baseline is not clean.
-7. Confirm the page shows the pre-incident state before recording.
-8. Open all Google Cloud evidence tabs listed below before starting the take.
-9. Keep the deployed Cloud Run URL/service identity visible at least once in the recording.
-
-Do not rerun `deploy.sh` just to reset the demo. The backend deployment is already verified.
+1. Open the verified hosted URL above in a clean browser tab.
+2. Confirm the page loads without authentication or 404 friction.
+3. Close personal tabs/notifications and hide any account-sensitive UI.
+4. Confirm **Opera Production** is selected.
+5. Reset the synthetic scenario from the demo UI if the baseline is not clean.
+6. Confirm the page shows the pre-incident state before recording.
+7. Open all Google Cloud evidence tabs listed below before starting the take.
+8. Keep the deployed Cloud Run URL/service identity visible at least once in the recording.
 
 ## Main take — target 3:40–3:55
 
@@ -92,6 +89,8 @@ Use the existing Cloud E2E evidence / UI evidence rather than improvising a new 
 
 Show that replay kept the same committed version/outbox and the impossible/adversarial event reached `human_required` without unsafe state mutation or sends.
 
+Independent external evidence is already captured in GitHub Actions run `33254443473`: version remained 2 after replay, outbox count remained 12, and the adversarial unknown-person case ended in `human_required` with messages sent = 0.
+
 ### 2:45–3:10 — second domain
 
 Switch to **Commercial Film / Broadcast Production**.
@@ -148,7 +147,7 @@ Do not publish the take unless all are true:
 
 - duration <= 4:00;
 - English audio or English subtitles;
-- the exact submitted build is demonstrated, not a mock substituted for cloud execution;
+- the exact submitted public Cloud Run build is demonstrated, not a mock;
 - the 0:40–1:45 trigger-to-terminal Proof-of-Action segment is continuous and uncut;
 - main workflow begins with one action and then proceeds autonomously;
 - actual candidate count/ID/reasons match narration;
@@ -160,11 +159,6 @@ Do not publish the take unless all are true:
 - Google Cloud deployment is visibly demonstrated;
 - no credentials, personal data, notifications or unrelated tabs appear.
 
-Strongly preferred but not formal deadline blockers:
-
-- anonymous public `.run.app` reachability is green;
-- hosted-project link can be supplied for judge testing.
-
 If any spoken number or model-selection claim differs from the screen, discard the take and record again.
 
 ## After recording
@@ -173,8 +167,8 @@ If any spoken number or model-selection claim differs from the screen, discard t
 2. Confirm the published duration is <= 4:00.
 3. Add the public video URL to `docs/submission.md` and `JUDGE_EVIDENCE.md`.
 4. Add final video timestamps to `JUDGE_EVIDENCE.md`.
-5. Publish the build article and social post independently of hosted-app availability; add their public URLs to the submission if claiming the bonuses.
-6. If the hosted app is anonymously reachable, include its verified URL. If not, follow the official FAQ and do not advertise a broken link as judge-accessible.
-7. Finalize Devpost.
+5. Publish the build article and social post; add their public URLs to the submission if claiming the bonuses.
+6. Re-open the hosted application anonymously once immediately before Devpost Submit.
+7. Finalize Devpost and freeze the exact repository/video/live build.
 
 Do not modify the judged repository/video or any submitted live app after final submission until winners are announced; use a separate fork/branch for later experimentation.

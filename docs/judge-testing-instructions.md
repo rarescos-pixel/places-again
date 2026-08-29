@@ -4,9 +4,13 @@ These instructions are intentionally short. They do not require credentials for 
 
 ## Preferred path — hosted UI
 
-Use this path only if the final submitted Devpost entry includes a hosted application URL that has passed the independent anonymous reachability check.
+Verified hosted application:
 
-1. Open the submitted hosted URL in a desktop browser.
+`https://places-again-674409858210.europe-west1.run.app`
+
+This URL passed an independent anonymous GitHub-hosted `/api/capabilities` check and full live Cloud E2E on 2026-08-29 (`Live Cloud E2E Proof` run `33254443473`).
+
+1. Open the hosted URL in a desktop browser.
 2. Select **Opera Production**.
 3. Confirm the page is in the clean synthetic baseline state. If the demo reset control is available and no event is running, use **Reset scenario** once.
 4. Click **Inject disruption event** once.
@@ -63,9 +67,11 @@ Expected repository baseline:
 
 ## Google Cloud proof
 
-The owner-authenticated deployment already completed a real end-to-end proof on Google Cloud using:
+The production path has passed both owner-authenticated and independent public end-to-end verification:
 
 `Cloud Run API → Pub/Sub/OIDC → private Cloud Run worker → Google ADK + Gemini 3.5 on Vertex AI → deterministic re-verification → Firestore`
+
+The independent external run also verified replay without a duplicate business effect and an adversarial/unknown-person event ending in `human_required` with zero messages sent.
 
 See:
 
