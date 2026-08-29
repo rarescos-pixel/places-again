@@ -6,138 +6,147 @@ Record from the exact independently reachable Cloud Run build:
 
 https://places-again-674409858210.europe-west1.run.app
 
-Independent anonymous public reachability and full live Cloud E2E passed on 2026-08-29 in GitHub Actions `Live Cloud E2E Proof` run `33254443473`.
+Independent anonymous hosted-UI reachability and the full live Cloud E2E passed
+on 2026-08-29 in GitHub Actions `Live Cloud E2E Proof` run `33255155489` on
+commit `374798636b7b907c7fb20ad4ced806b27a07eb55`.
 
 Verified Google Cloud project:
 
 `project-2ee12060-728f-434f-9ad`
 
-The API deployment has `PLACES_AGAIN_SYNTHETIC_DEMO_MODE=true`, so the synthetic scenario can be reset for clean recording attempts without redeploying infrastructure.
+The API deployment has `PLACES_AGAIN_SYNTHETIC_DEMO_MODE=true`, so the synthetic
+scenario can be reset for clean recording attempts without redeploying
+infrastructure. Do not rerun `deploy.sh` just to reset the demo.
 
-Do not rerun `deploy.sh` just to reset the demo. The backend deployment and public production path are already verified.
+The final proof measured the safe Opera run at about 12.61 seconds from
+`received` to `completed`, with about 11.34 seconds of Gemini/ADK latency. This
+is not a guaranteed future duration. Plan ~35 seconds for the live segment; if
+the run takes longer, keep it continuous and shorten later sections.
 
 ## Before recording
 
-1. Open the verified hosted URL above in a clean browser tab.
-2. Confirm the page loads without authentication or 404 friction.
-3. Close personal tabs/notifications and hide any account-sensitive UI.
+1. Open the hosted URL in a clean desktop browser tab.
+2. Confirm it loads without auth/404 and the badges identify Google ADK, Gemini
+   3.5, Cloud Run, Pub/Sub and Firestore.
+3. Close personal tabs, notifications and any account-sensitive UI.
 4. Confirm **Opera Production** is selected.
-5. Reset the synthetic scenario from the demo UI if the baseline is not clean.
-6. Confirm the page shows the pre-incident state before recording.
-7. Open all Google Cloud evidence tabs listed below before starting the take.
-8. Keep the deployed Cloud Run URL/service identity visible at least once in the recording.
+5. Press **Reset scenario** once if the page is not in the clean baseline.
+6. Confirm the status says the scenario is ready and the event ID is blank.
+7. Open all Google Cloud evidence tabs listed below before recording.
+8. Open the architecture diagram and repository/Quality Gate in separate tabs.
+9. Keep the browser address bar with the public `.run.app` URL visible at least
+   once in the final video.
 
-## Main take — target 3:40–3:55
+## Main take — target 3:30–3:40
 
-### 0:00–0:20 — problem, immediately quantified
+### 0:00–0:18 — problem and stakes
 
-Show **08:05 — principal unavailable** and let the blast-radius strip make the stakes obvious:
+Show the Opera incident context and say the quantified stakes: 3 activities, 6
+people, 3 resources, 12 person-hours at risk.
 
-- 3 activities;
-- 6 people;
-- 3 resources;
-- 12 person-hours at risk.
+### 0:18–0:35 — product promise
 
-Narration:
+Explain the authority split: Gemini chooses among already-safe strategies;
+deterministic code proves the exact selected candidate again before commit.
 
-> At 08:05, one principal calls in sick. Within seconds, three activities, six people, three resources, and twelve person-hours are at risk. I built this because I know this failure firsthand: in live production, one absence is never one absence, and somebody has to rebuild the day while everyone waits.
+### 0:35–1:10 — one real Cloud event
 
-### 0:20–0:40 — product promise
+**From the click on `Inject disruption event` until terminal state, keep the
+recording continuous and uncut.** No pause, splice, speed-up, jump-forward or
+second take inserted inside this live sequence.
 
-Show the hero/autonomy statement.
+Click **Inject disruption event** exactly once.
 
-> Places, Again is autonomous operational disruption recovery. When the plan breaks, it maps the cascade, finds several safe recovery strategies, lets Gemini choose what makes operational sense, proves that exact choice again, and commits the change. If safety cannot be proved, it stops for a human.
-
-### 0:40–1:45 — one real cloud event, one action
-
-**Record this entire segment continuously and without edits.** From the moment
-**Inject disruption event** is triggered until the workflow reaches terminal
-state, do not pause the recording, splice takes, jump forward, or hide waiting
-time. This is the rubric's live Proof of Action.
-
-Trigger **Inject disruption event** once in the exact submitted cloud build.
-
-After that, do not guide the workflow. Let the real Cloud Run → Pub/Sub → private worker → ADK/Gemini → Firestore path finish.
+Then do not interact until the workflow reaches `completed` or
+`human_required`.
 
 Keep visible where possible:
 
 - event ID;
 - blast-radius metrics;
+- timeline;
 - safe candidate cards;
-- actual Gemini selected candidate ID;
-- validated reason codes;
-- deterministic re-verification PASS;
-- timeline reaching terminal state.
+- actual Gemini-selected candidate ID;
+- actual validated reason codes;
+- `Deterministic re-verification: PASS`;
+- terminal status.
 
-Never pre-script a candidate ID or reason code. Narrate only what the captured run actually displays.
+If the run completes before the planned 35 seconds, stay in the same continuous
+shot and hold on the decision/re-verification proof. If it runs longer, keep
+recording and shorten the later evidence/closing sections. Never cut the live
+run to hit a timestamp.
 
-### 1:45–2:20 — recovered state
+### 1:10–1:38 — recovered state
 
-Show:
+Show clearly:
 
 - 3/3 recovered;
 - 12 person-hours restored;
 - 0 unaffected activities moved;
 - version `1 → 2`;
-- outbox prepared;
+- 12 messages prepared;
 - messages sent = 0;
-- safety proof.
+- safety proof / re-verification PASS.
 
-### 2:20–2:45 — replay/failure proof
+### 1:38–2:00 — replay and fail-closed evidence
 
-Use the existing Cloud E2E evidence / UI evidence rather than improvising a new destructive test during the main take.
+Use the already-verified Cloud/GitHub E2E evidence rather than improvising a
+second destructive test during the main take.
 
-Show that replay kept the same committed version/outbox and the impossible/adversarial event reached `human_required` without unsafe state mutation or sends.
+Final independent proof run `33255155489` recorded:
 
-Independent external evidence is already captured in GitHub Actions run `33254443473`: version remained 2 after replay, outbox count remained 12, and the adversarial unknown-person case ended in `human_required` with messages sent = 0.
+- replay version remained 2;
+- outbox count remained 12;
+- the impossible/adversarial unknown-person case ended in `human_required`;
+- messages sent remained 0.
 
-### 2:45–3:10 — second domain
+### 2:00–2:25 — second domain
 
-Switch to **Commercial Film / Broadcast Production**.
+Switch to **Commercial Film / Broadcast Production** and show a completed result
+using the same candidate-selection/re-verification mechanism. Keep this fast:
+show the domain switch, candidate/decision proof and the recovered metrics.
 
-Show the completed recovery proof using the same candidate-selection/re-verification mechanism.
+### 2:25–2:52 — Google Cloud proof
 
-Narration target:
-
-> Different people, resources and priorities—same recovery engine, same Gemini decision contract, same deterministic proof and commit path.
-
-### 3:10–3:30 — undeniable Google Cloud proof
-
-Make one fast cutaway through the following pages. **Open these tabs before recording; do not navigate through menus during the take.**
+These tabs must already be open before recording:
 
 Cloud Run services:
-
 https://console.cloud.google.com/run?project=project-2ee12060-728f-434f-9ad
 
 Pub/Sub:
-
 https://console.cloud.google.com/cloudpubsub?project=project-2ee12060-728f-434f-9ad
 
 Firestore:
-
 https://console.cloud.google.com/firestore?project=project-2ee12060-728f-434f-9ad
 
 Vertex AI:
-
 https://console.cloud.google.com/vertex-ai?project=project-2ee12060-728f-434f-9ad
 
-Names that must be legible somewhere:
+Make these names legible somewhere:
 
-- `places-again`
-- `places-again-worker`
-- `places-again-events`
-- `places-again-worker-push`
-- Gemini 3.5 / Vertex AI / Google ADK evidence
+- `places-again`;
+- `places-again-worker`;
+- `places-again-events`;
+- `places-again-worker-push`;
+- Gemini 3.5 / Vertex AI / Google ADK evidence.
 
 Then show the committed architecture diagram briefly.
 
-### 3:30–3:50 — close
+### 2:52–3:15 — reproducible evidence
+
+Show the public repo / Quality Gate and state:
+
+- 52/52 labeled evaluation cases;
+- 59/59 automated tests;
+- independent public hosted-UI + live Cloud E2E proof.
+
+### 3:15–3:32 — close
 
 Return to the recovered app.
 
 > Gemini decides what makes operational sense. Deterministic code proves what is safe.
 >
-> Places, Again is the agent where one person disappears—and the broken operation rebuilds itself safely.
+> One person disappears—and the broken operation rebuilds itself safely.
 >
 > The plan breaks. The operation recovers.
 
@@ -145,30 +154,37 @@ Return to the recovered app.
 
 Do not publish the take unless all are true:
 
-- duration <= 4:00;
+- duration <= 4:00; target 3:30–3:40;
 - English audio or English subtitles;
-- the exact submitted public Cloud Run build is demonstrated, not a mock;
-- the 0:40–1:45 trigger-to-terminal Proof-of-Action segment is continuous and uncut;
-- main workflow begins with one action and then proceeds autonomously;
+- exact public Cloud Run build is demonstrated;
+- browser shows the judge-accessible `.run.app` URL at least once;
+- trigger-to-terminal Proof of Action is one continuous uncut normal-speed shot;
+- main workflow begins with one action and receives no intermediate user guidance;
 - actual candidate count/ID/reasons match narration;
 - deterministic re-verification is visible before commit;
-- recovered metrics match the submitted build;
+- recovered metrics match the captured run;
 - messages sent = 0;
 - replay/fail-closed evidence is visible;
 - second-domain proof is visible;
-- Google Cloud deployment is visibly demonstrated;
+- Google Cloud deployment proof is readable;
 - no credentials, personal data, notifications or unrelated tabs appear.
 
-If any spoken number or model-selection claim differs from the screen, discard the take and record again.
+If any spoken number or model-selection claim differs from the screen, discard
+the take and record again.
 
 ## After recording
 
 1. Upload publicly to YouTube or Vimeo — not unlisted.
-2. Confirm the published duration is <= 4:00.
-3. Add the public video URL to `docs/submission.md` and `JUDGE_EVIDENCE.md`.
-4. Add final video timestamps to `JUDGE_EVIDENCE.md`.
-5. Publish the build article and social post; add their public URLs to the submission if claiming the bonuses.
-6. Re-open the hosted application anonymously once immediately before Devpost Submit.
-7. Finalize Devpost and freeze the exact repository/video/live build.
+2. Confirm published duration <= 4:00.
+3. Send the public video URL back into this workflow.
+4. Add the URL and exact timestamps to `docs/submission.md` and
+   `JUDGE_EVIDENCE.md`.
+5. Publish the prepared build article and social post if claiming +0.4 and save
+   their permanent public URLs.
+6. Re-open the hosted app anonymously immediately before Devpost Submit.
+7. Complete the eligibility declaration honestly.
+8. Submit, then tag/freeze the exact repository/video/live build.
 
-Do not modify the judged repository/video or any submitted live app after final submission until winners are announced; use a separate fork/branch for later experimentation.
+Do not modify the judged repository/video or submitted live app after final
+submission until winners are announced; use a separate branch/fork for later
+experimentation.
