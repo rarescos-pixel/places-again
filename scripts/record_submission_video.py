@@ -133,10 +133,28 @@ def set_overlay(page, kicker: str, text: str) -> None:
           if (!box) {
             box = document.createElement('div');
             box.id = 'places-again-auto-caption';
-            box.style.cssText = `position:fixed;left:72px;right:72px;bottom:26px;z-index:2147483647;background:rgba(8,10,13,.94);border:1px solid rgba(255,255,255,.22);border-radius:14px;padding:17px 22px 18px;color:#f7f3ec;font-family:Inter,Arial,sans-serif;box-shadow:0 14px 50px rgba(0,0,0,.5);pointer-events:none;`;
             (document.body || document.documentElement).appendChild(box);
           }
+          box.style.cssText = `position:fixed;left:72px;right:72px;bottom:26px;top:auto;z-index:2147483647;background:rgba(8,10,13,.94);border:1px solid rgba(255,255,255,.22);border-radius:14px;padding:17px 22px 18px;color:#f7f3ec;font-family:Inter,Arial,sans-serif;box-shadow:0 14px 50px rgba(0,0,0,.5);pointer-events:none;`;
           box.innerHTML = `<div style="font-size:15px;text-transform:uppercase;letter-spacing:.13em;color:#ff8a5b;font-weight:800;margin-bottom:5px">${kicker}</div><div style="font-size:29px;line-height:1.25;font-weight:650">${text}</div>`;
+        }
+        """,
+        {"kicker": kicker, "text": text},
+    )
+
+
+def set_compact_top_overlay(page, kicker: str, text: str) -> None:
+    page.evaluate(
+        """
+        ({kicker, text}) => {
+          let box = document.getElementById('places-again-auto-caption');
+          if (!box) {
+            box = document.createElement('div');
+            box.id = 'places-again-auto-caption';
+            (document.body || document.documentElement).appendChild(box);
+          }
+          box.style.cssText = `position:fixed;left:72px;right:72px;top:14px;bottom:auto;z-index:2147483647;background:rgba(8,10,13,.94);border:1px solid rgba(255,255,255,.22);border-radius:11px;padding:10px 17px 11px;color:#f7f3ec;font-family:Inter,Arial,sans-serif;box-shadow:0 8px 28px rgba(0,0,0,.45);pointer-events:none;`;
+          box.innerHTML = `<div style="font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:#ff8a5b;font-weight:800;margin-bottom:3px">${kicker}</div><div style="font-size:21px;line-height:1.18;font-weight:700">${text}</div>`;
         }
         """,
         {"kicker": kicker, "text": text},
@@ -159,14 +177,25 @@ def render_captured_opera_event(app) -> str:
           const event = await response.json();
           renderEvent(event);
           await loadState();
-          const cascade = document.getElementById('cascade');
-          cascade.scrollIntoView({block:'start'});
-          window.scrollBy(0,-18);
         }
         """,
         event_id,
     )
     return event_id
+
+
+def focus_recovered_product(app) -> None:
+    app.evaluate(
+        """
+        () => {
+          document.documentElement.style.scrollBehavior = 'auto';
+          document.body.style.scrollBehavior = 'auto';
+          const cascade = document.getElementById('cascade');
+          const y = cascade.getBoundingClientRect().top + window.scrollY - 108;
+          window.scrollTo({top: Math.max(0, y), behavior: 'auto'});
+        }
+        """
+    )
 
 
 def browser_evidence(context, app, browser) -> None:
@@ -175,13 +204,15 @@ def browser_evidence(context, app, browser) -> None:
     # and browser startup frames between the unedited proof and hosted UI.
     app.bring_to_front()
     opera_event_id = render_captured_opera_event(app)
-    set_overlay(
+    show_address_bar(app, 2.5)
+    focus_recovered_product(app)
+    time.sleep(0.6)
+    set_compact_top_overlay(
         app,
-        "LIVE PRODUCT RECOVERY",
-        "The same captured Opera event is now rendered in the public UI: AT RISK → RECOVERED · 3/3 activities · 12 person-hours · Gemini choice · deterministic PASS.",
+        "LIVE PRODUCT RECOVERY · SAME CAPTURED EVENT",
+        "AT RISK → RECOVERED · 3/3 activities · 12 person-hours · Gemini selected · deterministic PASS",
     )
-    show_address_bar(app, 3)
-    time.sleep(8)
+    time.sleep(8.5)
     log(f"Rendered captured Opera event in public UI: {opera_event_id}")
 
     cap = context.new_page()
@@ -210,7 +241,7 @@ def browser_evidence(context, app, browser) -> None:
     time.sleep(10)
 
     app.bring_to_front()
-    app.evaluate("window.scrollTo(0,0)")
+    app.evaluate("window.scrollTo({top:0,behavior:'auto'})")
     set_overlay(app, "PLACES, AGAIN", "Gemini decides what makes operational sense. Deterministic code proves what is safe. The plan breaks. The operation recovers.")
     time.sleep(10)
     browser.close()
@@ -270,7 +301,7 @@ def main() -> None:
             "adversarial human_required",
             "commercial film/broadcast autonomous recovery",
         ],
-        "product_ui_proof": "same captured Opera event re-rendered by the public app after live proof",
+        "product_ui_proof": "same captured Opera event re-rendered by the public app after live proof; recovered cascade and decision proof framed on screen",
         "proof_process_exit_code": 0,
         "transition": "preloaded hosted build behind proof terminal; direct visual handoff",
         "audio": "none; English on-screen text/captions",
