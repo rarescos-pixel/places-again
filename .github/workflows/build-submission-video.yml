@@ -4,7 +4,7 @@ on:
   push:
     branches: [submission-video-automation]
     paths:
-      - 'scripts/record_submission_video.py'
+      - 'scripts/record_submission_video_v3.py'
       - '.github/workflows/build-submission-video.yml'
   workflow_dispatch:
 
@@ -42,7 +42,7 @@ jobs:
           sleep 2
           openbox > /tmp/openbox.log 2>&1 &
           sleep 2
-          python scripts/record_submission_video.py
+          python scripts/record_submission_video_v3.py
 
       - name: Inspect generated video
         run: |
