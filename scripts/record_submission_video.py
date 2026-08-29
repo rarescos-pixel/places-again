@@ -198,10 +198,22 @@ def focus_recovered_product(app) -> None:
     )
 
 
+def show_problem_cold_open(app) -> None:
+    """Lead with the operational problem before asking the judge to read proof."""
+    app.bring_to_front()
+    app.evaluate("window.scrollTo({top:0,behavior:'auto'})")
+    set_overlay(
+        app,
+        "08:05 — ONE ABSENCE BREAKS THE DAY",
+        "3 activities · 6 people · 3 resources · 12 person-hours at risk. One incident starts autonomous recovery — no step-by-step human guidance.",
+    )
+    time.sleep(9)
+
+
 def browser_evidence(context, app, browser) -> None:
-    # app is deliberately preloaded behind xterm before capture starts. When
-    # xterm closes, this page is already rendered, eliminating blank desktop
-    # and browser startup frames between the unedited proof and hosted UI.
+    # The app is deliberately preloaded before capture. After the continuous
+    # live proof closes, the same browser is ready for an immediate product
+    # handoff with no blank desktop or startup frames.
     app.bring_to_front()
     opera_event_id = render_captured_opera_event(app)
     show_address_bar(app, 2.5)
@@ -252,9 +264,9 @@ def main() -> None:
     capture = None
     proof_elapsed = 0.0
     with sync_playwright() as p:
-        # Preload the exact public build before recording. It remains behind
-        # the terminal during Proof of Action and is ready for an immediate
-        # visual handoff when xterm exits.
+        # Preload the exact public build before recording. The judge sees the
+        # product/problem first; the proof terminal then opens above it and is
+        # captured continuously from trigger through terminal state.
         browser = p.chromium.launch(
             headless=False,
             args=["--no-sandbox", "--disable-dev-shm-usage", "--window-position=0,0", "--window-size=1920,1080", "--start-maximized"],
@@ -263,16 +275,21 @@ def main() -> None:
         app = context.new_page()
         app.goto(LIVE_URL, wait_until="networkidle", timeout=60000)
 
-        proof_proc, proof_started = start_visible_live_proof()
-        # Give the window manager time to put xterm above the preloaded browser.
-        time.sleep(1.2)
         capture = start_capture()
         try:
             time.sleep(1)
+            show_problem_cold_open(app)
+
+            proof_proc, proof_started = start_visible_live_proof()
+            # Give the window manager time to put xterm above the browser. Once
+            # it appears, the actual Proof of Action runs without cuts until its
+            # terminal state.
+            time.sleep(1.2)
             proof_elapsed = finish_visible_live_proof(proof_proc, proof_started)
             log(f"Live proof elapsed: {proof_elapsed:.2f}s")
-            # xterm has closed. The exact captured Opera event is rendered into
-            # the already-open public app before the rest of the evidence tour.
+
+            # xterm has closed. Render the exact captured Opera event into the
+            # already-open public app before the rest of the evidence tour.
             browser_evidence(context, app, browser)
             time.sleep(1)
         finally:
@@ -294,16 +311,16 @@ def main() -> None:
         "runtime_source_commit": "5d6b5662cb63f8af1d414f01570c9991278b3e8e",
         "repository_evidence_head": "d8074322fa39cd6eb6a7fa7eb038e39d4fffd4d3",
         "quality_gate_run": "33263263630",
-        "proof_mode": "unedited visible terminal execution against public Cloud Run endpoint",
+        "proof_mode": "product-first cold open followed by unedited visible terminal execution against public Cloud Run endpoint",
         "proof_cases": [
             "opera autonomous safe recovery",
             "replay exactly-once business effect",
             "adversarial human_required",
             "commercial film/broadcast autonomous recovery",
         ],
-        "product_ui_proof": "same captured Opera event re-rendered by the public app after live proof; recovered cascade and decision proof framed on screen",
+        "product_ui_proof": "problem-first hosted-product cold open, then same captured Opera event re-rendered by the public app after live proof with recovered cascade and decision proof framed on screen",
         "proof_process_exit_code": 0,
-        "transition": "preloaded hosted build behind proof terminal; direct visual handoff",
+        "transition": "9-second product/problem cold open; continuous xterm proof; direct handoff back to preloaded hosted build",
         "audio": "none; English on-screen text/captions",
     }, indent=2) + "\n", encoding="utf-8")
     log(f"FINAL_STATUS=SUBMISSION_VIDEO_BUILT duration={duration:.2f}s")
