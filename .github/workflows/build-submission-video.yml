@@ -4,7 +4,8 @@ on:
   push:
     branches: [submission-video-automation]
     paths:
-      - 'scripts/record_submission_video_v3.py'
+      - 'scripts/record_submission_video.py'
+      - 'scripts/live_demo_proof.py'
       - '.github/workflows/build-submission-video.yml'
   workflow_dispatch:
 
@@ -29,7 +30,7 @@ jobs:
       - name: Install desktop recording dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y ffmpeg xvfb openbox
+          sudo apt-get install -y ffmpeg xvfb openbox xterm fonts-dejavu-core
           python -m pip install --upgrade pip
           python -m pip install playwright
           python -m playwright install --with-deps chromium
@@ -42,13 +43,14 @@ jobs:
           sleep 2
           openbox > /tmp/openbox.log 2>&1 &
           sleep 2
-          python scripts/record_submission_video_v3.py
+          python scripts/record_submission_video.py
 
       - name: Inspect generated video
         run: |
-          ls -lh runtime/places-again-submission-demo.mp4 runtime/demo-metadata.json
+          ls -lh runtime/places-again-submission-demo.mp4 runtime/demo-metadata.json runtime/live-demo-proof.txt
           ffprobe -v error -show_entries format=duration,size -of json runtime/places-again-submission-demo.mp4
           cat runtime/demo-metadata.json
+          grep -F 'FINAL_STATUS=SUCCESS' runtime/live-demo-proof.txt
 
       - name: Publish submission video artifact
         uses: actions/upload-artifact@v4
@@ -57,5 +59,6 @@ jobs:
           path: |
             runtime/places-again-submission-demo.mp4
             runtime/demo-metadata.json
+            runtime/live-demo-proof.txt
           if-no-files-found: error
           retention-days: 30
