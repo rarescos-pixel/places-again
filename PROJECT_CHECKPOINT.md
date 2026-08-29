@@ -6,9 +6,11 @@ Updated: 2026-08-29 UTC
 
 Deliver a memorable, reliable Taskmaster entry: one absence cascades through an operation; Places, Again autonomously evaluates bounded safe recoveries, Gemini chooses what makes operational sense, deterministic code proves what is safe, and Google Cloud commits the smallest safe change.
 
+Canonical final checklist: `docs/final-submission-gate.md`. Do not replace it with another planning document; update evidence against that checklist.
+
 ## Locked architecture and positioning
 
-Public Cloud Run API -> Pub/Sub -> private Cloud Run worker -> Google ADK with Gemini 3.5 -> deterministic candidate engine -> current-state deterministic re-verification -> Firestore atomic commit/event ledger -> prepared-not-sent outbox.
+Cloud Run event API -> Pub/Sub -> private Cloud Run worker -> Google ADK with Gemini 3.5 -> deterministic candidate engine -> current-state deterministic re-verification -> Firestore atomic commit/event ledger -> prepared-not-sent outbox.
 
 Gemini may select only a supplied safe `candidate_id` and bounded reason codes. It cannot invent plans, relax constraints, mutate state directly, send messages, call arbitrary HTTP/shell, or override hard safety.
 
@@ -76,42 +78,52 @@ Therefore:
 - public internet reachability = NOT YET VERIFIED;
 - final video must NOT be recorded and final Devpost must NOT be submitted until an external runner reaches the service and the independent live E2E passes.
 
-Google Cloud documentation identifies this 404 pattern as consistent with effective ingress/default-URL restrictions or VPC Service Controls / policy-level `run.googleapis.com/HttpIngress` blocking. A read-only diagnostic is already committed and Quality-Gate verified:
+A read-only diagnostic is already committed and Quality-Gate verified:
 
 - `scripts/diagnose_public_404.sh`
 - `docs/public-404-diagnostic.md`
 
 It prints `DIAGNOSIS=...` and `FINAL_STATUS=PUBLIC_404_DIAGNOSTIC_COMPLETE` without mutating Cloud Run, IAM, Firestore, Pub/Sub, Vertex AI, or organization policies.
 
+The owner account is temporarily rate-limited from Cloud Shell. Do not purchase Cloud Workstations or improvise around that product quota. Resume the one-click diagnostic when Cloud Shell access returns.
+
 ## Immediate execution order
 
-1. Run the one-click read-only public-404 diagnostic in the owner Google Cloud environment.
+1. When owner Cloud Shell access returns, run the one-click read-only public-404 diagnostic.
 2. Capture the exact `DIAGNOSIS=...` result.
 3. Apply only the diagnosis-specific repair; do not guess or redeploy the working backend.
 4. Re-run the independent GitHub `Live Cloud E2E Proof`.
-5. Gate is closed only when an external runner reaches `/api/capabilities` and completes the real Gemini/ADK/Firestore E2E.
-6. Then freeze runtime and move immediately to final video, article/social +0.4, Devpost reconciliation, compliance/eligibility review, submit, and freeze.
+5. Gate closes only when an external runner reaches `/api/capabilities` and completes the real Gemini/ADK/Firestore workflow.
+6. Freeze runtime.
+7. Record final video from the exact externally reachable build.
+8. Publish build article + social post for the low-risk +0.4 bonus.
+9. Validate optional Gemma PR #2 only if core remains stable and timing permits.
+10. Reconcile Devpost + Judge Evidence + final URLs/timestamps, complete eligibility review, submit, tag/freeze.
 
 ## Final assets already prepared
 
-- `docs/submission.md` — final-form Devpost copy; final public URLs still need reconciliation.
-- `docs/demo-script.md` — target 3:50 public English video.
+- `docs/final-submission-gate.md` — canonical official + winner-pattern + bonus + freeze checklist.
+- `docs/submission.md` — final-form Devpost copy; public URLs remain gated.
+- `docs/demo-script.md` — target 3:50 public English video; narration does not pre-script Gemini candidate IDs/reasons.
 - `docs/recording-runbook.md` — recording flow.
-- `docs/build-article.md` — publication-ready build article draft.
-- `docs/social-post.md` — publication-ready social post draft.
-- `JUDGE_EVIDENCE.md` — rubric-to-evidence map.
+- `docs/build-article.md` — publication-ready draft gated on public reachability.
+- `docs/social-post.md` — publication-ready social draft gated on public reachability.
+- `JUDGE_EVIDENCE.md` — rubric-to-evidence map with public reachability separated from backend E2E.
 - architecture and workflow diagrams are committed.
 
-Do not publish article/social copy with the current live-app URL until external public reachability is verified.
+Do not publish article/social copy with the current deployed URL until external public reachability is verified.
 
 ## Bonus model branch
 
-Draft PR #1 (`bonus-gemma4`) remains isolated. It is optional and must not be merged unless:
+Draft PR #2 (`bonus-gemma4-refresh`) is the only current Gemma bonus path. The older PR #1 is closed as superseded.
+
+PR #2 is intentionally isolated and must not be merged unless:
 
 1. the public-reachability hard gate is already closed;
 2. its CI is green;
-3. a real managed Gemma call is owner-authenticated and evidenced;
-4. it does not threaten video/submission timing or the verified core.
+3. a real managed Gemma 4 call is owner-authenticated and evidenced;
+4. README and final demo can show the additional model clearly, as Devpost requires for model-bonus evidence;
+5. it does not threaten video/submission timing or the verified Taskmaster core.
 
 Core submission wins over bonus points.
 
