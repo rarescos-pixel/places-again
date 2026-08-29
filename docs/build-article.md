@@ -3,6 +3,8 @@
 > This piece of content was created for the purposes of entering the Google All Things
 > Agentic Hackathon.
 
+**Live app:** https://places-again-inb6leu4ca-ew.a.run.app
+
 Most operational software is designed for the moment when the plan works. I
 built Places, Again for the moment when one absence makes that plan false.
 
@@ -35,8 +37,8 @@ The final boundary is:
 The deterministic engine no longer returns only one answer. It searches the
 hard-constraint-safe space, removes dominated alternatives, and exposes a small
 bounded, heuristically generated non-dominated candidate set. Every candidate
-has already passed qualification,
-availability, person, resource, duration, and state-freshness constraints.
+has already passed qualification, availability, person, resource, duration,
+and state-freshness constraints.
 
 Each candidate also carries observable trade-off metrics: activities and
 people changed, resources rescheduled, shifted minutes, critical work moved,
@@ -137,7 +139,18 @@ the event ID, candidate set, selected ID, validated reasons, ADK tool actions,
 deterministic proof, versions, retries, outbox status, and available model
 usage/latency metadata.
 
-## The Google Cloud path
+## The Google Cloud path — verified live
+
+On 2026-08-29 the full deployment completed with `FINAL_STATUS=SUCCESS` on
+Google Cloud. The audited E2E run proved the real path:
+
+`public Cloud Run API → Pub/Sub/OIDC → private Cloud Run worker → Google ADK + Gemini 3.5 on Vertex AI → deterministic re-verification → Firestore`
+
+The same run proved `v1 → v2` exactly once, replay without duplicate business
+effects, an impossible/adversarial incident stopping at `human_required`, and
+messages prepared with messages sent remaining zero.
+
+The production architecture uses:
 
 - public and private services on Google Cloud Run;
 - authenticated background delivery through Google Pub/Sub;
@@ -146,13 +159,14 @@ usage/latency metadata.
 - separate least-privilege builder, API, worker, and push service accounts;
 - no service-account keys or secrets in the repository.
 
-The guided deployment also treats Service Usage limits as an expected
-operational condition: it checks APIs individually, enables only missing
-services, and retries transient `429` responses with bounded exponential
-backoff and jitter.
+The deployment path also treats Service Usage limits as an expected operational
+condition: it checks APIs individually, enables only missing services, and
+retries transient `429` responses with bounded exponential backoff and jitter.
 
 The transferable result is not a claim that every industry is already
 implemented. It is one tested pattern for time-critical operations: understand
 the cascade, construct the safe action space, let Gemini apply operational
 judgment inside that boundary, prove the selected state, and keep the operation
 moving.
+
+**Repository:** https://github.com/rarescos-pixel/places-again
