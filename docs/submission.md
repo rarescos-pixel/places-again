@@ -14,10 +14,10 @@ Taskmaster
 
 ## One-line summary
 
-When one person disappears from a live operation, Places, Again maps the
-cascade, compares several deterministically safe recovery strategies with
-Gemini, proves the selected plan again, and commits the bounded safe recovery
-that best fits the operation's ranked priorities—without waiting for
+At 08:05, one principal disappears and 3 activities, 6 people, 3 resources, and
+12 person-hours become at risk. Places, Again autonomously maps the cascade,
+lets Gemini choose among deterministically safe recovery strategies, re-verifies
+that choice against current state, and commits the bounded recovery without
 step-by-step human guidance.
 
 ## Inspiration: one absence is never one absence
@@ -42,11 +42,16 @@ to that setting.
 
 ## What it does
 
-One incident starts a background Google Cloud workflow. The Cloud Run API
-validates and persists it, returns an `event_id`, and publishes only that opaque
-ID to Pub/Sub. Authenticated delivery invokes a private Cloud Run worker running
-Google ADK and Gemini 3.5 on Vertex AI. The user does not choose tools or approve
-intermediate steps.
+The user reports one incident once. There is no tool-picking loop and no
+step-by-step approval sequence. From that single event, Places, Again measures
+what broke, finds several hard-safe ways to repair it, uses Gemini for the
+contextual trade-off among those safe options, proves the selected state again,
+and commits the recovery.
+
+Underneath that product flow, the Cloud Run API validates and persists the
+incident, returns an `event_id`, and publishes only that opaque ID to Pub/Sub.
+Authenticated delivery invokes a private Cloud Run worker running Google ADK and
+Gemini 3.5 on Vertex AI.
 
 The system then:
 
@@ -95,6 +100,12 @@ operation. In the opera baseline, two genuine safe strategies have a trade-off:
 one preserves the highest-priority call but shifts more minutes; the other
 shifts fewer minutes but moves that critical call and changes more people's
 schedules.
+
+A fixed deterministic weighting would encode one permanent preference policy.
+The demonstrated problem instead separates hard constraints from soft,
+context-dependent priorities: deterministic code decides what is allowed;
+Gemini evaluates which already-safe option best fits the ranked operational
+priorities for that situation.
 
 Gemini receives only the safe candidate summaries and the operation's ranked
 soft priorities. Its structured action is bounded to:
@@ -196,7 +207,7 @@ persistence, replay without a second business effect, and an impossible
 adversarial event without an unsafe commit.
 
 Independent public-internet verification also passed on 2026-08-29. GitHub
-Actions `Live Cloud E2E Proof` run `33255155489` reached the current Cloud Run
+Actions `Live Cloud E2E Proof` run `33255155489` reached the deployed Cloud Run
 service anonymously, verified `/api/capabilities`, executed the full production
 E2E, and ended with `passed: true`.
 
@@ -215,6 +226,11 @@ unknown-person event ended in `human_required`.
 Raw GitHub Actions evidence artifact:
 `live-cloud-e2e-374798636b7b907c7fb20ad4ced806b27a07eb55` (artifact ID
 `9715582052`).
+
+The independent live E2E above was captured on that deployed production
+lineage. The exact current `main` head is separately required to pass the public
+Quality Gate before submission; we do not treat a green repository gate as a
+substitute for live execution evidence or vice versa.
 
 A committed evidence checkpoint is available in
 `reports/cloud-e2e-verified-20260829.md`.
@@ -256,8 +272,8 @@ A committed evidence checkpoint is available in
    that a slide claiming “this works everywhere” would have hidden.
 5. **Deployment proof and public reachability are different gates.** We tested
    both separately. The owner-authenticated production E2E passed, then an
-   independent anonymous GitHub runner also reached the current URL and completed
-   the same live verification path.
+   independent anonymous GitHub runner also reached the deployed URL and
+   completed the same live verification path.
 
 ## What is real and what is synthetic
 
