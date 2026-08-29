@@ -1,11 +1,14 @@
 # Final public demo script — target 3:50
 
-English. Public YouTube or Vimeo. Record the submitted Cloud Run build with the
-`.run.app` URL visible. The main recovery must be one live incident and one
-click; after that, do not guide the workflow.
+English. Public YouTube or Vimeo. Record the exact submitted Google Cloud build.
+Preferred: use the anonymously reachable `.run.app` UI. Deadline fallback: use
+an owner-accessible/authenticated view of the same deployed build, as permitted
+by the official FAQ, while visibly proving the Google Cloud backend. Never
+present a local deterministic fallback as real Gemini cloud execution.
 
-Do not fake waiting states or replace a failed cloud run with a claim. If the
-run fails, repair and record again.
+The main recovery must be one real incident trigger; after that, do not guide
+the workflow. Do not fake waiting states or replace a failed cloud run with a
+claim. If the demonstrated run fails, repair and record again.
 
 ## 0:00–0:20 — The human problem, immediately quantified
 
@@ -29,10 +32,11 @@ Visual: hero and autonomy/safety statement.
 
 ## 0:40–1:45 — One live disruption, no further guidance
 
-Visual: click **Inject disruption event** once. Keep the event ID and workflow
-timeline visible. Do not click anything else until terminal state.
+Visual: trigger **Inject disruption event** once in the exact deployed build.
+Keep the event ID and workflow timeline visible. Do not guide intermediate
+steps until terminal state.
 
-> One click submits the incident. From here, the user does not guide the
+> One action submits the incident. From here, the user does not guide the
 > workflow. The API persists the event, and authenticated Pub/Sub invokes a
 > private Cloud Run worker.
 >
@@ -107,7 +111,7 @@ topic/subscription, Firestore event, and real ADK/Gemini trace. Then show the
 architecture diagram. Make these names legible: `places-again`,
 `places-again-worker`, `places-again-events`.
 
-> This runs on a public Cloud Run API, authenticated Pub/Sub delivery to a
+> This runs on a Cloud Run event API, authenticated Pub/Sub delivery to a
 > private Cloud Run worker, Gemini 3.5 and Google ADK on Vertex AI, and a
 > Firestore transaction. Fifty-two labeled cases and fifty-nine automated tests
 > protect replay, crashes, concurrency, stale state, model failure, and the
@@ -127,17 +131,23 @@ Visual: return to the recovered cascade and hero.
 
 ## Recording gate
 
-- Do not record the final submission video until independent public-internet
-  reachability of the submitted Cloud Run service is green.
-- Public video, not unlisted; final duration no longer than 4:00.
-- English audio or English subtitles.
-- Exact submitted Cloud Run build and commit.
-- `.run.app` URL and Google Cloud evidence visible.
-- One click before the main workflow reaches a terminal state.
-- Actual safe-candidate count, selected ID, validated reasons, and
-  re-verification visible.
-- `v1 → v2`, recovered metrics, zero unsafe actions, outbox, and zero sent.
-- Replay and `human_required` proof visible.
-- Second domain visibly uses the same mechanism.
-- No proprietary third-party data, credentials, notifications, or personal tabs.
-- Re-record if any spoken number or claim differs from the captured run.
+Mandatory:
+
+- public video, not unlisted; final duration no longer than 4:00;
+- English audio or English subtitles;
+- exact submitted Google Cloud build, not a mock substituted for cloud execution;
+- Google Cloud backend evidence visible;
+- one event trigger before the main workflow reaches a terminal state;
+- actual safe-candidate count, selected ID, validated reasons, and
+  re-verification visible;
+- `v1 → v2`, recovered metrics, zero unsafe actions, outbox, and zero sent;
+- replay and `human_required` proof visible;
+- second domain visibly uses the same mechanism;
+- no proprietary third-party data, credentials, notifications, or personal tabs;
+- re-record if any spoken number or claim differs from the captured run.
+
+Strongly preferred for maximum Production Readiness, but not a reason to miss
+the deadline under the official FAQ:
+
+- independent anonymous public-internet reachability of the hosted Cloud Run UI;
+- judge-accessible hosted application URL.
