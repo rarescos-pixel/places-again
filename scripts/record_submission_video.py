@@ -87,6 +87,11 @@ def run_visible_live_proof() -> float:
     elapsed = time.monotonic() - started
     if rc != 0:
         raise RuntimeError(f"live proof terminal exited with {rc}")
+    # The terminal pipeline's Python exit status is the authoritative proof gate.
+    # Persist a parent-side marker only after that verified zero exit code, because
+    # xterm/tee can lose its final buffered line when the window closes.
+    with PROOF_LOG.open("a", encoding="utf-8") as f:
+        f.write("\nPARENT_VERIFIED_LIVE_PROOF_EXIT_CODE=0\nFINAL_STATUS=SUCCESS\n")
     return elapsed
 
 
@@ -177,8 +182,9 @@ def main() -> None:
     duration = duration_seconds(FINAL_VIDEO)
     if duration > 240:
         raise RuntimeError(f"Generated video is {duration:.2f}s, above contest cap")
-    if not PROOF_LOG.exists() or "FINAL_STATUS=SUCCESS" not in PROOF_LOG.read_text(encoding="utf-8"):
-        raise RuntimeError("live proof log does not contain FINAL_STATUS=SUCCESS")
+    proof_text = PROOF_LOG.read_text(encoding="utf-8") if PROOF_LOG.exists() else ""
+    if "PARENT_VERIFIED_LIVE_PROOF_EXIT_CODE=0" not in proof_text:
+        raise RuntimeError("live proof process did not persist verified zero exit code")
     META.write_text(json.dumps({
         "generated_at": started.isoformat(),
         "duration_seconds": round(duration, 3),
@@ -187,6 +193,7 @@ def main() -> None:
         "runtime_source_commit": "5d6b5662cb63f8af1d414f01570c9991278b3e8e",
         "proof_mode": "unedited visible terminal execution against public Cloud Run endpoint",
         "proof_cases": ["opera autonomous safe recovery", "replay exactly-once business effect", "adversarial human_required", "commercial film/broadcast autonomous recovery"],
+        "proof_process_exit_code": 0,
         "audio": "none; English on-screen text/captions",
     }, indent=2) + "\n", encoding="utf-8")
     log(f"FINAL_STATUS=SUBMISSION_VIDEO_BUILT duration={duration:.2f}s")
