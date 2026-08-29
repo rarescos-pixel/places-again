@@ -4,7 +4,7 @@ Updated: 2026-08-29 UTC
 
 ## Objective
 
-Deliver a memorable, reliable Taskmaster entry: one absence cascades through an operation; Places, Again autonomously evaluates bounded safe recoveries, Gemini chooses what makes operational sense, deterministic code proves what is safe, and Google Cloud commits the smallest safe change.
+Deliver a memorable, reliable Taskmaster entry: one absence cascades through an operation; Places, Again autonomously evaluates bounded safe recoveries, Gemini chooses what makes operational sense, deterministic code proves what is safe, and Google Cloud commits the verified recovery that best fits ranked operational priorities.
 
 Canonical final checklist: `docs/final-submission-gate.md`. Do not replace it with another planning document; update evidence against that checklist.
 
