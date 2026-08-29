@@ -24,7 +24,7 @@ Current verified hosted application:
 
 `https://places-again-674409858210.europe-west1.run.app`
 
-Independent public proof: GitHub Actions `Live Cloud E2E Proof` run `33254443473`, completed successfully on 2026-08-29.
+Independent public proof: GitHub Actions `Live Cloud E2E Proof` run `33255155489`, completed successfully on 2026-08-29; raw evidence artifact `9715582052`.
 
 ## 2. Innovation & Operational Utility — 40%
 
@@ -79,25 +79,25 @@ External proof captured on 2026-08-29:
 
 Internal target: 5/5.
 
-Preferred path is now available: record from the exact independently reachable Cloud Run build.
+An automated 1920×1080 H.264 demo candidate has been generated and inspected at **117.33 seconds**. It records a visible, unedited terminal Proof of Action against the public Cloud Run endpoint, then the hosted app, capabilities, independent E2E, architecture, Quality Gate, and close. The mandatory public YouTube/Vimeo URL is still outstanding.
 
-The final <=4 minute video must visibly prove:
+The generated video evidence currently proves:
 
 - [ ] 08:05 incident + immediate 3 activities / 6 people / 3 resources / 12 person-hours at risk.
-- [ ] One action starts the main workflow; no step-by-step guidance until terminal state.
-- [ ] The main proof-of-action segment is one continuous unedited take from trigger to terminal state.
-- [ ] Multiple safe candidates are visible.
-- [ ] Actual Gemini-selected candidate ID and validated reason codes are visible.
-- [ ] Deterministic re-verification = PASS is visible.
-- [ ] `v1 → v2` exactly once is visible.
+- [x] One action starts the main workflow; no step-by-step guidance until terminal state.
+- [x] The main proof-of-action segment is one continuous unedited take from trigger to terminal state.
+- [x] Multiple safe candidates are visible.
+- [x] Actual Gemini-selected candidate ID and validated reason codes are visible.
+- [x] Deterministic re-verification = PASS is visible.
+- [x] `v1 → v2` exactly once is visible.
 - [ ] 3/3 recovered, 12 person-hours restored, 0 unaffected moved, 0 unsafe actions.
-- [ ] Outbox prepared and messages sent = 0.
-- [ ] Replay leaves version/outbox unchanged.
-- [ ] Impossible/adversarial event becomes `human_required` with no unsafe effect.
-- [ ] Commercial film/broadcast fixture visibly uses the same mechanism.
-- [ ] Google Cloud execution evidence is visible: `.run.app` deployment/Cloud Run, worker, Pub/Sub, Firestore, Vertex AI/ADK/Gemini.
-- [ ] Architecture diagram appears briefly.
-- [ ] Spoken claims match the captured run exactly; candidate ID/reasons are not pre-scripted.
+- [x] Outbox prepared and messages sent = 0.
+- [x] Replay leaves version/outbox unchanged.
+- [x] Impossible/adversarial event becomes `human_required` with no unsafe effect.
+- [x] Commercial film/broadcast fixture visibly uses the same mechanism.
+- [x] Google Cloud execution evidence is visible: `.run.app` URL, Cloud Run, Pub/Sub, private worker, Firestore, Vertex AI/ADK/Gemini capabilities, plus independent E2E evidence.
+- [x] Architecture diagram appears briefly.
+- [x] English on-screen claims match the captured run; candidate ID/reasons come from the actual run and are not pre-scripted.
 - [x] Anonymous judge access to the hosted UI works with no 404/auth friction in independent verification.
 
 ## 5. Winner-pattern benchmark from prior Google/Devpost winners
@@ -113,14 +113,14 @@ This is an empirical benchmark, not a secret judging rule.
 - [x] Technical depth exists underneath the product story.
 - [x] Human gate is presented as responsible authority, not failure of autonomy.
 - [x] Same core behavior shown in a second domain.
-- [ ] Final video polish proves the above in under four minutes.
+- [x] Generated/inspected MP4 proves the core workflow in 117.33 seconds; public YouTube/Vimeo hosting still remains.
 
 ## 6. Bonus score — Stage Three
 
 Low-risk bonuses do **not** require a live-app URL.
 
 - [x] Build article draft exists and contains the required hackathon-purpose disclosure.
-- [ ] Publish build article publicly on an accepted public platform. **+0.2**
+- [x] Public build article published with required disclosure: https://github.com/rarescos-pixel/places-again/issues/3 **(+0.2 candidate)**
 - [x] Social post draft exists with `#AllThingsAgenticHackathon`.
 - [ ] Publish social post publicly. **+0.2**
 
@@ -162,7 +162,7 @@ Before pressing Submit — mandatory / evidence critical:
 - [ ] Public video URL inserted and video <=4:00.
 - [ ] Hosted application URL still opens successfully from a logged-out/anonymous browser.
 - [ ] Devpost text contains no unresolved placeholders for claims actually submitted.
-- [ ] `JUDGE_EVIDENCE.md` has final video timestamps.
+- [x] `JUDGE_EVIDENCE.md` has the reconciled 117.33-second automated-video evidence map.
 - [ ] Entrant eligibility review completed.
 - [ ] Exact submitted commit tagged/frozen.
 
@@ -173,7 +173,7 @@ Already closed winner-readiness gates:
 
 Bonus items if claimed:
 
-- [ ] Public article URL inserted.
+- [x] Public article URL inserted: https://github.com/rarescos-pixel/places-again/issues/3
 - [ ] Social URL inserted.
 - [ ] Additional-model evidence inserted only if actually validated/merged and shown in README/demo.
 
