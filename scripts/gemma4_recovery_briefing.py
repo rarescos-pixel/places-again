@@ -23,6 +23,19 @@ def fetch_json(url: str, timeout_seconds: int = 30) -> dict:
     return payload
 
 
+def event_from_cloud_e2e(path: Path) -> dict:
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    try:
+        event = payload["checks"]["safe_autonomous_recovery"]
+    except (KeyError, TypeError) as error:
+        raise RuntimeError(
+            "Cloud E2E evidence does not contain checks.safe_autonomous_recovery"
+        ) from error
+    if not isinstance(event, dict):
+        raise RuntimeError("safe_autonomous_recovery is not an event object")
+    return event
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(
         description=(
@@ -30,17 +43,29 @@ def main() -> int:
             "event using Google's managed Gemma 4 model."
         )
     )
+    source = parser.add_mutually_exclusive_group(required=True)
+    source.add_argument("--event-json", help="Path to a terminal event JSON")
+    source.add_argument(
+        "--cloud-e2e-evidence",
+        help="Path to cloud-e2e-evidence-*.json; uses the verified safe event",
+    )
+    source.add_argument(
+        "--event-id",
+        help="Completed event ID; requires --api-url",
+    )
     parser.add_argument("--api-url", help="Public Places, Again API base URL")
-    parser.add_argument("--event-id", help="Completed event ID")
-    parser.add_argument("--event-json", help="Path to a previously captured event JSON")
     parser.add_argument("--project-id", help="Google Cloud project ID; defaults to ADC/env")
     parser.add_argument("--output", help="Optional JSON evidence output path")
     args = parser.parse_args()
 
-    if bool(args.event_json) == bool(args.api_url and args.event_id):
-        parser.error("use either --event-json OR both --api-url and --event-id")
+    if args.event_id and not args.api_url:
+        parser.error("--event-id requires --api-url")
+    if args.api_url and not args.event_id:
+        parser.error("--api-url is valid only with --event-id")
 
-    if args.event_json:
+    if args.cloud_e2e_evidence:
+        event = event_from_cloud_e2e(Path(args.cloud_e2e_evidence))
+    elif args.event_json:
         event = json.loads(Path(args.event_json).read_text(encoding="utf-8"))
     else:
         base = args.api_url.rstrip("/")
