@@ -21,8 +21,9 @@ jobs:
     timeout-minutes: 10
 
     env:
-      HASH_URL: https://places-again-inb6leu4ca-ew.a.run.app
-      DETERMINISTIC_URL: https://places-again-618104708054.europe-west1.run.app
+      CURRENT_URL: https://places-again-674409858210.europe-west1.run.app
+      LEGACY_HASH_URL: https://places-again-inb6leu4ca-ew.a.run.app
+      LEGACY_DETERMINISTIC_URL: https://places-again-618104708054.europe-west1.run.app
 
     steps:
       - name: Checkout submitted repository
@@ -41,7 +42,11 @@ jobs:
           from urllib.error import HTTPError, URLError
           from urllib.request import urlopen
 
-          candidates = [os.environ['HASH_URL'], os.environ['DETERMINISTIC_URL']]
+          candidates = [
+              os.environ['CURRENT_URL'],
+              os.environ['LEGACY_HASH_URL'],
+              os.environ['LEGACY_DETERMINISTIC_URL'],
+          ]
           failures = []
           selected = None
           for base in candidates:
