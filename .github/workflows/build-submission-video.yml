@@ -9,6 +9,10 @@ on:
       - '.github/workflows/build-submission-video.yml'
   workflow_dispatch:
 
+concurrency:
+  group: places-again-submission-video
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
@@ -51,6 +55,7 @@ jobs:
           ffprobe -v error -show_entries format=duration,size -of json runtime/places-again-submission-demo.mp4
           cat runtime/demo-metadata.json
           grep -F 'FINAL_STATUS=SUCCESS' runtime/live-demo-proof.txt
+          grep -F 'PARENT_VERIFIED_LIVE_PROOF_EXIT_CODE=0' runtime/live-demo-proof.txt
 
       - name: Publish submission video artifact
         uses: actions/upload-artifact@v4
