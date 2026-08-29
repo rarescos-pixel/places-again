@@ -1,8 +1,12 @@
 # Places, Again — final recording runbook
 
-Use this only **after independent public-internet reachability is green**.
+## Recording strategy
 
-Deployed Cloud Run service URL under verification:
+**Preferred winner path:** record after independent anonymous public-internet reachability is green, using the exact externally reachable Cloud Run build.
+
+**Deadline fallback permitted by the official FAQ:** the application does not have to remain publicly accessible/deployed during judging. If the anonymous front door still cannot be fixed in time, record only through an owner-accessible/authenticated path that demonstrates the same submitted Cloud build and real workflow, and show the Cloud Console/Cloud Run/Vertex/Firestore evidence explicitly. Do not fake a public URL or substitute a local deterministic run while narrating it as real Gemini cloud execution.
+
+Deployed Cloud Run service URL under external verification:
 
 https://places-again-inb6leu4ca-ew.a.run.app
 
@@ -10,20 +14,19 @@ Verified Google Cloud project:
 
 `project-2ee12060-728f-434f-9ad`
 
-The owner-authenticated backend/agent Cloud E2E has already passed. Do not record the final submission take until the independent external runner can reach the `run.app` front door and complete the live workflow.
-
-The API deployment has `PLACES_AGAIN_SYNTHETIC_DEMO_MODE=true`, so the synthetic scenario can be reset for clean recording attempts without redeploying the infrastructure.
+The owner-authenticated backend/agent Cloud E2E has already passed. The API deployment has `PLACES_AGAIN_SYNTHETIC_DEMO_MODE=true`, so the synthetic scenario can be reset for clean recording attempts without redeploying the infrastructure.
 
 ## Before recording
 
-1. Confirm the GitHub `Live Cloud E2E Proof` is green from an anonymous external runner.
-2. Open the verified public app in a clean browser tab.
-3. Close personal tabs/notifications and hide any account-sensitive UI.
-4. Confirm **Opera Production** is selected.
-5. Reset the synthetic scenario from the demo UI if the baseline is not clean.
-6. Confirm the page shows the pre-incident state before recording.
-7. Open all Google Cloud evidence tabs listed below before starting the take.
-8. Keep the `.run.app` URL visible at least once in the recording.
+1. Preferred: confirm the GitHub `Live Cloud E2E Proof` is green from an anonymous external runner.
+2. If anonymous access is not green and the deadline fallback is necessary, confirm you can visibly operate the exact deployed Cloud build through an authenticated owner-access path. If you cannot, do not misrepresent a local fallback as cloud execution.
+3. Open the app/demo view in a clean browser tab.
+4. Close personal tabs/notifications and hide any account-sensitive UI.
+5. Confirm **Opera Production** is selected.
+6. Reset the synthetic scenario from the demo UI if the baseline is not clean.
+7. Confirm the page shows the pre-incident state before recording.
+8. Open all Google Cloud evidence tabs listed below before starting the take.
+9. Keep the deployed Cloud Run URL/service identity visible at least once in the recording.
 
 Do not rerun `deploy.sh` just to reset the demo. The backend deployment is already verified.
 
@@ -48,9 +51,9 @@ Show the hero/autonomy statement.
 
 > Places, Again is autonomous operational disruption recovery. When the plan breaks, it maps the cascade, finds several safe recovery strategies, lets Gemini choose what makes operational sense, proves that exact choice again, and commits the change. If safety cannot be proved, it stops for a human.
 
-### 0:40–1:45 — one live event, one click
+### 0:40–1:45 — one real cloud event, one action
 
-Click **Inject disruption event** once.
+Trigger **Inject disruption event** once in the exact submitted cloud build.
 
 After that, do not guide the workflow. Let the real Cloud Run → Pub/Sub → private worker → ADK/Gemini → Firestore path finish.
 
@@ -88,13 +91,13 @@ Show that replay kept the same committed version/outbox and the impossible/adver
 
 Switch to **Commercial Film / Broadcast Production**.
 
-Show the already completed recovery proof using the same candidate-selection/re-verification mechanism.
+Show the completed recovery proof using the same candidate-selection/re-verification mechanism.
 
 Narration target:
 
 > Different people, resources and priorities—same recovery engine, same Gemini decision contract, same deterministic proof and commit path.
 
-### 3:10–3:30 — Google Cloud proof
+### 3:10–3:30 — undeniable Google Cloud proof
 
 Make one fast cutaway through the following pages. **Open these tabs before recording; do not navigate through menus during the take.**
 
@@ -138,19 +141,23 @@ Return to the recovered app.
 
 Do not publish the take unless all are true:
 
-- independent anonymous public reachability is green before recording;
 - duration <= 4:00;
 - English audio or English subtitles;
-- exact externally reachable `.run.app` build visible;
-- main workflow begins with one click and then proceeds autonomously;
+- the exact submitted build is demonstrated, not a mock substituted for cloud execution;
+- main workflow begins with one action and then proceeds autonomously;
 - actual candidate count/ID/reasons match narration;
 - deterministic re-verification is visible before commit;
 - recovered metrics match the submitted build;
 - messages sent = 0;
 - replay/fail-closed evidence is visible;
 - second-domain proof is visible;
-- Google Cloud deployment is visible;
+- Google Cloud deployment is visibly demonstrated;
 - no credentials, personal data, notifications or unrelated tabs appear.
+
+Strongly preferred but not formal deadline blockers:
+
+- anonymous public `.run.app` reachability is green;
+- hosted-project link can be supplied for judge testing.
 
 If any spoken number or model-selection claim differs from the screen, discard the take and record again.
 
@@ -160,7 +167,8 @@ If any spoken number or model-selection claim differs from the screen, discard t
 2. Confirm the published duration is <= 4:00.
 3. Add the public video URL to `docs/submission.md` and `JUDGE_EVIDENCE.md`.
 4. Add final video timestamps to `JUDGE_EVIDENCE.md`.
-5. Publish the build article and social post only after their live-app placeholders have been replaced with the verified public URL.
-6. Only then finalize Devpost.
+5. Publish the build article and social post independently of hosted-app availability; add their public URLs to the submission if claiming the bonuses.
+6. If the hosted app is anonymously reachable, include its verified URL. If not, follow the official FAQ and do not advertise a broken link as judge-accessible.
+7. Finalize Devpost.
 
-Do not modify the judged live app/repository/video after final submission until winners are announced; use a separate fork/branch for later experimentation.
+Do not modify the judged repository/video or any submitted live app after final submission until winners are announced; use a separate fork/branch for later experimentation.
