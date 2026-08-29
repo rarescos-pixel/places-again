@@ -16,8 +16,9 @@ Taskmaster
 
 When one person disappears from a live operation, Places, Again maps the
 cascade, compares several deterministically safe recovery strategies with
-Gemini, proves the selected plan again, and commits the smallest defensible
-change—without waiting for step-by-step human guidance.
+Gemini, proves the selected plan again, and commits the bounded safe recovery
+that best fits the operation's ranked priorities—without waiting for
+step-by-step human guidance.
 
 ## Inspiration: one absence is never one absence
 
