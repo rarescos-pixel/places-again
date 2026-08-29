@@ -8,11 +8,8 @@ The same engine recovers both an opera production and a synthetic commercial fil
 
 The owner-authenticated Google Cloud E2E is green: Cloud Run → Pub/Sub/OIDC → private worker → Vertex AI / Google ADK / Gemini 3.5 → Firestore, including replay and fail-closed proof.
 
-Live app: [INSERT ONLY AFTER INDEPENDENT PUBLIC-INTERNET REACHABILITY IS GREEN]
 Repo: https://github.com/rarescos-pixel/places-again
 
 The plan breaks. The operation recovers.
 
 Built for the Google All Things Agentic Hackathon. #AllThingsAgenticHackathon
-
-Publication gate: do not publish this post until the live-app placeholder above has been replaced by an independently verified public URL.
