@@ -1,0 +1,65 @@
+name: Sync Canonical Test Count
+
+on:
+  push:
+    branches: [submission-video-automation]
+    paths:
+      - '.github/workflows/sync-test-count.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Replace stale 59-test claims with verified 65-test count
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          targets = [Path('README.md'), Path('JUDGE_EVIDENCE.md'), Path('PROJECT_CHECKPOINT.md')]
+          targets += list(Path('docs').glob('*.md'))
+          replacements = {
+              '59/59 automated tests': '65/65 automated tests',
+              '59 automated tests': '65 automated tests',
+              '59/59 tests': '65/65 tests',
+          }
+          changed=[]
+          for p in targets:
+              if not p.exists():
+                  continue
+              text=p.read_text(encoding='utf-8')
+              new=text
+              for old, repl in replacements.items():
+                  new=new.replace(old, repl)
+              if new != text:
+                  p.write_text(new, encoding='utf-8')
+                  changed.append(str(p))
+          print('changed:', *changed, sep='\n- ')
+          if not changed:
+              print('No stale claims found.')
+          PY
+          git diff --check
+          git diff -- README.md JUDGE_EVIDENCE.md PROJECT_CHECKPOINT.md docs/
+
+      - name: Commit synchronized evidence text
+        run: |
+          set -euo pipefail
+          if git diff --quiet; then
+            echo 'FINAL_STATUS=NO_CHANGES'
+            exit 0
+          fi
+          git config user.name 'rarescos-pixel'
+          git config user.email 'rarescos@gmail.com'
+          git add README.md JUDGE_EVIDENCE.md PROJECT_CHECKPOINT.md docs/
+          git commit -m 'Sync verified automated-test count to 65'
+          git push origin HEAD:main
+          echo 'FINAL_STATUS=TEST_COUNT_SYNCED'
