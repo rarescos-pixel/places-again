@@ -3,9 +3,11 @@
 Every scored claim below maps to inspectable code, a visible product state, and
 a planned video moment. The real Google Cloud E2E backend/agent hard gate passed
 on 2026-08-29 in the owner-authenticated deployment. Independent public-internet
-reachability is a separate final gate and is not claimed as passed until the
-GitHub-hosted live proof reaches the service successfully. Final video URLs and
-exact video timestamps still need reconciliation with the submitted build.
+reachability is tracked separately and is not claimed as passed until the
+GitHub-hosted live proof reaches the service successfully. The official FAQ does
+not require a project to remain publicly live during judging, but anonymous
+judge access remains a high-value Production Readiness signal. Final video URLs
+and exact video timestamps still need reconciliation with the submitted build.
 
 ## 1. Innovation & Operational Utility — 40%
 
@@ -48,15 +50,16 @@ exact video timestamps still need reconciliation with the submitted build.
 |---|---|---|---|
 | Memorable visible transformation | cascade UI in `static/index.html` | AT RISK → RECOVERED | 0:00–2:00 |
 | Decision evidence is inspectable | `candidate_summaries`, selected ID, reasons, proof in event ledger | candidate strip + decision panel | 1:00–1:40 |
-| Responsive finalist control room | `static/index.html`; integration test | Cloud Run UI — final anonymous external reachability gate must pass before video/submission | entire demo |
+| Responsive finalist control room | `static/index.html`; integration test | Hosted Cloud Run UI preferred; if anonymous reachability remains unavailable, use verified owner-accessible build + video/repo testing evidence | entire demo |
 | Public reproducible quality gate | `.github/workflows/quality-gate.yml` | GitHub Actions: tests, evaluation, core verification, secret/history scan, syntax/parse checks; JSON evidence artifact | repository review |
 | Robust guided deploy | `enable_google_apis.sh`; `scripts/deploy_auto.sh`; retry tests | Owner-authenticated deployment succeeded after bypassing fragile hosted preflight | deployment evidence |
 | Real cloud E2E, replay, and failure | `scripts/cloud_e2e_test.py`; `reports/cloud-e2e-verified-20260829.md` | `FINAL_STATUS=SUCCESS`; generated cloud evidence JSON | 0:40–3:30 |
-| Independent external reachability | `.github/workflows/live-cloud-e2e-proof.yml`; `scripts/diagnose_public_404.sh` | PENDING: external runner currently receives 404; must be green before final submission | final gate |
+| Independent external reachability | `.github/workflows/live-cloud-e2e-proof.yml`; `scripts/diagnose_public_404.sh` | PREFERRED WINNER PROOF: external runner currently receives 404; continue diagnosis but do not miss deadline solely for this | production-readiness gate |
 | Reproducible local evaluation | 52 labeled deterministic/fake-selection cases across both domains; not a Gemini invocation | `reports/evaluation-report.json` | 3:10–3:30 |
 | Acceptance invariants pass | 0 unsafe/unresolved/duplicate/invented/override; 100% reverified | evaluation summary | 3:10–3:30 |
+| Judge testing fallback | `docs/judge-testing-instructions.md` | Hosted path if available + local reproducible path | judge review |
 | Observable without hidden reasoning | event/model/tool/candidate/proof/version/retry/outbox fields | action trace and audit | 1:00–2:20 |
-| Honest evidence boundary | README and submission disclosure | synthetic-data label + explicit reachability gate | judge review |
+| Honest evidence boundary | README and submission disclosure | synthetic-data label + explicit reachability distinction | judge review |
 | Public video ≤ 4:00 | `docs/demo-script.md`, target 3:50 | public YouTube/Vimeo | final artifact |
 
 ## Fatal question: Why Gemini?
@@ -102,38 +105,37 @@ owner's Cloud Shell environment. A concise committed checkpoint is available at
 `reports/cloud-e2e-verified-20260829.md`. The raw JSON should be preserved as the
 authoritative detailed artifact during final evidence reconciliation.
 
-### Separate public-internet reachability gate — OPEN
+### Separate anonymous public-internet reachability — OPEN / PREFERRED
 
 Cloud Shell later confirmed `/api/capabilities` with HTTP 200 after setting the
 Cloud Run event API to ingress `all`, enabling the default `run.app` URL, and
-disabling the Cloud Run Invoker IAM check. However, independent GitHub-hosted
-runners still received HTTP 404 from both the hash-form and deterministic-form
-Cloud Run URLs.
+disabling the Cloud Run Invoker IAM check. Independent GitHub-hosted runners
+still received HTTP 404 from both the hash-form and deterministic-form Cloud Run
+URLs.
 
-This means the backend/agent proof above remains valid, but the project is **not
-submission-ready as a public live application yet**. Do not record the final
-video or claim public internet accessibility until `.github/workflows/live-cloud-e2e-proof.yml`
-can reach `/api/capabilities` and complete the real workflow externally.
+This does **not** invalidate the passed backend/agent E2E. The official FAQ says
+the application does not have to remain publicly accessible/deployed during
+judging. We still want anonymous reachability green because a judge-accessible
+hosted UI strengthens Production Readiness and reduces friction. Continue the
+read-only diagnosis when owner Cloud Shell access returns, but protect the
+submission deadline if the front-door policy issue persists.
 
 A Quality-Gate-verified read-only diagnostic is committed at
 `scripts/diagnose_public_404.sh` with a one-click tutorial in
-`docs/public-404-diagnostic.md`. It reads effective Cloud Run configuration and
-recent `run.googleapis.com/HttpIngress` audit evidence without mutating the
-service.
+`docs/public-404-diagnostic.md`.
 
-## Bonus map — only after the public gate closes
+## Bonus map
 
 | Bonus | Evidence asset | Status |
 |---|---|---|
-| +0.2 public build content | `docs/build-article.md` | Draft gated on externally verified live URL; owner publication pending |
-| +0.2 social post | `docs/social-post.md` | Draft gated on externally verified live URL; owner publication pending |
+| +0.2 public build content | `docs/build-article.md` | Publish-ready; no live-app dependency; owner publication pending |
+| +0.2 social post | `docs/social-post.md` | Publish-ready with required hashtag; owner publication pending |
 | +0.2 Gemma 4 additional-model bonus | draft PR #2 `bonus-gemma4-refresh` | CI green; real owner-authenticated Gemma call + README/demo evidence still required; do not merge yet |
 | Further additional models, max +0.6 total | none | Intentionally deferred; no decorative model stuffing |
 
 ## Final sceptical-judge gate
 
 - Is the submitted commit's public Quality Gate green and are its generated reports downloadable?
-- Does an independent external runner reach the live Cloud Run UI/API without authentication or 404?
 - Can the problem be repeated after ten seconds?
 - Is the cascade visible before architecture is discussed?
 - Does the live trace show more than one real safe candidate?
@@ -142,5 +144,6 @@ service.
 - Does replay preserve the same version and outbox IDs?
 - Does the impossible/adversarial case stop without side effects?
 - Does the film scenario use the same code path rather than renamed slides?
-- Are the Cloud Run URL, Pub/Sub delivery, ADK/Gemini trace, and Firestore state impossible to mistake for a mock?
+- Are the Google Cloud deployment, Pub/Sub delivery, ADK/Gemini trace, and Firestore state impossible to mistake for a mock?
 - Does every spoken number/model-selection claim match the submitted commit's generated evidence?
+- Preferred: can a judge open the hosted UI anonymously? If not, are video + repo + testing instructions strong enough that no unsupported live-access claim remains?
