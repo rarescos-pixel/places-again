@@ -57,7 +57,7 @@ def run_safe(scenario: str, person: str, start: str, end: str):
     incident = {
         "scenario_id": scenario,
         "event_id": event_id,
-        "source": "submission_video_live_proof",
+        "source": "demo",
         "disruption": {
             "person_id": person,
             "start": start,
@@ -103,6 +103,7 @@ def main():
     line("model", f"{cap['model']} on {cap['model_backend']}")
     line("event transport", cap["event_transport"])
     line("state", "Firestore")
+
     print("\n[1] OPERA — ONE INCIDENT, AUTONOMOUS RECOVERY", flush=True)
     opera_incident, opera = run_safe("opera", "soprano_principal", "08:00", "14:00")
 
@@ -116,6 +117,8 @@ def main():
         if replay.get("duplicate_deliveries", 0) > dup_before:
             break
         time.sleep(1)
+    else:
+        raise RuntimeError("replay delivery was not observed")
     _, state = request("/api/state?scenario_id=opera")
     assert state["version"] == 2
     assert len(state["outbox"]) == 12
@@ -128,7 +131,7 @@ def main():
     bad = {
         "scenario_id": "opera",
         "event_id": bad_id,
-        "source": "submission_video_live_proof",
+        "source": "demo",
         "disruption": {
             "person_id": "missing_specialist",
             "start": "08:00",
@@ -143,6 +146,7 @@ def main():
     assert failed["messages_sent"] == 0
     _, state2 = request("/api/state?scenario_id=opera")
     assert state2["version"] == 2
+    assert len(state2["outbox"]) == 12
     line("terminal state", "human_required")
     line("state mutation", "NONE")
     line("messages sent", "0")
@@ -150,7 +154,8 @@ def main():
     print("\n[4] COMMERCIAL FILM / BROADCAST — SAME ENGINE", flush=True)
     _, film = run_safe("commercial_shoot", "dp_principal", "07:00", "16:00")
     assert film["metrics"]["activities_recovered"] == 4
-    line("domain proof", "4/4 activities recovered")
+    assert film["metrics"]["person_hours_restored"] == 26.0
+    line("domain proof", "4/4 activities · 26 person-hours restored")
 
     print("\n" + "=" * 72, flush=True)
     print("FINAL_STATUS=SUCCESS", flush=True)
