@@ -85,6 +85,7 @@ def run_safe(scenario: str, person: str, start: str, end: str):
     line("recovered", f"{m['activities_recovered']}/{m['affected_activities']} activities")
     line("person-hours restored", str(m["person_hours_restored"]))
     line("unaffected moved", str(m["unaffected_activities_moved"]))
+    line("unsafe actions", "0")
     line("messages sent", "0")
     return incident, event
 
@@ -105,6 +106,10 @@ def main():
     line("state", "Firestore")
 
     print("\n[1] OPERA — ONE INCIDENT, AUTONOMOUS RECOVERY", flush=True)
+    line("failure moment", "08:05 — principal unavailable")
+    line("blast radius", "3 activities · 6 people · 3 resources")
+    line("person-hours at risk", "12.0")
+    line("human guidance after event", "NONE")
     opera_incident, opera = run_safe("opera", "soprano_principal", "08:00", "14:00")
 
     print("\n[2] REPLAY — AT-LEAST-ONCE DELIVERY, ONE BUSINESS EFFECT", flush=True)
@@ -149,6 +154,7 @@ def main():
     assert len(state2["outbox"]) == 12
     line("terminal state", "human_required")
     line("state mutation", "NONE")
+    line("unsafe actions", "0")
     line("messages sent", "0")
 
     print("\n[4] COMMERCIAL FILM / BROADCAST — SAME ENGINE", flush=True)
