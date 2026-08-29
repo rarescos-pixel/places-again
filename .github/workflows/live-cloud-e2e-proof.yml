@@ -1,0 +1,64 @@
+name: Live Cloud E2E Proof
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/live-cloud-e2e-proof.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: live-cloud-e2e-proof
+  cancel-in-progress: false
+
+jobs:
+  prove-live-cloud-path:
+    name: Public app to real Gemini/ADK/Firestore proof
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    env:
+      PLACES_AGAIN_LIVE_URL: https://places-again-inb6leu4ca-ew.a.run.app
+
+    steps:
+      - name: Checkout submitted repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Confirm public capabilities endpoint
+        run: |
+          python - <<'PY'
+          import json
+          from urllib.request import urlopen
+          import os
+
+          url = os.environ['PLACES_AGAIN_LIVE_URL'].rstrip('/') + '/api/capabilities'
+          with urlopen(url, timeout=30) as response:
+              payload = json.loads(response.read())
+          assert payload['runtime'] == 'Google Cloud Run', payload
+          assert payload['repository'] == 'firestore', payload
+          assert payload['event_transport'] == 'Google Pub/Sub', payload
+          assert payload['synthetic_demo_reset_enabled'] is True, payload
+          print(json.dumps(payload, indent=2))
+          PY
+
+      - name: Run independent live Cloud E2E
+        run: |
+          mkdir -p runtime
+          python scripts/cloud_e2e_test.py "$PLACES_AGAIN_LIVE_URL" \
+            --output "runtime/cloud-e2e-github-${GITHUB_SHA}.json"
+
+      - name: Publish raw live Cloud evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: live-cloud-e2e-${{ github.sha }}
+          path: runtime/cloud-e2e-github-${{ github.sha }}.json
+          if-no-files-found: error
+          retention-days: 30
