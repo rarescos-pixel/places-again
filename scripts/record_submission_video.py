@@ -12,7 +12,7 @@ from playwright.sync_api import sync_playwright
 
 LIVE_URL = "https://places-again-674409858210.europe-west1.run.app"
 E2E_RUN_URL = "https://github.com/rarescos-pixel/places-again/actions/runs/33255155489"
-QUALITY_RUN_URL = "https://github.com/rarescos-pixel/places-again/actions/runs/33255724383"
+QUALITY_RUN_URL = "https://github.com/rarescos-pixel/places-again/actions/runs/33263263630"
 ARCH_URL = "https://github.com/rarescos-pixel/places-again/blob/main/docs/architecture.svg"
 OUT_DIR = pathlib.Path("runtime")
 RAW_VIDEO = OUT_DIR / "places-again-submission-demo-raw.mp4"
@@ -163,7 +163,7 @@ def browser_evidence(context, app, browser) -> None:
     quality = context.new_page()
     quality.goto(QUALITY_RUN_URL, wait_until="domcontentloaded", timeout=60000)
     quality.bring_to_front()
-    set_overlay(quality, "REPRODUCIBLE SAFETY EVIDENCE", "59 automated tests and 52 labeled evaluation cases cover replay, stale state, concurrency, model failure, prompt injection and fail-closed behavior.")
+    set_overlay(quality, "REPRODUCIBLE SAFETY EVIDENCE", "65 automated tests and 52 labeled evaluation cases cover replay, stale state, concurrency, model failure, prompt injection and fail-closed behavior.")
     time.sleep(10)
 
     app.bring_to_front()
@@ -218,6 +218,8 @@ def main() -> None:
         "live_proof_elapsed_seconds": round(proof_elapsed, 3),
         "live_url": LIVE_URL,
         "runtime_source_commit": "5d6b5662cb63f8af1d414f01570c9991278b3e8e",
+        "repository_evidence_head": "d8074322fa39cd6eb6a7fa7eb038e39d4fffd4d3",
+        "quality_gate_run": "33263263630",
         "proof_mode": "unedited visible terminal execution against public Cloud Run endpoint",
         "proof_cases": [
             "opera autonomous safe recovery",
