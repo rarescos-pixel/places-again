@@ -4,7 +4,9 @@ Every scored claim below maps to inspectable code, a visible product state, and
 the final automated video evidence map. The real Google Cloud E2E backend/agent hard gate passed
 on 2026-08-29 in the owner-authenticated deployment, and independent anonymous
 public-internet reachability plus full live E2E also passed from a GitHub-hosted
-runner on 2026-08-29. The final generated **120.40-second** MP4 has been inspected and reconciled below; only the final public YouTube/Vimeo URL remains to be inserted.
+runner on 2026-08-29. The promoted product-first **145.67-second** MP4 has been
+mechanically inspected and visually audited; only the final public YouTube/Vimeo
+URL remains to be inserted.
 
 Current verified hosted application:
 
@@ -14,30 +16,33 @@ Independent public proof: GitHub Actions `Live Cloud E2E Proof` run
 `33255155489`.
 
 Final video-generation proof: GitHub Actions `Build Submission Demo Video` run
-`33264120194`, artifact `9718156142`.
+`33267710383`, artifact `9719197325`.
 
 ## Final automated video map
 
-The inspected final automated MP4 is **120.40 seconds (2:00.4)**, 1920×1080,
+The inspected final automated MP4 is **145.67 seconds (2:25.7)**, 1920×1080,
 H.264/30 fps, with English on-screen captions and no audio. Its authoritative
 evidence map is:
 
-- **0:00–0:53** — one continuous, unedited public-Cloud Proof of Action: Opera
+- **0:00–0:10** — product/problem cold open on the real hosted UI: `08:05 — ONE
+  ABSENCE BREAKS THE DAY`, with 3 activities, 6 people, 3 resources, 12
+  person-hours at risk, and no step-by-step human guidance;
+- **0:10–1:18** — one continuous, unedited public-Cloud Proof of Action: Opera
   autonomous recovery, replay exactly-once business effect, adversarial/impossible
   `human_required`, and Commercial Film/Broadcast using the same engine;
-- **0:53–1:05** — the exact captured Opera event is fetched from the public backend
+- **1:18–1:30** — the exact captured Opera event is fetched from the public backend
   and rendered through the hosted `.run.app` product UI: `AT RISK → RECOVERED`,
   3/3 activities, 12 person-hours restored, two safe strategies, Gemini-selected
   Candidate A with validated reasons, deterministic re-verification PASS, state
   `1 → 2`, unaffected moved = 0, messages sent = 0;
-- **1:05–1:17** — `/api/capabilities`: Cloud Run, Pub/Sub, private worker, Google ADK,
+- **1:30–1:43** — `/api/capabilities`: Cloud Run, Pub/Sub, private worker, Google ADK,
   Gemini 3.5 on Vertex AI, Firestore;
-- **1:17–1:27** — independent external GitHub-hosted live Cloud E2E evidence;
-- **1:27–1:38** — committed architecture;
-- **1:38–1:49** — public Quality Gate / reproducible safety evidence;
-- **1:49–2:00** — hosted product close + decision/safety line.
+- **1:43–1:53** — independent external GitHub-hosted live Cloud E2E evidence;
+- **1:53–2:03** — committed architecture;
+- **2:03–2:14** — public Quality Gate / reproducible safety evidence;
+- **2:14–2:25** — hosted product close + decision/safety line.
 
-The MP4 is already generated, mechanically inspected, and visually audited. The
+The MP4 was generated from a successful real public-cloud recording. The
 mandatory **public YouTube/Vimeo URL is not claimed until that upload actually
 exists**.
 
@@ -45,54 +50,55 @@ exists**.
 
 | Claim | Exact evidence | Visible proof | Video |
 |---|---|---|---|
-| The failure is understood immediately | README opening; `docs/submission.md` | One absence expands into the cascade | 0:00–0:53 |
-| Personal BYOF friction | Firsthand opera origin; all actual identities/data synthetic | Origin line + Opera scenario | 1:49–2:00 |
-| Human and operational stakes are measured | `_plan_metrics` in `places_again/engine.py` | 3 activities, 6 people, 3 resources, 12 hours at risk | 0:00–1:05 |
-| One event completes without step-by-step guidance | `POST /api/events` → Pub/Sub → private worker | One event ID, autonomous terminal workflow | 0:00–0:53 |
-| More than one safe recovery genuinely exists | `build_recovery_candidates`; `test_multiple_safe_candidates_expose_a_real_operational_tradeoff` | Two safe strategies visible in captured proof and hosted decision panel | 0:00–1:05 |
-| Gemini makes a consequential bounded choice | Four-tool ADK agent; `candidate_id` + reason-code contract | Actual selected Candidate A + validated reasons from the captured run | 0:00–1:05 |
-| The operation actually changes | `commit_event_candidate`; Firestore transaction; cloud E2E assertions | State `v1 → v2`, then product UI state `1 → 2` | 0:00–1:05 |
-| Opera baseline result | `op_baseline`; report metrics | 3/3, 12 hours restored, 0 unaffected moved | 0:00–1:05 |
-| Portability is proved, not promised | `commercial_shoot.json`; same candidate generator and workflow tests | Commercial Film/Broadcast executes in the same continuous proof | 0:00–0:53 |
-| Commercial baseline result | `film_baseline` | 4/4 and 26 hours restored | 0:00–0:53 |
-| Failure is intentional and safe | `human_required` paths and adversarial cases | No mutation, no outbox, no send | 0:00–0:53 |
+| The failure is understood immediately | README opening; `docs/submission.md` | Hosted product + one absence expands into the cascade | 0:00–0:10 |
+| Personal BYOF friction | Firsthand opera origin in README/submission; all actual identities/data synthetic | Documented origin; Opera scenario is visible | judge review; 0:00–1:30 |
+| Human and operational stakes are measured | `_plan_metrics` in `places_again/engine.py` | 3 activities, 6 people, 3 resources, 12 hours at risk | 0:00–1:30 |
+| One event completes without step-by-step guidance | `POST /api/events` → Pub/Sub → private worker | One event ID, autonomous terminal workflow | 0:10–1:18 |
+| More than one safe recovery genuinely exists | `build_recovery_candidates`; `test_multiple_safe_candidates_expose_a_real_operational_tradeoff` | Two safe strategies visible in captured proof and hosted decision panel | 0:10–1:30 |
+| Gemini makes a consequential bounded choice | Four-tool ADK agent; `candidate_id` + reason-code contract | Actual selected Candidate A + validated reasons from the captured run | 0:10–1:30 |
+| The operation actually changes | `commit_event_candidate`; Firestore transaction; cloud E2E assertions | State `v1 → v2`, then product UI state `1 → 2` | 0:10–1:30 |
+| Opera baseline result | `op_baseline`; report metrics | 3/3, 12 hours restored, 0 unaffected moved | 0:10–1:30 |
+| Portability is proved, not promised | `commercial_shoot.json`; same candidate generator and workflow tests | Commercial Film/Broadcast executes in the same continuous proof | 0:10–1:18 |
+| Commercial baseline result | `film_baseline` | 4/4 and 26 hours restored | 0:10–1:18 |
+| Failure is intentional and safe | `human_required` paths and adversarial cases | No mutation, no outbox, no send | 0:10–1:18 |
 
 ## 2. Architectural Discipline & Tech Stack — 30%
 
 | Claim | Exact evidence | Visible/cloud proof | Video |
 |---|---|---|---|
-| Required Google stack is real | `google-adk`; model config; Cloud Run, Pub/Sub, Firestore code | Passed owner-authenticated + independent public cloud E2E; `/api/capabilities` shown | 1:05–1:49 |
-| Event-driven, not a synchronous chatbot | `places_again/pubsub.py`; API returns `202 + event_id`; private push endpoint | Event ID and background terminal workflow | 0:00–0:53 |
-| Authenticated private delivery | OIDC push SA and private internal-ingress worker in `deploy.sh` | Passed Pub/Sub OIDC cloud E2E | 1:05–1:49 |
-| Hard constraints define the safe space | `build_recovery_candidates`, `validate_schedule` | Two strategies explicitly shown as deterministic safe space | 0:00–1:05 |
-| Soft priorities belong to Gemini | scenario `soft_priorities`; structured selection tools | Gemini-selected candidate ID and validated operational reasons | 0:00–1:05 |
-| Gemini cannot invent or edit a plan | `commit_event_candidate`; invalid-ID evaluation | Invented/unsafe path ends `human_required`; selected ID is visibly one of supplied candidates | 0:00–1:05 |
-| Every committed candidate is reverified | `reverify_recovery_plan`; transaction path | “Deterministic re-verification: PASS” in terminal and hosted product | 0:00–1:05 |
-| Firestore-cloud exactly-once business effect over at-least-once delivery | event ledger + Firestore transaction; replay assertions | Real replay proof: version/outbox unchanged | 0:00–0:53 |
-| Crash and concurrency recovery | fault injection and concurrent tests | Public Quality Gate / evaluation evidence | 1:38–1:49 |
-| Prompt injection cannot change authority | strict schema, opaque ID, tool allowlist, adversarial fixture | Fail-closed proof + public Quality Gate | 0:00–0:53; 1:38–1:49 |
-| No irreversible send authority | no send tool; deterministic `prepared_not_sent` outbox | 12 prepared, 0 sent; hosted recovery proof shows messages sent = 0 | 0:00–1:05 |
-| Least privilege without keys | separate builder/API/worker/push identities | Deployment/capability and architecture evidence | 1:05–1:38 |
+| Required Google stack is real | `google-adk`; model config; Cloud Run, Pub/Sub, Firestore code | Passed owner-authenticated + independent public cloud E2E; `/api/capabilities` shown | 1:30–2:14 |
+| Event-driven, not a synchronous chatbot | `places_again/pubsub.py`; API returns `202 + event_id`; private push endpoint | Event ID and background terminal workflow | 0:10–1:18 |
+| Authenticated private delivery | OIDC push SA and private internal-ingress worker in `deploy.sh` | Passed Pub/Sub OIDC cloud E2E | 1:30–2:14 |
+| Hard constraints define the safe space | `build_recovery_candidates`, `validate_schedule` | Two strategies explicitly shown as deterministic safe space | 0:10–1:30 |
+| Soft priorities belong to Gemini | scenario `soft_priorities`; structured selection tools | Gemini-selected candidate ID and validated operational reasons | 0:10–1:30 |
+| Gemini cannot invent or edit a plan | `commit_event_candidate`; invalid-ID evaluation | Invented/unsafe path ends `human_required`; selected ID is visibly one of supplied candidates | 0:10–1:30 |
+| Every committed candidate is reverified | `reverify_recovery_plan`; transaction path | “Deterministic re-verification: PASS” in terminal and hosted product | 0:10–1:30 |
+| Firestore-cloud exactly-once business effect over at-least-once delivery | event ledger + Firestore transaction; replay assertions | Real replay proof: version/outbox unchanged | 0:10–1:18 |
+| Crash and concurrency recovery | fault injection and concurrent tests | Public Quality Gate / evaluation evidence | 2:03–2:14 |
+| Prompt injection cannot change authority | strict schema, opaque ID, tool allowlist, adversarial fixture | Fail-closed proof + public Quality Gate | 0:10–1:18; 2:03–2:14 |
+| No irreversible send authority | no send tool; deterministic `prepared_not_sent` outbox | 12 prepared, 0 sent; hosted recovery proof shows messages sent = 0 | 0:10–1:30 |
+| Least privilege without keys | separate builder/API/worker/push identities | Deployment/capability and architecture evidence | 1:30–2:03 |
 | Threat and failure analysis | `SECURITY.md`; `FAILURE_MODES.md` | Repository | judge review |
-| Secret hygiene | `scripts/secret_scan.py --history`; `reports/secret-scan.json`; public Quality Gate | 0 findings on green submitted-commit CI | judge review / 1:38–1:49 |
+| Secret hygiene | `scripts/secret_scan.py --history`; `reports/secret-scan.json`; public Quality Gate | 0 findings on green CI | judge review / 2:03–2:14 |
 
 ## 3. Demo & Production Readiness — 30%
 
 | Claim | Exact evidence | Visible/deployment proof | Video |
 |---|---|---|---|
-| Memorable visible transformation | cascade UI in `static/index.html` | `AT RISK → RECOVERED`, with before/after metrics on the actual captured event | 0:53–1:05 |
-| Decision evidence is inspectable | `candidate_summaries`, selected ID, reasons, proof in event ledger | two-candidate strip + Gemini decision panel + deterministic PASS | 0:53–1:05 |
-| Responsive finalist control room | `static/index.html`; integration test | Independently reachable hosted Cloud Run UI | 0:53–1:05; 1:49–2:00 |
-| Public reproducible quality gate | `.github/workflows/quality-gate.yml` | GitHub Actions: tests, evaluation, core verification, secret/history scan, syntax/parse checks; JSON evidence artifact | 1:38–1:49 |
+| Problem is visible before proof architecture | hosted product UI + synthetic baseline | 08:05 cold open with cascade stakes before terminal evidence | 0:00–0:10 |
+| Memorable visible transformation | cascade UI in `static/index.html` | `AT RISK → RECOVERED`, with before/after metrics on the actual captured event | 1:18–1:30 |
+| Decision evidence is inspectable | `candidate_summaries`, selected ID, reasons, proof in event ledger | two-candidate strip + Gemini decision panel + deterministic PASS | 1:18–1:30 |
+| Responsive finalist control room | `static/index.html`; integration test | Independently reachable hosted Cloud Run UI | 0:00–0:10; 1:18–1:30; 2:14–2:25 |
+| Public reproducible quality gate | `.github/workflows/quality-gate.yml` | GitHub Actions: tests, evaluation, core verification, secret/history scan, syntax/parse checks; JSON evidence artifact | 2:03–2:14 |
 | Robust guided deploy | `enable_google_apis.sh`; `scripts/deploy_auto.sh`; retry tests | Owner-authenticated deployment succeeded after bypassing fragile hosted preflight | deployment evidence |
-| Real cloud E2E, replay, and failure | `scripts/cloud_e2e_test.py`; `reports/cloud-e2e-verified-20260829.md` | Owner-authenticated `FINAL_STATUS=SUCCESS` + independent public E2E `passed: true` | 0:00–1:49 |
-| Independent external reachability | `.github/workflows/live-cloud-e2e-proof.yml` | PASSED: public `/api/capabilities` + full live E2E from GitHub-hosted runner | 1:17–1:27 |
-| Reproducible local evaluation | 52 labeled deterministic/fake-selection cases across both domains; not a Gemini invocation | Quality Gate evidence; explicitly separate from real Gemini cloud proof | 1:38–1:49 |
-| Acceptance invariants pass | 0 unsafe/unresolved/duplicate/invented/override; 100% reverified | generated evaluation + visible real-cloud safety invariants | 0:00–1:05; 1:38–1:49 |
+| Real cloud E2E, replay, and failure | `scripts/cloud_e2e_test.py`; `reports/cloud-e2e-verified-20260829.md` | Owner-authenticated `FINAL_STATUS=SUCCESS` + independent public E2E `passed: true` | 0:10–2:14 |
+| Independent external reachability | `.github/workflows/live-cloud-e2e-proof.yml` | PASSED: public `/api/capabilities` + full live E2E from GitHub-hosted runner | 1:43–1:53 |
+| Reproducible local evaluation | 52 labeled deterministic/fake-selection cases across both domains; not a Gemini invocation | Quality Gate evidence; explicitly separate from real Gemini cloud proof | 2:03–2:14 |
+| Acceptance invariants pass | 0 unsafe/unresolved/duplicate/invented/override; 100% reverified | generated evaluation + visible real-cloud safety invariants | 0:10–1:30; 2:03–2:14 |
 | Judge testing path | `docs/judge-testing-instructions.md` | Hosted Cloud Run path + local reproducible fallback | judge review |
-| Observable without hidden reasoning | event/model/tool/candidate/proof/version/retry/outbox fields | terminal action proof + hosted decision panel | 0:00–1:05 |
+| Observable without hidden reasoning | event/model/tool/candidate/proof/version/retry/outbox fields | terminal action proof + hosted decision panel | 0:10–1:30 |
 | Honest evidence boundary | README and submission disclosure | synthetic-data labels + exact cloud evidence | judge review |
-| Public video ≤ 4:00 | automated submission-video artifact `9718156142`, 120.40 s | MP4 verified; public YouTube/Vimeo URL still required | final artifact |
+| Public video ≤ 4:00 | automated submission-video artifact `9719197325`, 145.67 s | MP4 verified; public YouTube/Vimeo URL still required | final artifact |
 
 ## Fatal question: Why Gemini?
 
@@ -100,6 +106,7 @@ exists**.
 |---|---|
 | If Gemini is removed, is this the same product? | No. Deterministic code still defines safety, but it no longer makes a context-sensitive choice between safe operational strategies. |
 | Is Gemini only calling an algorithm? | No. The engine returns a bounded, heuristically generated non-dominated candidate set. Gemini selects one actual candidate using domain soft priorities and returns auditable reason codes. |
+| Why not use one fixed deterministic weighting? | A fixed weighting encodes one permanent soft-preference policy. The demonstrated boundary keeps hard safety deterministic while letting Gemini apply ranked, context-dependent operational priorities only inside the already-safe set. |
 | Can Gemini bypass safety? | No. It cannot edit plans, and its ID is checked for set membership before current-state deterministic re-verification. |
 | Is the choice fake? | No. Opera trades critical-call preservation against total shifted minutes; film trades single-cover continuity against balanced cover workload. Tests assert both. |
 
@@ -165,12 +172,26 @@ Raw evidence artifact:
 
 ## Final demo-generation evidence — PASSED 2026-08-29
 
-GitHub Actions `Build Submission Demo Video` run `33264120194` executed the final
-recording automation on branch `submission-video-automation` and completed every
-step successfully: real public-cloud proof, MP4 inspection, and artifact upload.
-Artifact `9718156142` contains the final 120.40-second H.264 MP4, metadata, and
-live proof log. The video-generation branch is intentionally separate from the
-verified application core.
+GitHub Actions `Build Submission Demo Video` run `33267710383` executed the
+product-first recording automation on branch `submission-video-automation` and
+completed every step successfully: real public-cloud proof, MP4 inspection, and
+artifact upload. Artifact `9719197325` contains the final **145.67-second** H.264
+MP4, metadata, and live proof log. The video-generation branch is intentionally
+separate from the verified application core.
+
+The final live proof log records:
+
+- Opera: 2 safe candidates; Gemini selected `candidate-a`; validated reasons
+  `preserve_highest_priority_activity` and `minimize_people_schedule_changes`;
+- deterministic re-verification PASS; `v1 → v2`; 3/3 activities and 12
+  person-hours restored; 0 unaffected moved; 0 unsafe actions; 0 messages sent;
+- replay: version 2, 12 `prepared_not_sent`, no second business effect;
+- adversarial/impossible incident: `human_required`, no mutation, no send;
+- Commercial Film/Broadcast: 2 safe candidates; Gemini selected `candidate-b`;
+  validated reasons `preserve_highest_priority_activity` and
+  `balance_cover_workload`; deterministic PASS; 4/4 activities and 26
+  person-hours restored; 0 messages sent;
+- `FINAL_STATUS=SUCCESS`.
 
 ## Bonus map
 
