@@ -1,0 +1,98 @@
+name: Reconcile Final Evidence
+
+on:
+  push:
+    branches: [submission-video-automation]
+    paths:
+      - '.github/workflows/reconcile-final-evidence.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  reconcile:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Reconcile final public proof and video map
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          evidence = Path('JUDGE_EVIDENCE.md')
+          s = evidence.read_text(encoding='utf-8')
+          s = s.replace('`33254443473`', '`33255155489`')
+          s = s.replace('`live-cloud-e2e-7e5cb3d29a11ef9affa3d3c44fe73d94df84cbfd`, artifact ID `9715370372`.',
+                        '`live-cloud-e2e-374798636b7b907c7fb20ad4ced806b27a07eb55`, artifact ID `9715582052`.')
+          s = s.replace('| +0.2 public build content | `docs/build-article.md` | Publish-ready; owner publication pending |',
+                        '| +0.2 public build content | https://github.com/rarescos-pixel/places-again/issues/3 | **Published** with required hackathon disclosure, live app, repository, and current 65/65 + 52/52 evidence |')
+          s = s.replace('| Public video ≤ 4:00 | `docs/demo-script.md`, target 3:50 | public YouTube/Vimeo | final artifact |',
+                        '| Public video ≤ 4:00 | automated submission-video artifact, 117.33 s | MP4 verified locally; public YouTube/Vimeo URL still required | final artifact |')
+          s = s.replace('a planned video moment', 'the final automated video evidence map')
+          s = s.replace('Final video URLs and exact video timestamps still need\nreconciliation with the submitted build.',
+                        'The generated 117.33-second MP4 has been inspected and reconciled below; only the final public YouTube/Vimeo URL remains to be inserted.')
+
+          # Replace the obsolete manual-demo timing vocabulary with the actual
+          # automated-video windows. Broad windows are intentional: the first
+          # 53 seconds are one continuous terminal Proof of Action.
+          timing = {
+            '0:00–0:20': '0:00–0:53',
+            '0:00–1:05': '0:00–0:53',
+            '0:40–1:45': '0:00–0:53',
+            '1:00–1:20': '0:00–0:53',
+            '1:15–1:30': '0:00–0:53',
+            '1:30–2:00': '0:00–0:53',
+            '1:45–2:20': '0:00–0:53',
+            '2:45–3:10': '0:00–0:53',
+            '2:20–2:45': '0:00–0:53',
+            '1:25–1:40': '0:00–0:53',
+            '2:20–2:35': '0:00–0:53',
+            '2:35–2:45': '0:00–0:53',
+            '1:00–1:40': '0:00–0:53',
+            '1:00–2:20': '0:00–0:53',
+            '3:10–3:30': '1:05–1:47',
+            '0:40–3:30': '0:00–1:47',
+            'entire demo': '0:00–1:57',
+          }
+          for old, new in timing.items():
+              s = s.replace(old, new)
+
+          marker = '## Final automated video map\n'
+          if marker not in s:
+              insert = '''## Final automated video map\n\nThe inspected automated MP4 is **117.33 seconds**, 1920×1080, H.264/30 fps,\nwith English on-screen captions and no audio. Its authoritative evidence map is:\n\n- **0:00–0:53** — one continuous, unedited public-Cloud Proof of Action: Opera\n  autonomous recovery, replay exactly-once business effect, adversarial/impossible\n  `human_required`, and Commercial Film/Broadcast using the same engine;\n- **0:53–1:05** — judge-accessible hosted Cloud Run application + visible `.run.app` URL;\n- **1:05–1:16** — `/api/capabilities`: Cloud Run, Pub/Sub, private worker, Google ADK,\n  Gemini 3.5 on Vertex AI, Firestore;\n- **1:16–1:26** — independent external GitHub-hosted live Cloud E2E evidence;\n- **1:26–1:37** — committed architecture;\n- **1:37–1:47** — public Quality Gate / reproducible safety evidence;\n- **1:47–1:57** — recovered hosted application + closing decision/safety line.\n\nThe MP4 is already generated and inspected. The mandatory **public YouTube/Vimeo\nURL is not claimed until that upload actually exists**.\n\n'''
+              anchor = '## 1. Innovation & Operational Utility — 40%\n'
+              s = s.replace(anchor, insert + anchor)
+          evidence.write_text(s, encoding='utf-8')
+
+          submission = Path('docs/submission.md')
+          s = submission.read_text(encoding='utf-8')
+          s = s.replace('`33254443473`', '`33255155489`')
+          s = s.replace('`live-cloud-e2e-7e5cb3d29a11ef9affa3d3c44fe73d94df84cbfd` (artifact ID\n`9715370372`)',
+                        '`live-cloud-e2e-374798636b7b907c7fb20ad4ced806b27a07eb55` (artifact ID\n`9715582052`)')
+          s = s.replace('- Public build article: `[ADD AFTER PUBLICATION]`',
+                        '- Public build article: `https://github.com/rarescos-pixel/places-again/issues/3`')
+          submission.write_text(s, encoding='utf-8')
+          PY
+          git diff --check
+          git diff -- JUDGE_EVIDENCE.md docs/submission.md
+
+      - name: Commit reconciled evidence to main
+        run: |
+          set -euo pipefail
+          git config user.name 'rarescos-pixel'
+          git config user.email 'rarescos@gmail.com'
+          git add JUDGE_EVIDENCE.md docs/submission.md
+          if git diff --cached --quiet; then
+            echo 'FINAL_STATUS=NO_CHANGES'
+            exit 0
+          fi
+          git commit -m 'Reconcile final public proof and automated video map'
+          git push origin HEAD:main
+          echo 'FINAL_STATUS=FINAL_EVIDENCE_RECONCILED'
