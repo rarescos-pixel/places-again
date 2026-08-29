@@ -13,9 +13,11 @@ A box becomes green only with inspectable evidence.
 - [x] Public GitHub repository with reproducible setup instructions.
 - [x] Clean architecture diagram.
 - [x] English product / submission materials.
-- [ ] Independently anonymous public application URL works from outside the owner Google Cloud environment.
+- [x] Real owner-authenticated Google Cloud backend/agent E2E passed.
 - [ ] Public YouTube/Vimeo demo is <= 4:00 and English / English-subtitled.
 - [ ] Final entrant eligibility attestation completed honestly.
+
+Official FAQ note: a project does **not** have to remain publicly live or deployed during judging, and a hosted URL is highly encouraged rather than a mandatory Stage-One pass/fail requirement. Independent anonymous public reachability remains a high-value **winner-readiness** target because it strengthens Demo & Production Readiness and makes judge testing frictionless.
 
 ## 2. Innovation & Operational Utility — 40%
 
@@ -51,20 +53,22 @@ Internal target: 5/5.
 - [x] Deterministic re-verification occurs after Gemini selection and before commit.
 - [x] Replay, concurrency, crashes, malformed input, prompt injection, model failure, and impossible recovery are tested.
 - [x] Secret + git-history scanning is public in CI.
-- [x] Public GitHub Quality Gate is green on the final documentation/core commit.
+- [x] Public GitHub Quality Gate is green on a current core/documentation commit.
 - [x] Owner-authenticated real Google Cloud E2E passed with ADK/Gemini/PubSub/Firestore.
-- [ ] Independent anonymous external E2E reaches the public front door and completes the workflow.
+- [ ] **Preferred winner-readiness proof:** independent anonymous external E2E reaches the public front door and completes the workflow.
 
 ## 4. Demo & Production Readiness — 30%
 
 Internal target: 5/5.
 
-Do not record until the public reachability gate above is green.
+Preferred path: close anonymous public reachability first, then record from the exact externally reachable build.
+
+Deadline fallback allowed by the official FAQ: do **not** miss submission solely because an anonymous front door remains unavailable. The final video can still prove the actual product and Google Cloud execution using the owner-accessible deployed build plus Cloud Console/Cloud Run/Vertex/Firestore evidence. If the hosted URL is not reliably judge-accessible, omit the broken hosted-project link rather than presenting it as working.
 
 The final <=4 minute video must visibly prove:
 
 - [ ] 08:05 incident + immediate 3 activities / 6 people / 3 resources / 12 person-hours at risk.
-- [ ] One click starts the main workflow; no further guidance until terminal state.
+- [ ] One action starts the main workflow; no step-by-step guidance until terminal state.
 - [ ] Multiple safe candidates are visible.
 - [ ] Actual Gemini-selected candidate ID and validated reason codes are visible.
 - [ ] Deterministic re-verification = PASS is visible.
@@ -74,10 +78,10 @@ The final <=4 minute video must visibly prove:
 - [ ] Replay leaves version/outbox unchanged.
 - [ ] Impossible/adversarial event becomes `human_required` with no unsafe effect.
 - [ ] Commercial film/broadcast fixture visibly uses the same mechanism.
-- [ ] `.run.app` URL is visible and externally reachable.
-- [ ] Cloud Run API + worker, Pub/Sub, Firestore, and Vertex AI/ADK/Gemini proof are legible in a short console cutaway.
+- [ ] Google Cloud execution evidence is visible: `.run.app` deployment/Cloud Run, worker, Pub/Sub, Firestore, Vertex AI/ADK/Gemini.
 - [ ] Architecture diagram appears briefly.
 - [ ] Spoken claims match the captured run exactly; candidate ID/reasons are not pre-scripted.
+- [ ] **Preferred:** anonymous judge access to the hosted UI works with no 404/auth friction.
 
 ## 5. Winner-pattern benchmark from prior Google/Devpost winners
 
@@ -96,17 +100,17 @@ This is an empirical benchmark, not a secret judging rule.
 
 ## 6. Bonus score — Stage Three
 
-Low-risk bonuses:
+Low-risk bonuses do **not** require a live-app URL. Do not delay them for Cloud Run front-door work.
 
 - [x] Build article draft exists and contains the required hackathon-purpose disclosure.
-- [ ] Publish build article publicly after live URL is externally verified. **+0.2**
+- [ ] Publish build article publicly on an accepted public platform. **+0.2**
 - [x] Social post draft exists with `#AllThingsAgenticHackathon`.
-- [ ] Publish social post after live URL is externally verified. **+0.2**
+- [ ] Publish social post publicly. **+0.2**
 
 Additional-model bonus:
 
 - [x] Gemma 4 experiment is isolated from `main` and outside the safety/mutation path.
-- [ ] Rebase/refresh the Gemma branch against final core.
+- [x] Refreshed Gemma bonus branch / PR #2 exists and CI is green.
 - [ ] Real owner-authenticated Gemma call succeeds with evidence.
 - [ ] Gemma integration is useful, documented clearly in README, and visible in the final demo.
 - [ ] Only then merge and claim **+0.2**.
@@ -118,34 +122,44 @@ Official maximum for additional-model bonus: +0.6 total.
 
 - [x] All people, schedules, resources, incidents, and scenario metrics are labeled synthetic.
 - [x] Cloud E2E claims are based on actual execution evidence.
-- [x] Public-internet access is not claimed until independently verified.
+- [x] Anonymous public-internet access is not claimed until independently verified.
 - [x] Local evaluation is not described as a real Gemini invocation.
 - [x] No hidden chain-of-thought is requested or stored.
 - [x] No unimplemented industry support is claimed.
 - [x] No real outbound communication is claimed.
+- [x] Data sources + pre-existing-work disclosure + findings/learnings are explicit in the Devpost draft.
 
 ## 8. Entrant eligibility — separate blocking gate
 
-The official rules exclude certain government/government-agency employment situations. This is separate from project quality.
+The official rules explicitly say individuals or organizations employed by a government agency are ineligible, and also reserve discretion over real/apparent conflicts of interest. This is separate from project quality.
 
-- [ ] Entrant reviews the official eligibility language before final Submit.
+- [ ] Entrant reviews the exact official eligibility language before final Submit.
 - [ ] No employment/status information is hidden or misrepresented.
 - [ ] Final eligibility declaration is made by the entrant, not inferred by the software project.
 
 ## 9. Submission and judging freeze
 
-Before pressing Submit:
+Before pressing Submit — mandatory / evidence critical:
 
-- [ ] Public front door green.
-- [ ] Final external E2E green.
 - [ ] Final Quality Gate green on exact submitted commit.
-- [ ] Public video URL inserted.
-- [ ] Public article URL inserted if bonus claimed.
-- [ ] Social URL inserted if bonus claimed.
-- [ ] Additional-model evidence inserted only if actually validated/merged.
-- [ ] Devpost text contains no placeholders or pending claims.
+- [ ] Public video URL inserted and video <=4:00.
+- [ ] Devpost text contains no unresolved placeholders for claims actually submitted.
 - [ ] `JUDGE_EVIDENCE.md` has final video timestamps.
+- [ ] Entrant eligibility review completed.
 - [ ] Exact submitted commit tagged/frozen.
+
+Strongly preferred before Submit, but **not a reason to miss the deadline**:
+
+- [ ] Anonymous public front door green.
+- [ ] Independent external E2E green.
+
+Bonus items if claimed:
+
+- [ ] Public article URL inserted.
+- [ ] Social URL inserted.
+- [ ] Additional-model evidence inserted only if actually validated/merged and shown in README/demo.
+
+If anonymous public access remains unresolved near the deadline, follow the FAQ: submit the strong video/repo/Cloud evidence and do not advertise a broken hosted-project link as judge-accessible.
 
 After Submit until winners are announced:
 
