@@ -21,16 +21,18 @@ change—without waiting for step-by-step human guidance.
 
 ## Inspiration: one absence is never one absence
 
-I built this because I know this failure firsthand. In live production, one
+At 08:05, one principal calls in sick. Within seconds, three activities, six
+people, three resources, and twelve person-hours are at risk.
+
+I built this because I know that failure firsthand. In live production, one
 absence is never one absence. It instantly becomes a problem of people, skills,
 rooms, resources, and time—and somebody has to rebuild the day while everyone
 waits.
 
-At 08:05, an opera principal calls in sick. Three calls depend on that
-performer. A replacement must be qualified. The conductor, pianist, director,
-other cast members, rehearsal rooms, and individual availability windows all
-constrain what can move. Existing planning software knows yesterday's plan;
-the difficult work starts when reality makes that plan false.
+A replacement must be qualified. The conductor, pianist, director, other cast
+members, rehearsal rooms, and individual availability windows all constrain
+what can move. Existing planning software knows yesterday's plan; the difficult
+work starts when reality makes that plan false.
 
 Places, Again solves that failure moment: **Autonomous Operational Disruption
 Recovery**. Opera is where the friction is firsthand. A second implemented
@@ -39,11 +41,11 @@ to that setting.
 
 ## What it does
 
-One incident starts a background Google Cloud workflow. The public Cloud Run
-API validates and persists it, returns an `event_id`, and publishes only that
-opaque ID to Pub/Sub. Authenticated delivery invokes a private Cloud Run worker
-running Google ADK and Gemini 3.5 on Vertex AI. The user does not choose tools or
-approve intermediate steps.
+One incident starts a background Google Cloud workflow. The Cloud Run API
+validates and persists it, returns an `event_id`, and publishes only that opaque
+ID to Pub/Sub. Authenticated delivery invokes a private Cloud Run worker running
+Google ADK and Gemini 3.5 on Vertex AI. The user does not choose tools or approve
+intermediate steps.
 
 The system then:
 
@@ -88,10 +90,10 @@ These are calculated operational measures, not invented dollar savings.
 Removing Gemini changes the decision, not the safety boundary.
 
 The deterministic engine can find multiple valid ways to recover the same
-operation. In the live opera baseline, two genuine safe strategies have a
-trade-off: one preserves the highest-priority call but shifts more minutes; the
-other shifts fewer minutes but moves that critical call and changes more
-people's schedules.
+operation. In the opera baseline, two genuine safe strategies have a trade-off:
+one preserves the highest-priority call but shifts more minutes; the other
+shifts fewer minutes but moves that critical call and changes more people's
+schedules.
 
 Gemini receives only the safe candidate summaries and the operation's ranked
 soft priorities. Its structured action is bounded to:
@@ -127,7 +129,7 @@ moved. We do not claim support for unimplemented industries.
   context.
 - **Google ADK** exposes a four-tool allowlist: inspect context, prepare safe
   candidates, select one valid candidate, and inspect status.
-- **Cloud Run** separates a public event API from a private worker.
+- **Cloud Run** separates a public-facing event API from a private worker.
 - **Pub/Sub** provides authenticated asynchronous at-least-once delivery.
 - **Firestore** provides the event ledger and atomic state/outbox transaction.
 - **FastAPI + Pydantic** bound and validate the public data surface.
@@ -159,9 +161,9 @@ invented candidate IDs, Gemini-timeout state, selection-policy evidence, and
 re-verification failure.
 
 The real owner-authenticated Google Cloud E2E passed on 2026-08-29 and verified
-the production path with real Google ADK + Gemini 3.5, Pub/Sub OIDC delivery,
-Firestore state mutation, replay protection, and adversarial fail-closed
-behavior.
+the production backend/agent path with real Google ADK + Gemini 3.5, Pub/Sub
+OIDC delivery, Firestore state mutation, replay protection, and adversarial
+fail-closed behavior.
 
 Current reproducible result:
 
@@ -197,9 +199,14 @@ real ADK/Gemini workflow, checked `v1 → v2`, outbox creation, Firestore
 persistence, replay without a second business effect, and an impossible
 adversarial event without an unsafe commit.
 
-Public application:
+Deployed Cloud Run service URL:
 
 `https://places-again-inb6leu4ca-ew.a.run.app`
+
+**Final submission gate:** independent anonymous public-internet reachability of
+that URL must be green before the entry is submitted or the final demo is
+recorded. The backend/agent Cloud E2E proof is already passed; this separate
+front-door gate is not overclaimed.
 
 A committed evidence checkpoint is available in
 `reports/cloud-e2e-verified-20260829.md`; the deployment also generated the raw
@@ -207,14 +214,16 @@ JSON cloud E2E report in the owner-authenticated Cloud Shell runtime.
 
 ## What is real and what is synthetic
 
-- **Real code and deployed path:** ADK agent, Gemini structured-selection path,
-  deterministic candidate engine, API, Pub/Sub integration, Firestore
-  transactions, Cloud Run deployment, UI, security controls, tests, evaluation,
-  and E2E verifier.
+- **Real code and deployed backend/agent path:** ADK agent, Gemini
+  structured-selection path, deterministic candidate engine, API, Pub/Sub
+  integration, Firestore transactions, Cloud Run deployment, UI, security
+  controls, tests, evaluation, and E2E verifier.
 - **Synthetic data:** every person, production, schedule, resource, incident,
   and measured scenario value.
 - **Cloud proof:** passed owner-authenticated E2E on 2026-08-29; code presence is
   not used as a substitute for execution evidence.
+- **Public reachability:** final independent anonymous check required before
+  submission.
 - **Future work:** customer connectors, tenancy, RBAC, retention, governed
   delivery, and organization-specific policies.
 
@@ -231,12 +240,19 @@ Python, FastAPI, Pydantic, JavaScript, HTML/CSS, Pytest, Docker
 - Do not select Startup Excellence without an incorporated entrant organization.
 - Do not select Best Multimodal UX; the product is not multimodal.
 - Claim an additional-model bonus only if that model is truly integrated,
-  deployed, and shown in the final evidence.
+  deployed, clearly documented in the README, and shown in the final demo.
 
 ## Final links
 
-- Public application: `https://places-again-inb6leu4ca-ew.a.run.app`
+- Public application: `[REPLACE WITH VERIFIED LIVE URL AFTER EXTERNAL GATE]`
 - Public repository: `https://github.com/rarescos-pixel/places-again`
 - Public video: `[ADD PUBLIC YOUTUBE OR VIMEO URL]`
 - Public build article: `[ADD AFTER PUBLICATION]`
 - Social post: `[ADD AFTER PUBLICATION]`
+
+## Submission stop rule
+
+Do not submit while any of these remain unresolved: external public reachability,
+public demo URL, article/social bonus URLs if claimed, or entrant eligibility
+attestation. After submission, freeze the exact repository, video, and live app
+through the judging period as required by the official FAQ.
