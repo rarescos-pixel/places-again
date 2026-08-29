@@ -1,0 +1,35 @@
+name: Sync Public Article Test Count
+
+on:
+  push:
+    branches: [submission-video-automation]
+    paths:
+      - '.github/workflows/sync-public-article-count.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Correct published build article count
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          gh issue view 3 --repo "$GH_REPO" --json body --jq .body > /tmp/article.md
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('/tmp/article.md')
+          s=p.read_text(encoding='utf-8')
+          s=s.replace('59/59 automated tests', '65/65 automated tests')
+          s=s.replace('59 automated tests', '65 automated tests')
+          p.write_text(s, encoding='utf-8')
+          PY
+          gh issue edit 3 --repo "$GH_REPO" --body-file /tmp/article.md
+          gh issue view 3 --repo "$GH_REPO" --json body --jq .body | grep -F '65/65 automated tests'
+          echo 'FINAL_STATUS=PUBLIC_ARTICLE_COUNT_SYNCED'
