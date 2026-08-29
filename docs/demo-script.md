@@ -1,10 +1,13 @@
 # Final public demo script — target 3:50
 
 English. Public YouTube or Vimeo. Record the exact submitted Google Cloud build.
-Preferred: use the anonymously reachable `.run.app` UI. Deadline fallback: use
-an owner-accessible/authenticated view of the same deployed build, as permitted
-by the official FAQ, while visibly proving the Google Cloud backend. Never
-present a local deterministic fallback as real Gemini cloud execution.
+Use the independently verified public Cloud Run UI:
+
+https://places-again-674409858210.europe-west1.run.app
+
+Independent anonymous reachability and the full live Cloud E2E passed on
+2026-08-29 in GitHub Actions `Live Cloud E2E Proof` run `33254443473`.
+Never present a local deterministic fallback as real Gemini cloud execution.
 
 The main recovery must be one real incident trigger; after that, do not guide
 the workflow. Do not fake waiting states or replace a failed cloud run with a
@@ -141,6 +144,7 @@ Mandatory:
 - public video, not unlisted; final duration no longer than 4:00;
 - English audio or English subtitles;
 - exact submitted Google Cloud build, not a mock substituted for cloud execution;
+- verified public URL above opens without auth/404 friction immediately before recording;
 - Google Cloud backend evidence visible;
 - the main trigger-to-terminal Proof-of-Action segment is continuous and uncut;
 - one event trigger before the main workflow reaches a terminal state;
@@ -152,8 +156,8 @@ Mandatory:
 - no proprietary third-party data, credentials, notifications, or personal tabs;
 - re-record if any spoken number or claim differs from the captured run.
 
-Strongly preferred for maximum Production Readiness, but not a reason to miss
-the deadline under the official FAQ:
+Already verified before recording:
 
 - independent anonymous public-internet reachability of the hosted Cloud Run UI;
-- judge-accessible hosted application URL.
+- judge-accessible hosted application URL;
+- independent full live Cloud E2E against that URL.
