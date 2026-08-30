@@ -8,7 +8,7 @@ Verified hosted application:
 
 `https://places-again-674409858210.europe-west1.run.app`
 
-This URL passed an independent anonymous GitHub-hosted `/api/capabilities` check and full live Cloud E2E on 2026-08-29 (`Live Cloud E2E Proof` run `33254443473`).
+Final post-P0 production validation passed on 2026-08-30. The current live Cloud Run revision is `places-again-00003-jz8`; the exact UI-shaped incident payload returns HTTP 202 and completes through Pub/Sub → private Google ADK/Gemini worker → deterministic re-verification → Firestore.
 
 1. Open the hosted URL in a desktop browser.
 2. Select **Opera Production**.
@@ -55,10 +55,10 @@ The local product uses the persisted deterministic fallback in a background task
 .venv/bin/python scripts/secret_scan.py --history
 ```
 
-Expected repository baseline:
+Expected repository baseline after the final Firestore persistence P0 fix:
 
 - 52/52 labeled evaluation cases;
-- 65/65 automated tests in the verified core baseline;
+- 67/67 automated tests;
 - 0 unsafe commits;
 - 0 duplicate business effects;
 - 0 Gemini-invented candidate commits;
@@ -67,15 +67,29 @@ Expected repository baseline:
 
 ## Google Cloud proof
 
-The production path has passed both owner-authenticated and independent public end-to-end verification:
+The production path has passed owner-authenticated deployment E2E plus an independent post-deploy public validation:
 
 `Cloud Run API → Pub/Sub/OIDC → private Cloud Run worker → Google ADK + Gemini 3.5 on Vertex AI → deterministic re-verification → Firestore`
 
-The independent external run also verified replay without a duplicate business effect and an adversarial/unknown-person event ending in `human_required` with zero messages sent.
+The final 2026-08-30 public validation observed:
+
+- exact UI-shaped incident payload accepted with HTTP 202;
+- `received → planned → completed`;
+- two hard-safe candidates;
+- Gemini-selected `candidate-a` with validated reason codes;
+- deterministic re-verification PASS;
+- Firestore `v1 → v2`;
+- 3/3 activities and 12 person-hours recovered;
+- zero unaffected activities moved;
+- 12 prepared-not-sent outbox items, zero messages sent;
+- replay without a duplicate business effect;
+- an adversarial/unknown-person event ending in `human_required`, version unchanged, outbox zero.
+
+The post-P0 persistence fix also keeps the observable ADK trace bounded so repeated demo/E2E runs do not recursively inflate the single transactional Firestore document.
 
 See:
 
-- `reports/cloud-e2e-verified-20260829.md`
+- `reports/cloud-e2e-verified-20260830.md`
 - `JUDGE_EVIDENCE.md`
 - `docs/architecture.svg`
 
