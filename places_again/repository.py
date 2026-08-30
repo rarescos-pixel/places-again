@@ -181,6 +181,88 @@ class JsonRepository:
             return result
 
 
+_FIRESTORE_TRACE_RESULT_KEYS = (
+    "status",
+    "candidate_set_id",
+    "safe_candidates_considered",
+    "selected_candidate_id",
+    "selection_reason_codes",
+    "selector",
+    "base_version",
+    "final_version",
+    "outcome",
+    "outbox_status",
+    "outbox_count",
+    "messages_sent",
+    "human_reason",
+)
+
+
+def _compact_trace_result(result: Any) -> Any:
+    """Keep observable ADK evidence without recursively persisting event payloads."""
+    if not isinstance(result, dict):
+        if isinstance(result, (str, int, float, bool)) or result is None:
+            return result
+        return str(type(result).__name__)
+    compact = {
+        key: deepcopy(result[key])
+        for key in _FIRESTORE_TRACE_RESULT_KEYS
+        if key in result
+    }
+    reverified = result.get("deterministic_reverification")
+    if isinstance(reverified, dict) and "passed" in reverified:
+        compact["deterministic_reverification"] = {"passed": bool(reverified["passed"])}
+    failure = result.get("failure")
+    if isinstance(failure, dict):
+        compact["failure"] = {
+            key: failure[key]
+            for key in ("type", "message")
+            if key in failure
+        }
+    return compact
+
+
+def _compact_agent_trace(trace: Any) -> list[dict[str, Any]]:
+    """Bound persisted tool traces to the evidence needed by UI and E2E checks."""
+    if not isinstance(trace, list):
+        return []
+    compact_trace: list[dict[str, Any]] = []
+    for item in trace:
+        if not isinstance(item, dict):
+            continue
+        compact: dict[str, Any] = {
+            key: deepcopy(item[key])
+            for key in ("type", "name")
+            if key in item
+        }
+        if "arguments" in item and isinstance(item["arguments"], dict):
+            compact["arguments"] = deepcopy(item["arguments"])
+        if "result" in item:
+            compact["result"] = _compact_trace_result(item["result"])
+        compact_trace.append(compact)
+    return compact_trace
+
+
+def _compact_system_for_firestore(system: dict[str, Any]) -> dict[str, Any]:
+    """Remove recursive/transient evidence before writing the single Firestore doc.
+
+    Candidate summaries, the selected plan, metrics, reason codes, verification,
+    versions and compact ADK tool evidence remain inspectable. The full candidate
+    set is only needed while an event is non-terminal; persisting it after commit
+    duplicates the selected plan and made the contest document exceed Firestore's
+    1 MiB document limit under repeated demo/E2E runs.
+    """
+    compacted = deepcopy(system)
+    for event in compacted.get("events", {}).values():
+        if not isinstance(event, dict):
+            continue
+        if event.get("agent_trace") is not None:
+            event["agent_trace"] = _compact_agent_trace(event["agent_trace"])
+        if event.get("status") in TERMINAL_EVENT_STATUSES:
+            event.pop("candidate_set", None)
+    return compacted
+
+
 class FirestoreRepository:
     """Single-document transactional store used by the contest deployment.
 
@@ -216,9 +298,10 @@ class FirestoreRepository:
     @staticmethod
     def _encode(system: dict[str, Any]) -> dict[str, Any]:
         # `state` remains as a migration/read-compatibility view for v1.
+        compacted = _compact_system_for_firestore(system)
         return {
-            "system": deepcopy(system),
-            "state": deepcopy(system["scenarios"][DEFAULT_SCENARIO]),
+            "system": compacted,
+            "state": deepcopy(compacted["scenarios"][DEFAULT_SCENARIO]),
         }
 
     def reset_all(self) -> dict[str, Any]:
