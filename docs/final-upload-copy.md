@@ -18,16 +18,22 @@ The production path is: Cloud Run API → authenticated Pub/Sub → private Clou
 
 Gemini chooses among several already-safe recovery strategies using ranked operational priorities. Deterministic code owns every hard constraint and proves the selected plan again before any state change. When safety cannot be proved, the workflow ends in `human_required` with no unsafe commit and no outbound send.
 
+The Opera proof includes a real safe trade-off rather than a single preordained answer:
+- Candidate A: 0 highest-priority calls moved, 3 people changed, 270 shifted minutes;
+- Candidate B: 1 highest-priority call moved, 7 people changed, 240 shifted minutes.
+
+Both pass hard constraints. Gemini selects Candidate A because preserving the highest-priority call outweighs the 30-minute reduction in shifted time; deterministic code then re-verifies that exact candidate before Firestore can commit.
+
 The demo shows:
 - the operational problem first: one absence expanding into 3 activities, 6 people, 3 resources, and 12 person-hours at risk;
-- one continuous, unedited public-Cloud Proof of Action from trigger through terminal state;
+- one continuous live Proof of Action with no cuts inside the agent run;
 - autonomous recovery of 3/3 activities and 12 person-hours;
 - multiple safe candidates and the real Gemini-selected candidate/reason codes;
 - deterministic re-verification before Firestore commit;
 - replay without a duplicate business effect;
 - adversarial/impossible recovery failing closed;
 - the same recovery engine in a commercial film/broadcast scenario;
-- real Google Cloud execution evidence.
+- real Google Cloud execution and architecture evidence.
 
 Hosted application: https://places-again-674409858210.europe-west1.run.app
 Repository: https://github.com/rarescos-pixel/places-again
@@ -36,31 +42,32 @@ Built with Gemini 3.5, Vertex AI, Google ADK, Cloud Run, Pub/Sub, Firestore, Fas
 
 #AllThingsAgenticHackathon
 
-### Generated demo candidate — VERIFIED
+### Final master — VERIFIED FOR UPLOAD
 
-The automated submission-video workflow has produced and inspected a 1920×1080 H.264 MP4:
+Final master v3:
 
-- duration: **145.67 seconds (2:25.7)**;
-- English on-screen captions;
-- 9-second product/problem cold open before the technical proof;
-- visible continuous unedited terminal proof against the public `.run.app` endpoint;
-- Opera safe recovery;
-- replay exactly-once business-effect proof;
-- adversarial/impossible `human_required` proof;
-- commercial film/broadcast second-domain proof;
-- public app, capabilities, independent E2E, architecture, and Quality Gate evidence.
+- duration: **159.701 seconds (2:39.701)**;
+- resolution: **1920×1080**;
+- H.264 video + AAC audio;
+- English narration / on-screen text;
+- cinematic problem cold open before technical proof;
+- visible live public-Cloud Proof of Action;
+- explicit `CONTINUOUS LIVE PROOF — NO CUTS IN AGENT RUN` label over the continuous execution segment;
+- visible Candidate A vs Candidate B safe trade-off and Gemini selection rationale;
+- deterministic re-verification proof;
+- recovery result and safe-failure path;
+- Cloud Run → Pub/Sub → private Google ADK worker → Gemini 3.5 on Vertex AI → deterministic re-verification → Firestore architecture explanation;
+- final human payoff.
 
-Final video-generation proof: GitHub Actions `Build Submission Demo Video` run `33267710383`, artifact `9719197325`.
-
-This MP4 is a generated artifact, **not yet the mandatory public-video URL**. Do not put a GitHub artifact/release URL in the Devpost video field: the official submission requires public YouTube or Vimeo.
+The mandatory Devpost video field must contain the **public YouTube or Vimeo URL**, not a GitHub artifact or temporary media-storage URL.
 
 ### Visibility / compliance
 
-- Public YouTube/Vimeo video, not unlisted.
+- Public YouTube/Vimeo video, not private.
 - English narration or English subtitles/on-screen captions.
 - <= 4:00 final duration.
-- Do not replace the final video after submission.
-- Hosted application is independently verified from GitHub Actions on 2026-08-29.
+- Do not replace the final video after submission unless the Devpost rules explicitly permit it before deadline.
+- Hosted application final post-P0 production validation passed on 2026-08-30.
 
 ## Devpost — fixed copy anchors
 
@@ -74,7 +81,7 @@ This MP4 is a generated artifact, **not yet the mandatory public-video URL**. Do
 
 ### One-line summary
 
-At 08:05, one principal disappears and 3 activities, 6 people, 3 resources, and 12 person-hours become at risk. Places, Again autonomously maps the cascade, lets Gemini choose among deterministically safe recovery strategies, re-verifies that choice against current state, and commits the bounded recovery without step-by-step human guidance.
+At 08:05, one critical principal becomes unavailable and 3 activities, 6 people, 3 resources, and 12 person-hours become at risk. Places, Again autonomously maps the cascade, lets Gemini choose among deterministically safe recovery strategies, re-verifies that choice against current state, and commits the bounded recovery without step-by-step human guidance.
 
 ### Primary category
 
@@ -92,16 +99,33 @@ https://github.com/rarescos-pixel/places-again
 
 https://places-again-674409858210.europe-west1.run.app
 
-Independent GitHub-hosted verification on 2026-08-29 reached `/api/capabilities` and completed the full live Cloud E2E path successfully.
+Final live validation on 2026-08-30 reached the exact UI-shaped public event path and completed the full Cloud workflow successfully on revision `places-again-00003-jz8`.
 
 ### Demo video
 
 Insert the final public YouTube/Vimeo URL only after verifying:
-- <= 4:00;
+- duration = 2:39.701 and therefore <= 4:00;
 - public visibility;
-- exact submitted build/evidence path;
+- the uploaded file is the final v3 master;
 - actual candidate/reason codes match what is shown;
-- Google Cloud evidence is readable.
+- Google Cloud evidence and architecture labels are readable.
+
+## Final repository/evidence baseline
+
+- 67/67 automated tests;
+- 52/52 labeled evaluation cases;
+- Quality Gate #91 green on the post-P0 runtime commit;
+- final Firestore persistence P0 fixed with bounded observable trace persistence and regression coverage;
+- public UI-shaped incident path: HTTP 202 → completed;
+- Gemini-selected Candidate A;
+- deterministic re-verification PASS;
+- Firestore v1 → v2;
+- 3/3 activities / 12 person-hours recovered;
+- replay: no duplicate business effect;
+- adversarial case: `human_required`, version unchanged, outbox zero;
+- both synthetic scenarios reset to clean version-1 state for judge use.
+
+Detailed checkpoint: `reports/cloud-e2e-verified-20260830.md`.
 
 ## Bonus publication status
 
@@ -111,22 +135,23 @@ Permanent public URL:
 
 https://github.com/rarescos-pixel/places-again/issues/3
 
-The article explicitly states that it was created for entering the Google All Things Agentic Hackathon and links the live app and repository. Current evidence text has been synchronized to **65/65 automated tests** and **52/52 labeled evaluation cases**.
+The article explicitly states that it was created for entering the Google All Things Agentic Hackathon and links the live app and repository. Before submission, ensure its numeric evidence is synchronized to the final **67/67 automated tests** and **52/52 labeled evaluation cases**.
 
 ### Social bonus — NOT YET CLAIMED
 
 The canonical copy remains `docs/social-post.md`. Claim +0.2 only after it is actually public on an eligible social platform with `#AllThingsAgenticHackathon` and its permanent URL is inserted into the submission.
 
-### Additional-model bonus — NOT YET CLAIMED
+### Additional-model bonus — NOT CLAIMED
 
-Do not claim the optional Gemma/additional-model bonus unless the real managed-model call is validated, the integration is merged and documented, and the final demo visibly includes it.
+Do not claim the optional Gemma/additional-model bonus unless a real managed-model call is validated, the integration is merged and documented, and the final demo visibly includes it. The final base submission intentionally avoids decorative model stuffing.
 
 ## Final upload stop rule
 
 Before pressing Submit:
 
-- exact submitted commit has a green Quality Gate;
-- final public YouTube/Vimeo video is <= 4:00;
+- final repository Quality Gate is green;
+- hosted application opens anonymously and the clean one-click demo works;
+- final public YouTube/Vimeo video is exactly the approved <=4:00 master;
 - all submitted URLs open successfully;
 - no placeholders remain in the Devpost form;
 - `JUDGE_EVIDENCE.md` contains final video timestamps;
