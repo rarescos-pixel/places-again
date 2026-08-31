@@ -128,7 +128,7 @@ The production path is:
 Current baseline:
 
 - **52/52 labeled evaluation cases pass** across both domains;
-- **65/65 automated tests pass**;
+- **67/67 automated tests pass**;
 - **0 unsafe commits**;
 - **0 unresolved auto-commits**;
 - **0 duplicate business effects**;
@@ -142,6 +142,18 @@ secret/history scanning, Python/shell syntax checks, JSON/SVG parsing, and
 publishes generated evidence artifacts.
 
 Full local evaluation: [`reports/evaluation-report.json`](reports/evaluation-report.json).
+
+### Final post-P0 production validation — PASSED 2026-08-30
+
+The final public runtime revision `places-again-00003-jz8` passed a fresh
+judge-path validation after the Firestore 1 MiB persistence fix. The exact
+UI-shaped incident payload returned HTTP 202 and completed through Pub/Sub →
+private Google ADK/Gemini worker → deterministic re-verification → Firestore.
+Replay preserved the exactly-once business effect, and the adversarial path
+ended in `human_required` without mutation or send.
+
+Committed checkpoint:
+[`reports/cloud-e2e-verified-20260830.md`](reports/cloud-e2e-verified-20260830.md).
 
 ### Real Google Cloud backend/agent E2E — PASSED 2026-08-29
 
@@ -298,9 +310,9 @@ No public arbitrary-prompt endpoint exists.
 - `places_again/models.py` — strict bounded Pydantic input models
 - `evaluation/cases.json` — 52 labeled cases
 - `reports/evaluation-report.json` — reproducible evaluation result
-- `JUDGE_EVIDENCE.md` — rubric claim-to-proof map
-- `docs/demo-script.md` — final public-video script (<4 min)
-- `docs/submission.md` — Devpost draft
+- `JUDGE_EVIDENCE.md` — canonical final rubric claim-to-proof map
+- `docs/final-upload-copy.md` — canonical final upload / Devpost packet
+- `docs/submission.md` — working Devpost draft retained for history
 - `docs/build-article.md` / `docs/social-post.md` — bonus publication drafts
 
 ## What is demonstrated — and what is not
