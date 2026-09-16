@@ -1,0 +1,44 @@
+name: tmp-fidelio-assets
+on:
+  push:
+    branches: [tmp-fidelio-assets-20260916]
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch facsimile sources
+        shell: bash
+        run: |
+          set -euxo pipefail
+          mkdir -p assets
+          curl -L --fail --retry 3 'https://lh3.googleusercontent.com/7XZKVUBUgTD4sTDTzRc2Ylrbk0ZEFO2bcubaUjycW7rpoBWA9kFxkpc5-LOD8SmlSfd8LrxbVGaWM-EiyVSCu_ynD9bboeq37TqeWC4vWg=s2400' -o assets/moscheles_p3.jpg
+          curl -L --fail --retry 3 'https://lh3.googleusercontent.com/V8tguqkccZiJfrBv_-w-PgsymcxtUA3FIAihh-H-htMmL_or6gCBwqf6ImW22pEBgBJs_mLRCf7_8u3aLMlA1SQWqi85oocaWZUB0MGL=s2400' -o assets/moscheles_p4.jpg
+          curl -L --fail --retry 3 'https://lh3.googleusercontent.com/35j-k01rpLTHjKfyRtmqfx6WY6GmNnRUfQMrTCd4dSLL76M8kXlQAlEgNbkgBjJmUTFzVj0RNl3FeKEW4D8EsiP9bQRbY8jJNUBIrojM=s2400' -o assets/schmidt_p27.jpg
+          curl -L --fail --retry 3 'https://lh3.googleusercontent.com/2CovhaqViZfOnFfBUDGXaWQLZk_odc9RLxHE9kdyowFzU57xvTVAHbEFoFfgC-d6tcVNiVc2bzniz4F3bsEbgd4iocs1S8Z16zeA6kUo2Q=s2400' -o assets/schmidt_p28.jpg
+          curl -L --fail --retry 3 'https://lh3.googleusercontent.com/cgDMva82HfbMCd52SR5jPPuExIw2ScY4frRuQNpNjDwbYa885vE90uCZOguT5P4c0rCL84yOF-sjQftssu7u9N2cZ1a8AspkkY4l0uOL=s2400' -o assets/schmidt_p29.jpg
+          curl -L --fail --retry 3 'https://lh3.googleusercontent.com/CCkNTEVCGNhIvlGI0VwXuOXvhRaQbDeaJx1T1iHmwGdTCOfLGeID_BDiQHG88sTd4C1dFOPaOaYZaWH1odyxNgUnVUa057WA1nDiuhrxzg=s2400' -o assets/schmidt_p30.jpg
+      - name: Fetch and render orchestral score pages
+        shell: bash
+        run: |
+          set -euxo pipefail
+          python -m pip install --quiet PyMuPDF requests
+          python - <<'PY'
+          import requests, fitz
+          url = 'https://s9.imslp.org/files/imglnks/usimg/b/b7/IMSLP971827-PMLP3048-Beethoven%2C_L._van_-_Fidelio%2C_Op._72.pdf'
+          r = requests.get(url, headers={'User-Agent':'Mozilla/5.0'}, timeout=60)
+          r.raise_for_status()
+          open('assets/fidelio_full_score.pdf','wb').write(r.content)
+          doc = fitz.open('assets/fidelio_full_score.pdf')
+          for pno in range(113, 122):
+              page = doc.load_page(pno-1)
+              pix = page.get_pixmap(matrix=fitz.Matrix(2.0,2.0), alpha=False)
+              pix.save(f'assets/fullscore_pdfpage_{pno}.png')
+          print('pages', doc.page_count)
+          PY
+      - name: Upload assets
+        uses: actions/upload-artifact@v4
+        with:
+          name: fidelio-assets
+          path: assets
+          retention-days: 1
